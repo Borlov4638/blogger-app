@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Put } from "@nestjs/common";
+import { PostsService } from "./posts.service";
 
 
 
