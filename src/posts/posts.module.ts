@@ -11,6 +11,7 @@ import { Comment, commentsSchema } from "src/entyties/comments.schema";
 @Module({
     imports: [MongooseModule.forFeature([{name:Post.name, schema:postSchema}, {name:Blog.name, schema: BlogSchema}, {name:Comment.name, schema:commentsSchema}])],
     controllers:[PostController],
-    providers:[PostsService, PostRepository]
+    providers:[PostsService, PostRepository],
+    exports: [PostsService]
 })
 export class PostsModule {}

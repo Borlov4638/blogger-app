@@ -12,10 +12,11 @@ import {
 } from '@nestjs/common';
 import { BlogPaganationQuery, CreateBlogDto, UpdateBlogDto } from './dto/blogs.dto';
 import { BlogsService } from './blogs.service';
+import { PostsService } from 'src/posts/posts.service';
 
 @Controller('blogs')
 export class BlogsController {
-  constructor(private readonly blogsService: BlogsService) {}
+  constructor(private readonly blogsService: BlogsService, private readonly postService: PostsService) {}
 
   @Get()
   getAllBlog(@Query() query: BlogPaganationQuery) {
@@ -49,5 +50,7 @@ export class BlogsController {
   getPostsByBlogId(@Param('blogsId') id: string) {}
 
   @Post(':blogId/posts')
-  createPostByBlogId(@Param('blogId') id: string) {}
+  async createPostByBlogId(@Param('blogId') blogId: string, @Body('title') title: string, @Body('shortDescription') shortDescription: string, @Body('content') content:string) {
+    return await this.postService.createNewPost({title, shortDescription, content}, blogId)
+  }
 }
