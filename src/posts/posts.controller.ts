@@ -40,4 +40,9 @@ export class PostController {
     async deleteAllPosts(){
         await this.postService.deleteAll()
     }
+
+    @Get()
+    getAllPostsComments(){
+        
+    }
 }
