@@ -5,7 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Blog, BlogDocument } from 'src/entyties/blogs.schema';
 import { Model, Types } from 'mongoose';
 
-interface IPaganationQuery {
+interface IBlogPaganationQuery {
   searchNameTerm: string;
   sortBy: string;
   sortDirection: string;
@@ -24,7 +24,7 @@ interface IUpdateBlog {
 export class BlogsService {
   constructor(@InjectModel(Blog.name) private blogModel: Model<Blog>, private readonly blogsRepo: BlogsRepository) {}
 
-  getAllBlogs(paganationQuery: IPaganationQuery) {
+  getAllBlogs(paganationQuery: IBlogPaganationQuery) {
     const searchNameTerm = paganationQuery.searchNameTerm ? paganationQuery.searchNameTerm : ''
     const sortBy = paganationQuery.sortBy ? paganationQuery.sortBy : "createdAt"
     const sortDirection = (paganationQuery.sortDirection === "asc") ? 1 : -1

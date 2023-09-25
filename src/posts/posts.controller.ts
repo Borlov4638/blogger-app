@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Post, Put } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Put, Query } from "@nestjs/common";
 import { PostsService } from "./posts.service";
-import { CreatePostDto } from "./dto/post.dto";
+import { CreatePostDto, PostPaganationQuery, PostUpdateDto } from "./dto/post.dto";
 
 
 
@@ -9,8 +9,8 @@ export class PostController {
     constructor(private readonly postService: PostsService) {}
 
     @Get()
-    getAllPosts(){
-
+    async getAllPosts(@Query() postPagonationQuery : PostPaganationQuery){
+        return await this.postService.getAllPosts(postPagonationQuery)
     }
 
     @Post()
@@ -18,8 +18,8 @@ export class PostController {
         return await this.postService.createNewPost(data)
     }
     
-    @Put()
-    updatePost(){
-        
+    @Put(':id')
+    async updatePost(@Param('id') postId: string, @Body() data: PostUpdateDto){
+        return await this.postService.updatePost(postId ,data)
     }
 }
