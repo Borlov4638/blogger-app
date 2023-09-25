@@ -24,7 +24,7 @@ interface IUpdateBlog {
 export class BlogsService {
   constructor(@InjectModel(Blog.name) private blogModel: Model<Blog>, private readonly blogsRepo: BlogsRepository) {}
 
-  getAllBlogs(paganationQuery: IBlogPaganationQuery) {
+  async getAllBlogs(paganationQuery: IBlogPaganationQuery) {
     const searchNameTerm = paganationQuery.searchNameTerm ? paganationQuery.searchNameTerm : ''
     const sortBy = paganationQuery.sortBy ? paganationQuery.sortBy : "createdAt"
     const sortDirection = (paganationQuery.sortDirection === "asc") ? 1 : -1
@@ -33,10 +33,23 @@ export class BlogsService {
     const pageSize = paganationQuery.pageSize ? +paganationQuery.pageSize : 10
     const itemsToSkip = (pageNumber - 1) * pageSize
 
-    return this.blogModel.find({ name: {$regex: searchNameTerm, $options:'i'}},{projection:{_id:0}})
+    const findedBlogs = await this.blogModel.find({ name: {$regex: searchNameTerm, $options:'i'}},{_id:false, __v:false})
     .sort(sotringQuery)
     .skip(itemsToSkip)
     .limit(pageSize)
+
+    const totalCountOfItems = (await this.blogModel.find({ name: {$regex: searchNameTerm, $options:'i'}})).length
+
+    const mappedResponse = {
+        pagesCount: Math.ceil(totalCountOfItems / pageSize),
+        page: pageNumber,
+        pageSize: pageSize,
+        totalCount: totalCountOfItems,
+        items: [...findedBlogs]
+    }
+
+    return mappedResponse
+
   }
 
   async createNewBlog(createBlogDto: CreateBlogDto) {
