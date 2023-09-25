@@ -1,5 +1,6 @@
-import { Controller, Get, Post, Put } from "@nestjs/common";
+import { Body, Controller, Get, Post, Put } from "@nestjs/common";
 import { PostsService } from "./posts.service";
+import { CreatePostDto } from "./dto/post.dto";
 
 
 
@@ -13,8 +14,8 @@ export class PostController {
     }
 
     @Post()
-    createNewPost(){
-
+    async createNewPost(@Body() data: CreatePostDto){
+        return await this.postService.createNewPost(data)
     }
     
     @Put()

@@ -22,7 +22,7 @@ export class Post {
     blogName: string
     @Prop({default: new Date()})
     createdAt:Date
-    @Prop({usersWhoLiked:[{userId:String, string: String, login:String, addedAt: Number}], usersWhoDisliked:[]})
+    @Prop({type:{usersWhoLiked:[{userId:String, string: String, login:String, addedAt: Number}], usersWhoDisliked:[]}})
     extendedLikesInfo:{
         usersWhoLiked:[]
         useusersWhoDisliked:[]
