@@ -29,9 +29,9 @@ export class Post {
     }
 }
 
-export const PostSchema = SchemaFactory.createForClass(Post)
+export const postSchema = SchemaFactory.createForClass(Post)
 
-PostSchema.pre('save', function (next) {
+postSchema.pre('save', function (next) {
     if (!this._id) {
       this._id = this.id = new Types.ObjectId();
     }
