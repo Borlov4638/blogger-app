@@ -9,7 +9,6 @@ interface ICreatePost{
     title:string
     shortDescription:string
     content:string
-    blogId:string | Types.ObjectId
 }
 
 interface IPostPaganationQuery{
@@ -52,13 +51,12 @@ export class PostsService {
         return findedPost
     }
 
-    async createNewPost(data: ICreatePost){
-        data.blogId = new Types.ObjectId(data.blogId)
-        const blogToPost = await this.blogModel.findById(data.blogId).exec()
+    async createNewPost(data: ICreatePost, blogId:string){
+        const blogToPost = await this.blogModel.findById(new Types.ObjectId(blogId)).exec()
         if(!blogToPost){
             throw new NotFoundException()            
         }
-        const newPost = new this.postModel(data)
+        const newPost = new this.postModel({...data, blogId})
         return await newPost.save()
     }
 
