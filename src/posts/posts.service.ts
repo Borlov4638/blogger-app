@@ -3,7 +3,6 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { Blog } from "src/entyties/blogs.schema";
 import { Post } from "src/entyties/posts.schema";
-import { PostPaganationQuery } from "./dto/post.dto";
 import { PostRepository } from "./posts.repository";
 
 interface ICreatePost{
@@ -39,10 +38,18 @@ export class PostsService {
         const pageSize = postPagonationQuery.pageSize ? +postPagonationQuery.pageSize : 10
         const itemsToSkip = (pageNumber - 1) * pageSize
     
-        return this.blogModel.find({},{projection:{_id:0}})
+        return this.postModel.find({},{projection:{_id:0}})
         .sort(sotringQuery)
         .skip(itemsToSkip)
         .limit(pageSize)
+    }
+
+    async getPostById(postId:string){
+        const findedPost = await this.postModel.findById(new Types.ObjectId(postId)).exec()
+        if(!findedPost){
+            throw new NotFoundException('no such post')
+        }
+        return findedPost
     }
 
     async createNewPost(data: ICreatePost){
@@ -75,4 +82,18 @@ export class PostsService {
         return await postToUpdate.save()
         
     }
+
+    async deletePostById(id:string){
+        const postToDelete = await this.postModel.findOneAndDelete({_id: new Types.ObjectId(id)})
+        if(!postToDelete){
+            throw new NotFoundException('no such post')
+        }
+        return
+    }
+
+    async deleteAll(){
+        return await this.postModel.deleteMany({})
+    }
+
+
 }
