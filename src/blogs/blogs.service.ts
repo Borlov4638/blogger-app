@@ -36,7 +36,16 @@ export class BlogsService {
     const findedBlogs = await this.blogModel.find({ name: {$regex: searchNameTerm, $options:'i'}},{_id:false, __v:false})
     .sort(sotringQuery)
     .skip(itemsToSkip)
-    .limit(pageSize)
+    .limit(pageSize).then(findedBlogs =>{
+      findedBlogs.map(blog =>{
+        delete blog._id
+        delete blog.__v
+        return blog
+      })
+      return findedBlogs
+    })
+    
+    
 
     const totalCountOfItems = (await this.blogModel.find({ name: {$regex: searchNameTerm, $options:'i'}})).length
 
@@ -51,11 +60,18 @@ export class BlogsService {
     return mappedResponse
 
   }
-
-  async createNewBlog(createBlogDto: CreateBlogDto) {
-    const createdBlog = new this.blogModel(createBlogDto);
-    await createdBlog.save();
-    return createdBlog;
+  // 
+  // TODO Верные поля объекта при возврате (убрать _id и __v)
+  //   
+  async createNewBlog(data: CreateBlogDto) {
+    const createdBlog = new this.blogModel(data);
+    return await createdBlog.save()
+      .then(savedBlog =>{
+        const plainBlog : BlogDocument = savedBlog.toObject() 
+        delete plainBlog._id
+        delete plainBlog.__v
+        return plainBlog
+      })
   }
 
   async getBlogById(blogId:string){
@@ -76,6 +92,7 @@ export class BlogsService {
     blogToUpdate.description = data.description
     blogToUpdate.websiteUrl = data.websiteUrl
     await blogToUpdate.save()
+    return
   }
 
   async deleteBlogById(blogId:string){
