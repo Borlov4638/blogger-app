@@ -1,5 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { HydratedDocument, Types } from "mongoose";
+import { LikeStatus } from "src/enums/like-status.enum";
+
 
 
 export type PostDocument = HydratedDocument<Post>;
@@ -22,10 +24,29 @@ export class Post {
     blogName: string
     @Prop({default: new Date()})
     createdAt:Date
-    @Prop({type:{usersWhoLiked:[{userId:String, string: String, login:String, addedAt: Number}], usersWhoDisliked:[]}})
-    extendedLikesInfo:{
-        usersWhoLiked:[]
-        useusersWhoDisliked:[]
+    @Prop({type:{usersWhoLiked:[{userId:String, login:String, addedAt: Number}], usersWhoDisliked:[String]},
+      default:{usersWhoLiked:[], usersWhoDisliked:[]}, _id:false
+    })
+    likesInfo:{
+        usersWhoLiked:[{
+          userId: string,
+          login: string,
+          addedAt: number
+        }]
+        useusersWhoDisliked:string[]
+    }
+    @Prop({type:{likesCount:Number, dislikesCount:Number, myStatus:String, newestLikes:[{addedAt:String, userId:String, login:String}]},
+     default:{likesCount:0, dislikesCount:0, myStatus:LikeStatus.NONE,newestLikes:[]}, _id:false
+    })
+    extenextendedLikesInfo: {
+      likesCount: number,
+      dislikesCount: number,
+      myStatus:LikeStatus
+      newestLikes:[{
+        addedAt:string,
+        userId:string
+        login:string
+      }]
     }
 }
 

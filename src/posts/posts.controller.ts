@@ -20,8 +20,8 @@ export class PostController {
     
     @HttpCode(HttpStatus.CREATED)
     @Post()
-    async createNewPost(@Body('title') title: string, @Body('shortDescription') shortDescription: string, @Body('content') content:string, @Body('blogId') blogId:string){
-        return await this.postService.createNewPost({title, shortDescription, content}, blogId)
+    async createNewPost(@Body() data: CreatePostDto, @Body('blogId') blogId:string){
+        return await this.postService.createNewPost(data, blogId)
     }
 
     @HttpCode(HttpStatus.NO_CONTENT)

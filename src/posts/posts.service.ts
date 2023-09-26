@@ -2,7 +2,7 @@ import { NotFoundException, Query } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { Blog } from "src/entyties/blogs.schema";
-import { Post } from "src/entyties/posts.schema";
+import { Post, PostDocument } from "src/entyties/posts.schema";
 import { PostRepository } from "./posts.repository";
 
 interface ICreatePost{
@@ -29,7 +29,7 @@ interface IPostUpdate {
 export class PostsService {
     constructor(@InjectModel(Post.name) private postModel: Model<Post>, @InjectModel(Blog.name) private blogModel: Model<Blog>, private readonly postRepo : PostRepository){}
 
-    getAllPosts(postPagonationQuery: IPostPaganationQuery){
+    async getAllPosts(postPagonationQuery: IPostPaganationQuery){
         const sortBy = postPagonationQuery.sortBy ? postPagonationQuery.sortBy : "createdAt"
         const sortDirection = (postPagonationQuery.sortDirection === "asc") ? 1 : -1
         const sotringQuery = this.postRepo.postsSortingQuery(sortBy, sortDirection)
@@ -37,14 +37,27 @@ export class PostsService {
         const pageSize = postPagonationQuery.pageSize ? +postPagonationQuery.pageSize : 10
         const itemsToSkip = (pageNumber - 1) * pageSize
     
-        return this.postModel.find({},{projection:{_id:0}})
+        const findedPosts =  await this.postModel.find({},{_id:false, __v:false, likesInfo:false})
         .sort(sotringQuery)
         .skip(itemsToSkip)
         .limit(pageSize)
+
+        const totalCountOfItems = (await this.postModel.find({})).length
+
+        const mappedResponse = {
+            pagesCount: Math.ceil(totalCountOfItems / pageSize),
+            page: pageNumber,
+            pageSize: pageSize,
+            totalCount: totalCountOfItems,
+            items: [...findedPosts]
+        }
+    
+        return mappedResponse
+    
     }
 
     async getPostById(postId:string){
-        const findedPost = await this.postModel.findById(new Types.ObjectId(postId)).exec()
+        const findedPost = await this.postModel.findById(new Types.ObjectId(postId), {_id:false, __v:false, likesInfo:false}).exec()
         if(!findedPost){
             throw new NotFoundException('no such post')
         }
@@ -56,8 +69,14 @@ export class PostsService {
         if(!blogToPost){
             throw new NotFoundException()            
         }
-        const newPost = new this.postModel({...data, blogId})
-        return await newPost.save()
+        const newPost = new this.postModel({...data, blogId, blogName:blogToPost.name})
+        return await newPost.save().then(newPost =>{
+            const plainPost : PostDocument = newPost.toObject()
+            delete plainPost.__v
+            delete plainPost._id
+            delete plainPost.likesInfo
+            return plainPost
+        })
     }
 
     async updatePost(postId:string, data: IPostUpdate){
@@ -77,8 +96,8 @@ export class PostsService {
         postToUpdate.content = data.content
         postToUpdate.blogId = data.blogId
 
-        return await postToUpdate.save()
-        
+        await postToUpdate.save()
+        return
     }
 
     async deletePostById(id:string){
