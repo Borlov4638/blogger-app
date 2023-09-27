@@ -1,6 +1,6 @@
 {
     "version": 2,
-    "name":"authorisation-validation",
+    "name":"blogger-app",
     "builds": [
         {
             "src": "./src/main.ts",
