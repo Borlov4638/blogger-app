@@ -57,7 +57,7 @@ export class PostsService {
     }
 
     async getPostById(postId:string){
-        const findedPost = await this.postModel.findById(new Types.ObjectId(postId), {_id:false, __v:false, likesInfo:false}, {sort:{'_id':1}}).exec()
+        const findedPost = await this.postModel.findById(new Types.ObjectId(postId), {_id:false, __v:false, likesInfo:false}, {sort:{'_id':-1}}).exec()
         if(!findedPost){
             throw new NotFoundException('no such post')
         }
