@@ -4,10 +4,11 @@ import { UsersService } from "./users.service";
 import { CrytoModule } from "../crypto/crypto.module";
 import { MongooseModule } from "@nestjs/mongoose";
 import { User, usersSchema } from "../entyties/users.chema";
+import { UsersRepository } from "./users.repository";
 
 @Module({
     controllers:[UsersController],
-    providers:[UsersService],
+    providers:[UsersService, UsersRepository],
     imports:[CrytoModule, MongooseModule.forFeature([{name:User.name, schema:usersSchema}])]
 })
 
