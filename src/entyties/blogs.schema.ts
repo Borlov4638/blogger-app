@@ -15,7 +15,7 @@ export class Blog {
   description: string;
   @Prop({ required: true })
   websiteUrl: string;
-  @Prop({ required: true, default: new Date().toISOString() })
+  @Prop()
   createdAt: string;
   @Prop({ required: true, default: false })
   isMembership: boolean;
@@ -24,6 +24,9 @@ export class Blog {
 export const BlogSchema = SchemaFactory.createForClass(Blog);
 
 BlogSchema.pre('save', function (next) {
+  if(!this.createdAt){
+    this.createdAt = new Date().toISOString()
+  }
   if (!this._id) {
     this._id = this.id = new Types.ObjectId();
   }

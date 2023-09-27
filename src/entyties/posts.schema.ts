@@ -22,8 +22,8 @@ export class Post {
     blogId: Types.ObjectId
     @Prop()
     blogName: string
-    @Prop({default: new Date()})
-    createdAt:Date
+    @Prop()
+    createdAt:string
     @Prop({type:{usersWhoLiked:[{userId:String, login:String, addedAt: Number}], usersWhoDisliked:[String]},
       default:{usersWhoLiked:[], usersWhoDisliked:[]}, _id:false
     })
@@ -53,6 +53,9 @@ export class Post {
 export const postSchema = SchemaFactory.createForClass(Post)
 
 postSchema.pre('save', function (next) {
+    if(!this.createdAt){
+      this.createdAt = new Date().toISOString()
+    }
     if (!this._id) {
       this._id = this.id = new Types.ObjectId();
     }

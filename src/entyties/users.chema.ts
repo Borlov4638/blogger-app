@@ -10,7 +10,7 @@ export class User {
     _id:Types.ObjectId
     @Prop()
     id:Types.ObjectId
-    @Prop({default: new Date().toISOString()})
+    @Prop()
     createdAt: string
     @Prop()
     login: string
@@ -23,6 +23,9 @@ export class User {
 export const usersSchema = SchemaFactory.createForClass(User)
 
 usersSchema.pre('save', function (next) {
+    if(!this.createdAt){
+        this.createdAt = new Date().toISOString()
+    }
     if (!this._id) {
         this._id = this.id = new Types.ObjectId();
       }
