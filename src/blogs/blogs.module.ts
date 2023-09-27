@@ -10,7 +10,7 @@ import { PostsModule } from '../posts/posts.module';
   controllers: [BlogsController],
   imports: [
     MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
-    PostsModule
+    PostsModule,
   ],
   providers: [BlogsService, BlogsRepository],
 })

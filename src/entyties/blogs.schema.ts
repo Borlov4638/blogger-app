@@ -24,8 +24,8 @@ export class Blog {
 export const BlogSchema = SchemaFactory.createForClass(Blog);
 
 BlogSchema.pre('save', function (next) {
-  if(!this.createdAt){
-    this.createdAt = new Date().toISOString()
+  if (!this.createdAt) {
+    this.createdAt = new Date().toISOString();
   }
   if (!this._id) {
     this._id = this.id = new Types.ObjectId();

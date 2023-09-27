@@ -7,12 +7,15 @@ import { User } from './entyties/users.chema';
 
 @Injectable()
 export class AppService {
-
-  constructor(@InjectModel(Blog.name) private blogsModel: Model<Blog>, @InjectModel(Post.name) private postModel:Model<Post>, @InjectModel(User.name) private userModel : Model<User>){}
+  constructor(
+    @InjectModel(Blog.name) private blogsModel: Model<Blog>,
+    @InjectModel(Post.name) private postModel: Model<Post>,
+    @InjectModel(User.name) private userModel: Model<User>,
+  ) {}
   async deleteAllData(): Promise<void> {
-    await this.blogsModel.deleteMany({})
-    await this.postModel.deleteMany({})
-    await this.userModel.deleteMany({})
-    return 
+    await this.blogsModel.deleteMany({});
+    await this.postModel.deleteMany({});
+    await this.userModel.deleteMany({});
+    return;
   }
 }

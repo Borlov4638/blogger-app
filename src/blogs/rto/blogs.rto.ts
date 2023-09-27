@@ -1,4 +1,3 @@
-export class BlogRto{
-    id:string
-    
+export class BlogRto {
+  id: string;
 }
