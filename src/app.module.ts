@@ -6,13 +6,17 @@ import { BlogsModule } from './blogs/blogs.module';
 import { PostsModule } from './posts/posts.module';
 import { CommentsModule } from './comments/comments.module';
 import { UsersModule } from './users/users.module';
+import { Blog, BlogSchema } from './entyties/blogs.schema';
+import { Post, postSchema } from './entyties/posts.schema';
+import { User, usersSchema } from './entyties/users.chema';
 
 @Module({
   imports: [
     MongooseModule.forRoot(
       'mongodb+srv://mrwiggle40000:OErZka7OiZTiToGx@cluster0.dt0bgxc.mongodb.net/incubator',
     ),
-    BlogsModule, PostsModule, CommentsModule, UsersModule
+    BlogsModule, PostsModule, CommentsModule, UsersModule,
+    MongooseModule.forFeature([{name:Blog.name, schema:BlogSchema}, {name:Post.name, schema:postSchema}, {name:User.name, schema:usersSchema}])
   ],
   controllers: [AppController],
   providers: [AppService],
