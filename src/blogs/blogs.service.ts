@@ -65,7 +65,7 @@ export class BlogsService {
 
   async getBlogById(blogId:string){
     
-    const findedBlog = await this.blogModel.findById(new Types.ObjectId(blogId), {_id:false, __v:false}, {lean:true, sort: {'_id':-1}}).exec()
+    const findedBlog = await this.blogModel.findById(new Types.ObjectId(blogId), {_id:false, __v:false}, {lean:true}).exec()
     if(!findedBlog){
       throw new NotFoundException()
     }

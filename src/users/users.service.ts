@@ -43,7 +43,7 @@ export class UsersService {
         const itemsToSkip = (pageNumber - 1) * pageSize
     
         const usersToSend = await this.userModel
-            .find({ $or: [{login: {$regex: searchLoginTerm, $options: 'i'}},{email: {$regex: searchEmailTerm, $options: 'i' }}]},{_id:false, password:false, __v:false}, {sort:{'_id':-1}})
+            .find({ $or: [{login: {$regex: searchLoginTerm, $options: 'i'}},{email: {$regex: searchEmailTerm, $options: 'i' }}]},{_id:false, password:false, __v:false})
             .sort(sotringQuery)
             .skip(itemsToSkip)
             .limit(pageSize)
