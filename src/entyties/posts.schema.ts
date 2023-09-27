@@ -38,7 +38,7 @@ export class Post {
     @Prop({type:{likesCount:Number, dislikesCount:Number, myStatus:String, newestLikes:[{addedAt:String, userId:String, login:String}]},
      default:{likesCount:0, dislikesCount:0, myStatus:LikeStatus.NONE,newestLikes:[]}, _id:false
     })
-    extenextendedLikesInfo: {
+    extendedLikesInfo: {
       likesCount: number,
       dislikesCount: number,
       myStatus:LikeStatus

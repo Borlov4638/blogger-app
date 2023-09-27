@@ -91,5 +91,10 @@ export class BlogsService {
     }
     return
   }
+
+  async getAllPostsInBlog(blogId: string){
+    
+  }
+
   
 }

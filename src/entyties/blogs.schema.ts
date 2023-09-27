@@ -17,7 +17,7 @@ export class Blog {
   websiteUrl: string;
   @Prop({ required: true, default: new Date().toISOString() })
   createdAt: string;
-  @Prop({ required: true, default: true })
+  @Prop({ required: true, default: false })
   isMembership: boolean;
 }
 

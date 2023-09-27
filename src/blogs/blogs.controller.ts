@@ -47,7 +47,9 @@ export class BlogsController {
   }
 
   @Get(':blogId/posts')
-  getPostsByBlogId(@Param('blogsId') id: string) {}
+  getAllPostsInBlog(@Param('blogsId') id: string) {
+    return  this.blogsService.getAllPostsInBlog(id)
+  }
 
   @Post(':blogId/posts')
   async createPostByBlogId(@Param('blogId') blogId: string, @Body('title') title: string, @Body('shortDescription') shortDescription: string, @Body('content') content:string) {

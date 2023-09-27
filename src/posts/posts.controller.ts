@@ -36,11 +36,6 @@ export class PostController {
         return await this.postService.deletePostById(postId)
     }
 
-    @Delete()
-    async deleteAllPosts(){
-        await this.postService.deleteAll()
-    }
-
     @Get()
     getAllPostsComments(){
         

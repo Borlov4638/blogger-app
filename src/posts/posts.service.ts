@@ -108,9 +108,13 @@ export class PostsService {
         return
     }
 
-    async deleteAll(){
-        return await this.postModel.deleteMany({})
+    async getAllPostsInBlog(blogId:string){
+        const blogToFindPosts = await this.blogModel.findById(new Types.ObjectId(blogId))
+        if(!blogToFindPosts){
+            throw new NotFoundException()
+        }
+        const findedPosts = await this.postModel.find({blogId})
+        
     }
-
 
 }
