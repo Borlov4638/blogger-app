@@ -25,18 +25,20 @@ export class Post {
     @Prop()
     createdAt:string
     @Prop({type:{usersWhoLiked:[{userId:String, login:String, addedAt: Number}], usersWhoDisliked:[String]},
-      default:{usersWhoLiked:[], usersWhoDisliked:[]}, _id:false
+      // default:{usersWhoLiked:[], usersWhoDisliked:[]},
+      _id:false
     })
     likesInfo:{
         usersWhoLiked:[{
           userId: string,
           login: string,
           addedAt: number
-        }]
-        useusersWhoDisliked:string[]
+        }] | []
+        usersWhoDisliked:string[] | []
     }
     @Prop({type:{likesCount:Number, dislikesCount:Number, myStatus:String, newestLikes:[{addedAt:String, userId:String, login:String}]},
-     default:{likesCount:0, dislikesCount:0, myStatus:LikeStatus.NONE,newestLikes:[]}, _id:false
+      // default:{likesCount:0, dislikesCount:0, myStatus:LikeStatus.NONE,newestLikes:[]},
+      _id:false
     })
     extendedLikesInfo: {
       likesCount: number,
@@ -46,13 +48,21 @@ export class Post {
         addedAt:string,
         userId:string
         login:string
-      }]
+      }] | []
     }
 }
 
 export const postSchema = SchemaFactory.createForClass(Post)
 
 postSchema.pre('save', function (next) {
+
+    if(!this.likesInfo){
+      this.likesInfo = {usersWhoLiked:[], usersWhoDisliked:[]}
+    }
+    if(!this.extendedLikesInfo){
+      this.extendedLikesInfo = {likesCount:0, dislikesCount:0, myStatus:LikeStatus.NONE,newestLikes:[]}
+    }
+
     if(!this.createdAt){
       this.createdAt = new Date().toISOString()
     }
