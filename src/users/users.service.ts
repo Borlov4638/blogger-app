@@ -43,7 +43,7 @@ export class UsersService {
         const itemsToSkip = (pageNumber - 1) * pageSize
     
         const usersToSend = await this.userModel
-            .find({ $or: [{login: {$regex: searchLoginTerm, $options: 'i'}},{email: {$regex: searchEmailTerm, $options: 'i' }}]},{_id:false, password:false, id:false})
+            .find({ $or: [{login: {$regex: searchLoginTerm, $options: 'i'}},{email: {$regex: searchEmailTerm, $options: 'i' }}]},{_id:false, password:false, __v:false})
             .sort(sotringQuery)
             .skip(itemsToSkip)
             .limit(pageSize)
@@ -74,9 +74,9 @@ export class UsersService {
     }
 
     async deleteUserById(id:string){
-        const deletedUser = this.userModel.findOneAndDelete({_id: new Types.ObjectId(id)})
+        const deletedUser = await this.userModel.findOneAndDelete({_id: new Types.ObjectId(id)})
         if(!deletedUser){
-            throw new NotFoundException('user not found')
+            throw new NotFoundException()
         }
         return 
     }
