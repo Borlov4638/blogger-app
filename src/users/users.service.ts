@@ -45,6 +45,7 @@ export class UsersService {
         const usersToSend = await this.userModel
             .find({ $or: [{login: {$regex: searchLoginTerm, $options: 'i'}},{email: {$regex: searchEmailTerm, $options: 'i' }}]},{_id:false, password:false, __v:false})
             .sort(sotringQuery)
+            .sort({id:-1})
             .skip(itemsToSkip)
             .limit(pageSize)
     
