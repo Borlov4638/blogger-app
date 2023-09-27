@@ -126,7 +126,7 @@ export class PostsService {
         .skip(itemsToSkip)
         .limit(pageSize)
 
-        const totalCountOfItems = (await this.postModel.find({})).length
+        const totalCountOfItems = (await this.postModel.find({blogId})).length
 
         const mappedResponse = {
             pagesCount: Math.ceil(totalCountOfItems / pageSize),
