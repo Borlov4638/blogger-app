@@ -69,6 +69,7 @@ export class UsersService {
             delete plainUser._id
             delete plainUser.__v
             delete plainUser.password
+            setTimeout(() => {}, 10)
             return plainUser
         })
     }
