@@ -1,7 +1,7 @@
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { CryptoService } from "src/crypto/crypto.service";
-import { User } from "src/entyties/users.chema";
+import { CryptoService } from "../crypto/crypto.service";
+import { User } from "../entyties/users.chema";
 
 interface ICreateUser {
     email: string;

@@ -1,7 +1,7 @@
 import { NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { Comment } from "src/entyties/comments.schema";
+import { Comment } from "../entyties/comments.schema";
 
 export class CommentsService{
     constructor(@InjectModel(Comment.name) private commentModel : Model<Comment>){}

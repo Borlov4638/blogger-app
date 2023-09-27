@@ -1,8 +1,8 @@
 import { NotFoundException, Query } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { Blog } from "src/entyties/blogs.schema";
-import { Post, PostDocument } from "src/entyties/posts.schema";
+import { Blog } from "../entyties/blogs.schema";
+import { Post, PostDocument } from "../entyties/posts.schema";
 import { PostRepository } from "./posts.repository";
 
 interface ICreatePost{

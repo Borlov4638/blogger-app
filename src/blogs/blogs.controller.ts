@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { BlogPaganationQuery, CreateBlogDto, UpdateBlogDto } from './dto/blogs.dto';
 import { BlogsService } from './blogs.service';
-import { PostsService } from 'src/posts/posts.service';
+import { PostsService } from '../posts/posts.service';
 
 @Controller('blogs')
 export class BlogsController {

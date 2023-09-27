@@ -1,11 +1,11 @@
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
-import { Post, postSchema } from "src/entyties/posts.schema";
+import { Post, postSchema } from "../entyties/posts.schema";
 import { PostController } from "./posts.controller";
 import { PostsService } from "./posts.service";
-import { Blog, BlogSchema } from "src/entyties/blogs.schema";
+import { Blog, BlogSchema } from "../entyties/blogs.schema";
 import { PostRepository } from "./posts.repository";
-import { Comment, commentsSchema } from "src/entyties/comments.schema";
+import { Comment, commentsSchema } from "../entyties/comments.schema";
 
 
 @Module({

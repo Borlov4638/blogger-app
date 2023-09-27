@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBlogDto } from './dto/blogs.dto';
 import { BlogsRepository } from './blogs.repository';
 import { InjectModel } from '@nestjs/mongoose';
-import { Blog, BlogDocument } from 'src/entyties/blogs.schema';
+import { Blog, BlogDocument } from '../entyties/blogs.schema';
 import { Model, Types } from 'mongoose';
 
 interface IBlogPaganationQuery {
