@@ -13,6 +13,7 @@ import {
 import { BlogPaganationQuery, CreateBlogDto, UpdateBlogDto } from './dto/blogs.dto';
 import { BlogsService } from './blogs.service';
 import { PostsService } from '../posts/posts.service';
+import { PostPaganationQuery } from 'src/posts/dto/post.dto';
 
 @Controller('blogs')
 export class BlogsController {
@@ -47,8 +48,8 @@ export class BlogsController {
   }
 
   @Get(':blogId/posts')
-  getAllPostsInBlog(@Param('blogsId') id: string) {
-    return  this.blogsService.getAllPostsInBlog(id)
+  getAllPostsInBlog(@Param('blogId') id: string, @Query() paganation : PostPaganationQuery) {
+    return this.postService.getAllPostsInBlog(paganation, id)
   }
 
   @Post(':blogId/posts')

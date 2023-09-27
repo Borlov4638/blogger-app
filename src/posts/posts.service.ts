@@ -108,12 +108,36 @@ export class PostsService {
         return
     }
 
-    async getAllPostsInBlog(blogId:string){
+    async getAllPostsInBlog(postPagonationQuery: IPostPaganationQuery, blogId:string){
         const blogToFindPosts = await this.blogModel.findById(new Types.ObjectId(blogId))
         if(!blogToFindPosts){
             throw new NotFoundException()
         }
-        const findedPosts = await this.postModel.find({blogId})
+
+        const sortBy = postPagonationQuery.sortBy ? postPagonationQuery.sortBy : "createdAt"
+        const sortDirection = (postPagonationQuery.sortDirection === "asc") ? 1 : -1
+        const sotringQuery = this.postRepo.postsSortingQuery(sortBy, sortDirection)
+        const pageNumber = postPagonationQuery.pageNumber ? +postPagonationQuery.pageNumber : 1
+        const pageSize = postPagonationQuery.pageSize ? +postPagonationQuery.pageSize : 10
+        const itemsToSkip = (pageNumber - 1) * pageSize
+    
+        const findedPosts =  await this.postModel.find({blogId},{_id:false, __v:false, likesInfo:false})
+        .sort(sotringQuery)
+        .skip(itemsToSkip)
+        .limit(pageSize)
+
+        const totalCountOfItems = (await this.postModel.find({})).length
+
+        const mappedResponse = {
+            pagesCount: Math.ceil(totalCountOfItems / pageSize),
+            page: pageNumber,
+            pageSize: pageSize,
+            totalCount: totalCountOfItems,
+            items: [...findedPosts]
+        }
+    
+        return mappedResponse
+
         
     }
 
