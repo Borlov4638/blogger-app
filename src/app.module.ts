@@ -9,12 +9,14 @@ import { UsersModule } from './users/users.module';
 import { Blog, BlogSchema } from './entyties/blogs.schema';
 import { Post, postSchema } from './entyties/posts.schema';
 import { User, usersSchema } from './entyties/users.chema';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
     MongooseModule.forRoot(
       'mongodb+srv://mrwiggle40000:OErZka7OiZTiToGx@cluster0.dt0bgxc.mongodb.net/incubator',
     ),
+    AuthModule,
     BlogsModule,
     PostsModule,
     CommentsModule,

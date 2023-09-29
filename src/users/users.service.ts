@@ -20,6 +20,11 @@ interface IUsersPaganationQuery {
   searchEmailTerm: string;
 }
 
+
+interface ILoginUser{
+  loginOrEmail:string
+  password:string
+}
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
@@ -106,5 +111,9 @@ export class UsersService {
       throw new NotFoundException();
     }
     return;
+  }
+
+  async getUserByLoginOrEmail(credentials:ILoginUser){
+    return await this.userModel.findOne({$or:[{login:credentials.loginOrEmail}, {login:credentials.loginOrEmail}]})
   }
 }
