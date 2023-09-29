@@ -10,7 +10,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { UsersPaganationQuery } from './dto/users.dto';
+import { CreateUserDto, UsersPaganationQuery } from './dto/users.dto';
 
 @Controller('users')
 export class UsersController {
@@ -24,11 +24,9 @@ export class UsersController {
   @HttpCode(HttpStatus.CREATED)
   @Post()
   async createUser(
-    @Body('login') login: string,
-    @Body('email') email: string,
-    @Body('password') password: string,
+    @Body() data: CreateUserDto
   ) {
-    return await this.usersService.createUser({ email, login, password });
+    return await this.usersService.createUser(data);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
