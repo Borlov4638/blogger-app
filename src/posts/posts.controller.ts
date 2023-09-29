@@ -17,7 +17,7 @@ import {
   PostPaganationQuery,
   PostUpdateDto,
 } from './dto/post.dto';
-import { BasicAuthGuard } from 'src/auth/auth.basic.guard';
+import { BasicAuthGuard } from 'src/auth/guards/auth.basic.guard';
 
 @Controller('posts')
 export class PostController {
