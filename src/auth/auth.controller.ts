@@ -1,5 +1,5 @@
 import { Body, Controller, Post, Req, Res, UseGuards } from "@nestjs/common";
-import { LoginUserDto } from "./dto/auth.dto";
+import { LoginUserDto, PasswordRecoveryDto } from "./dto/auth.dto";
 import { AuthService } from "./auth.service";
 import { Request, Response } from "express";
 import { BearerRefreshAuthGuard } from "./guards/auth.bearer.guard";
@@ -41,5 +41,15 @@ export class AuthController {
     @Post('registration-email-resending')
     async resendConfirmationEmail(@Body('email') email:string){
         this.authService.resendConfirmationEmail(email)
+    }
+
+    @Post('password-recovery')
+    async sendPasswordRecoveryCode(@Body('email') email: string) {
+        await this.authService.sendPasswordRecoveryCode(email);
+    }
+
+    @Post('new-password')
+    async newPassword(@Body() data:PasswordRecoveryDto){
+        this.authService.recoverPassword(data)
     }
 } 

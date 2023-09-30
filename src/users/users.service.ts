@@ -145,4 +145,10 @@ export class UsersService {
     return
   }
 
+  async changePassword(newPassword:string, user:UserDocument){
+    user.password = await this.cryptoService.getHash(newPassword, 10)
+    user.save()
+    return
+  }
+
 }

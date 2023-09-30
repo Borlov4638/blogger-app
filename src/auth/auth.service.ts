@@ -22,6 +22,11 @@ interface INewUsersData {
     password: string;
   }
 
+interface IPasswordRecovery{
+    newPassword:string
+    recoveryCode:string
+}
+
 
 @Injectable()
 export class AuthService{
@@ -46,7 +51,11 @@ export class AuthService{
     }
 
     private async _getTokenDataAndVerify(token:string){
-        return await this.jwtService.verifyAsync(token)
+        try{
+            return await this.jwtService.verifyAsync(token)
+        }catch(err){
+            throw new UnauthorizedException()
+        }    
     }
 
     async loginUser(credentials: ILoginUser){
@@ -80,4 +89,23 @@ export class AuthService{
         return
     }
 
+    async sendPasswordRecoveryCode(email:string){
+        const user = await this.userService.getUserByLoginOrEmail(email)
+        if(!user){
+            return
+        }
+        const code = await this._getUsersToken(user, 1800)
+        await this.utilsService.sendPassRecoweryMail(user.email, code)
+        return
+    }
+
+    async recoverPassword(data:IPasswordRecovery){
+        const userData : IUsersToken = await this._getTokenDataAndVerify(data.recoveryCode)
+        const user = await this.userService.getUserByLoginOrEmail(userData.email)
+        if(!user){
+            return
+        }
+        await this.userService.changePassword(data.newPassword, user)
+        return
+    }
 }

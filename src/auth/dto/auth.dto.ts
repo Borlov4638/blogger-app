@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsString, Length } from "class-validator";
 
 export class LoginUserDto{
     @IsNotEmpty()
@@ -7,4 +7,13 @@ export class LoginUserDto{
     @IsNotEmpty()
     @IsString()
     password:string
+}
+export class PasswordRecoveryDto{
+    @IsNotEmpty()
+    @IsString()
+    @Length(6,20)
+    newPassword:string
+    @IsNotEmpty()
+    @IsString()
+    recoveryCode:string
 }
