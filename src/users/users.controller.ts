@@ -30,7 +30,7 @@ export class UsersController {
   async createUser(
     @Body() data: CreateUserDto
   ) {
-    return await this.usersService.createUser(data);
+    return await this.usersService.createUser(data, true);
   }
 
   @UseGuards(BasicAuthGuard)

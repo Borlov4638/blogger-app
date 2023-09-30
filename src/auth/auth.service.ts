@@ -15,6 +15,12 @@ interface IUsersToken{
     email:string
     login:string
 }
+interface INewUsersData {
+    email: string;
+    login: string;
+    password: string;
+  }
+
 
 @Injectable()
 export class AuthService{
@@ -54,7 +60,10 @@ export class AuthService{
         const accessToken = await this._getUsersToken(data, 10)
         const refreshToken = await this._getUsersToken(data, 30)
         return {accessToken, refreshToken}
+    }
 
+    async registrateUser(data:INewUsersData){
+        return await this.userService.createUser(data, false)
     }
 
 }

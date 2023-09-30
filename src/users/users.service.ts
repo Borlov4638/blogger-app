@@ -25,6 +25,7 @@ interface ILoginUser{
   loginOrEmail:string
   password:string
 }
+
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
@@ -90,15 +91,27 @@ export class UsersService {
     return mappedResponse;
   }
 
-  async createUser(data: ICreateUser) {
+  async createUser(data: ICreateUser, isConfirmed:boolean) {
     const hashedPassword = await this.cryptoService.getHash(data.password, 10);
-    const newUser = new this.userModel({ ...data, password: hashedPassword });
+
+    let newUser : UserDocument
+    if(isConfirmed){
+      newUser = new this.userModel({ ...data, password: hashedPassword});
+      newUser.confirm()
+    }else{
+      newUser = new this.userModel({ ...data, password: hashedPassword });
+//       
+// TODO: ADD SEND EMAIL
+//       
+    }
+
+
+
     return await newUser.save().then((newUser) => {
       const plainUser: UserDocument = newUser.toObject();
       delete plainUser._id;
       delete plainUser.__v;
       delete plainUser.password;
-      setTimeout(() => {}, 10);
       return plainUser;
     });
   }

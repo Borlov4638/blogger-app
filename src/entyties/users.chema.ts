@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Date, HydratedDocument, Types } from 'mongoose';
-
+import mongoose, { Date, HydratedDocument, Types } from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
 export type UserDocument = HydratedDocument<User>;
 
 @Schema()
@@ -17,9 +17,22 @@ export class User {
   password: string;
   @Prop()
   email: string;
+  @Prop({type:{confirmationCode:String, expirationDate: Number, isConfirmed:Boolean},
+    default:{confirmationCode: uuidv4(), expirationDate: +new Date()+1800000, isConfirmed:false}, _id:false
+  })
+  emailConfirmation:{
+    confirmationCode:string,
+    expirationDate:number,
+    isConfirmed:boolean
+  }
+  confirm : Function
 }
 
 export const usersSchema = SchemaFactory.createForClass(User);
+
+usersSchema.methods.confirm = function (){
+  this.emailConfirmation.isConfirmed=true
+}
 
 usersSchema.pre('save', function (next) {
   if (!this.createdAt) {

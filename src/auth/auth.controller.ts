@@ -3,6 +3,7 @@ import { LoginUserDto } from "./dto/auth.dto";
 import { AuthService } from "./auth.service";
 import { Request, Response } from "express";
 import { BearerRefreshAuthGuard } from "./guards/auth.bearer.guard";
+import { CreateUserDto } from "src/users/dto/users.dto";
 
 interface ITokens{
     accessToken: string;
@@ -25,5 +26,10 @@ export class AuthController {
         const tokens = await this.authService.getNewTokenPair(request)
         response.cookie('refreshToken', tokens.refreshToken)
         return response.status(201).json({accessToken:tokens.accessToken})
+    }
+
+    @Post('registration')
+    async registrateUser(@Body() data: CreateUserDto){
+        return await this.authService.registrateUser(data)
     }
 } 
