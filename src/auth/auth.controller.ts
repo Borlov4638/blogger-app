@@ -37,4 +37,9 @@ export class AuthController {
     async confirmRegistration(@Body("code") token: string){
         this.authService.confirmRegistration(token)
     }
+
+    @Post('registration-email-resending')
+    async resendConfirmationEmail(@Body('email') email:string){
+        this.authService.resendConfirmationEmail(email)
+    }
 } 

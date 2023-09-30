@@ -127,8 +127,8 @@ export class UsersService {
     return;
   }
 
-  async getUserByLoginOrEmail(credentials:ILoginUser){
-    return await this.userModel.findOne({$or:[{login:credentials.loginOrEmail}, {login:credentials.loginOrEmail}]})
+  async getUserByLoginOrEmail(loginOrEmail:string): Promise<UserDocument>{
+    return await this.userModel.findOne({$or:[{login:loginOrEmail}, {email:loginOrEmail}]})
   }
 
   async confirmUserByCode(code:string){

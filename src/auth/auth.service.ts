@@ -4,6 +4,7 @@ import { Request } from "express";
 import { CryptoService } from "src/crypto/crypto.service";
 import { UserDocument } from "src/entyties/users.chema";
 import { UsersService } from "src/users/users.service";
+import { UtilsService } from "src/utils/utils.service";
 
 interface ILoginUser{
     loginOrEmail:string
@@ -24,10 +25,10 @@ interface INewUsersData {
 
 @Injectable()
 export class AuthService{
-    constructor(private readonly userService : UsersService, private cryptoService:CryptoService, private jwtService : JwtService){}
+    constructor(private readonly userService : UsersService, private cryptoService:CryptoService, private jwtService : JwtService, private utilsService : UtilsService){}
 
     private async _checkCredentials(credentials:ILoginUser){
-        const user = await this.userService.getUserByLoginOrEmail(credentials)
+        const user = await this.userService.getUserByLoginOrEmail(credentials.loginOrEmail)
 
         if(!user){
             throw new UnauthorizedException()
@@ -68,6 +69,15 @@ export class AuthService{
 
     async confirmRegistration(code:string){
         this.userService.confirmUserByCode(code)
+    }
+
+    async resendConfirmationEmail(email:string){
+        const user = await this.userService.getUserByLoginOrEmail(email)
+        if(!user){
+            return
+        }
+        await this.utilsService.sendConfirmationViaEmail(user.email, user.emailConfirmation.confirmationCode)
+        return
     }
 
 }
