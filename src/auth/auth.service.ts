@@ -66,4 +66,8 @@ export class AuthService{
         return await this.userService.createUser(data, false)
     }
 
+    async confirmRegistration(code:string){
+        this.userService.confirmUserByCode(code)
+    }
+
 }

@@ -32,4 +32,9 @@ export class AuthController {
     async registrateUser(@Body() data: CreateUserDto){
         return await this.authService.registrateUser(data)
     }
+
+    @Post('registration-confirmation')
+    async confirmRegistration(@Body("code") token: string){
+        this.authService.confirmRegistration(token)
+    }
 } 

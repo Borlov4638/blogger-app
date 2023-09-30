@@ -18,7 +18,7 @@ export class User {
   @Prop()
   email: string;
   @Prop({type:{confirmationCode:String, expirationDate: Number, isConfirmed:Boolean},
-    default:{confirmationCode: uuidv4(), expirationDate: +new Date()+1800000, isConfirmed:false}, _id:false
+    default:{ isConfirmed:false}, _id:false
   })
   emailConfirmation:{
     confirmationCode:string,
@@ -35,6 +35,12 @@ usersSchema.methods.confirm = function (){
 }
 
 usersSchema.pre('save', function (next) {
+  if(!this.emailConfirmation.expirationDate){
+    this.emailConfirmation.expirationDate = +new Date()+1800000
+  }
+  if(!this.emailConfirmation.confirmationCode){
+    this.emailConfirmation.confirmationCode = uuidv4()
+  }
   if (!this.createdAt) {
     this.createdAt = new Date().toISOString();
   }

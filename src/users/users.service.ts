@@ -102,18 +102,19 @@ export class UsersService {
       newUser.confirm()
     }else{
       newUser = new this.userModel({ ...data, password: hashedPassword });
-      await this.utilsService.sendConfirmationViaEmail(data.email, newUser.emailConfirmation.confirmationCode)
     }
 
 
 
-    return await newUser.save().then((newUser) => {
+    const userToReturn = await newUser.save().then((newUser) => {
       const plainUser: UserDocument = newUser.toObject();
       delete plainUser._id;
       delete plainUser.__v;
       delete plainUser.password;
       return plainUser;
     });
+    await this.utilsService.sendConfirmationViaEmail(data.email, newUser.emailConfirmation.confirmationCode)
+    return userToReturn
   }
 
   async deleteUserById(id: string) {
@@ -129,4 +130,19 @@ export class UsersService {
   async getUserByLoginOrEmail(credentials:ILoginUser){
     return await this.userModel.findOne({$or:[{login:credentials.loginOrEmail}, {login:credentials.loginOrEmail}]})
   }
+
+  async confirmUserByCode(code:string){
+    const user = await this.userModel.findOne({'emailConfirmation.confirmationCode': code})
+    console.log(user)
+    if(!user){
+      return
+    }
+    if(user.emailConfirmation.expirationDate > +new Date()){
+      return
+    }
+    await user.confirm()
+    await user.save()
+    return
+  }
+
 }
