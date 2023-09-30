@@ -1,5 +1,6 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
+import { Request } from "express";
 import { CryptoService } from "src/crypto/crypto.service";
 import { UserDocument } from "src/entyties/users.chema";
 import { UsersService } from "src/users/users.service";
@@ -7,6 +8,12 @@ import { UsersService } from "src/users/users.service";
 interface ILoginUser{
     loginOrEmail:string
     password:string
+}
+
+interface IUsersToken{
+    id:string
+    email:string
+    login:string
 }
 
 @Injectable()
@@ -27,14 +34,27 @@ export class AuthService{
         return user
     }
 
+    private async _getUsersToken(user:IUsersToken, exp:number|string){
+        return await this.jwtService.signAsync({id:user.id, email:user.email, login:user.login}, {expiresIn:exp})
+    }
+
+    private async _getTokenDataAndVerify(token:string){
+        return await this.jwtService.verifyAsync(token)
+    }
+
     async loginUser(credentials: ILoginUser){
         const user = await this._checkCredentials(credentials)
-        const accessToken = await this._getToken(user, 10)
-        const refreshToken = await this._getToken(user, 30)
+        const accessToken = await this._getUsersToken(user, 10)
+        const refreshToken = await this._getUsersToken(user, 30)
         return {accessToken, refreshToken}
     }
 
-    private async _getToken(user:UserDocument, exp:number|string){
-        return await this.jwtService.signAsync({userId:user.id, email:user.email, login:user.login}, {expiresIn:exp})
+    async getNewTokenPair(request : Request){
+        const data : IUsersToken = await this._getTokenDataAndVerify(request.cookies.refreshToken)
+        const accessToken = await this._getUsersToken(data, 10)
+        const refreshToken = await this._getUsersToken(data, 30)
+        return {accessToken, refreshToken}
+
     }
+
 }
