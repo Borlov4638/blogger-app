@@ -29,9 +29,9 @@ export class AuthService{
 
     async loginUser(credentials: ILoginUser){
         const user = await this._checkCredentials(credentials)
-        const accessToken = this._getToken(user, 10)
-        
-        return accessToken
+        const accessToken = await this._getToken(user, 10)
+        const refreshToken = await this._getToken(user, 30)
+        return {accessToken, refreshToken}
     }
 
     private async _getToken(user:UserDocument, exp:number|string){
