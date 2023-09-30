@@ -10,6 +10,7 @@ import { Blog, BlogSchema } from './entyties/blogs.schema';
 import { Post, postSchema } from './entyties/posts.schema';
 import { User, usersSchema } from './entyties/users.chema';
 import { AuthModule } from './auth/auth.module';
+import { UtilsModule } from './utils/utils.moduls';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { AuthModule } from './auth/auth.module';
     PostsModule,
     CommentsModule,
     UsersModule,
+    UtilsModule,
     MongooseModule.forFeature([
       { name: Blog.name, schema: BlogSchema },
       { name: Post.name, schema: postSchema },

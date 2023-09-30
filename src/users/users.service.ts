@@ -4,6 +4,7 @@ import { CryptoService } from '../crypto/crypto.service';
 import { User, UserDocument } from '../entyties/users.chema';
 import { NotFoundException } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
+import { UtilsService } from 'src/utils/utils.service';
 
 interface ICreateUser {
   email: string;
@@ -31,6 +32,7 @@ export class UsersService {
     @InjectModel(User.name) private userModel: Model<User>,
     private readonly cryptoService: CryptoService,
     private usersRepository: UsersRepository,
+    private utilsService: UtilsService
   ) {}
 
   async getAllUsers(paganation: IUsersPaganationQuery) {
@@ -100,9 +102,7 @@ export class UsersService {
       newUser.confirm()
     }else{
       newUser = new this.userModel({ ...data, password: hashedPassword });
-//       
-// TODO: ADD SEND EMAIL
-//       
+      await this.utilsService.sendConfirmationViaEmail(data.email, newUser.emailConfirmation.confirmationCode)
     }
 
 
