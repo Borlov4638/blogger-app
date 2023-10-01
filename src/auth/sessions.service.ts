@@ -1,11 +1,11 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { Request } from "express";
 import { UserDocument } from "src/entyties/users.chema";
 import { v4 as uuidv4 } from 'uuid';
 import { add, compareAsc, format } from "date-fns"
 import { InjectModel } from "@nestjs/mongoose";
 import { Session } from "src/entyties/session.schema";
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import { JwtService } from "@nestjs/jwt";
 
 interface IUsersRefreshToken{
@@ -47,6 +47,7 @@ export class SessionService{
     }
     async findSessionById(deviceId:string){
         return await this.sessionModel.findOne({deviceId})
+
     }
     async deleteSessionById(deviceId:string){
         return await this.sessionModel.findOneAndDelete({deviceId})
@@ -64,5 +65,15 @@ export class SessionService{
         }
         return session
     }
+    async getUserSessions(request:Request){
+        const tokenData : IUsersRefreshToken = await this.jwtService.verifyAsync(request.headers.authorization.split(' ')[1])
+        return await this.sessionModel.find({userId:new Types.ObjectId(tokenData.id)})
+    }
+    async deleteOtherSessions(request:Request){
+        const tokenData : IUsersRefreshToken = await this.jwtService.verifyAsync(request.cookies.refreshToken)
+        await this.sessionModel.deleteMany({userId:new Types.ObjectId(tokenData.id), deviceId:{$not: {$regex:tokenData.deviceId}}})
+        return
+    }
+    
 
 }
