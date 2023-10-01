@@ -5,17 +5,26 @@ import { CryptoService } from "src/crypto/crypto.service";
 import { UserDocument } from "src/entyties/users.chema";
 import { UsersService } from "src/users/users.service";
 import { UtilsService } from "src/utils/utils.service";
+import { SessionService } from "./sessions.service";
+import { SessionDocument } from "src/entyties/session.schema";
 
 interface ILoginUser{
     loginOrEmail:string
     password:string
 }
 
-interface IUsersToken{
+interface IUsersAcessToken{
     id:string
     email:string
     login:string
 }
+interface IUsersRefreshToken{
+    id:string
+    email:string
+    login:string
+    deviceId:string
+}
+
 interface INewUsersData {
     email: string;
     login: string;
@@ -30,7 +39,7 @@ interface IPasswordRecovery{
 
 @Injectable()
 export class AuthService{
-    constructor(private readonly userService : UsersService, private cryptoService:CryptoService, private jwtService : JwtService, private utilsService : UtilsService){}
+    constructor(private readonly userService : UsersService, private cryptoService:CryptoService, private jwtService : JwtService, private utilsService : UtilsService, private readonly sessionService : SessionService){}
 
     private async _checkCredentials(credentials:ILoginUser){
         const user = await this.userService.getUserByLoginOrEmail(credentials.loginOrEmail)
@@ -46,9 +55,14 @@ export class AuthService{
         return user
     }
 
-    private async _getUsersToken(user:IUsersToken, exp:number|string){
+    private async _getUsersAccessToken(user:IUsersAcessToken, exp:number|string){
         return await this.jwtService.signAsync({id:user.id, email:user.email, login:user.login}, {expiresIn:exp})
     }
+
+    private async _getUsersRefreshToken(user:IUsersAcessToken, exp:number|string, deviceId:string){
+        return await this.jwtService.signAsync({id:user.id, email:user.email, login:user.login, deviceId:deviceId}, {expiresIn:exp})
+    }
+
 
     private async _getTokenDataAndVerify(token:string){
         try{
@@ -58,17 +72,21 @@ export class AuthService{
         }    
     }
 
-    async loginUser(credentials: ILoginUser){
+    async loginUser(credentials: ILoginUser, request : Request){
         const user = await this._checkCredentials(credentials)
-        const accessToken = await this._getUsersToken(user, 10)
-        const refreshToken = await this._getUsersToken(user, 30)
+        const reftrsTokenExpDate = 3600
+        const sessionData :SessionDocument = await this.sessionService.createNewSession(request, user, reftrsTokenExpDate)
+        const accessToken = await this._getUsersAccessToken(user, 360)
+        const refreshToken = await this._getUsersRefreshToken(user, reftrsTokenExpDate, sessionData.deviceId)
         return {accessToken, refreshToken}
     }
 
     async getNewTokenPair(request : Request){
-        const data : IUsersToken = await this._getTokenDataAndVerify(request.cookies.refreshToken)
-        const accessToken = await this._getUsersToken(data, 10)
-        const refreshToken = await this._getUsersToken(data, 30)
+        const data : IUsersRefreshToken = await this._getTokenDataAndVerify(request.cookies.refreshToken)
+        const reftrsTokenExpDate = 3600
+        await this.sessionService.updateCurrentSession(request, reftrsTokenExpDate, data.deviceId)
+        const accessToken = await this._getUsersAccessToken(data, 360)
+        const refreshToken = await this._getUsersRefreshToken(data, reftrsTokenExpDate, data.deviceId)
         return {accessToken, refreshToken}
     }
 
@@ -94,13 +112,13 @@ export class AuthService{
         if(!user){
             return
         }
-        const code = await this._getUsersToken(user, 1800)
+        const code = await this._getUsersAccessToken(user, 1800)
         await this.utilsService.sendPassRecoweryMail(user.email, code)
         return
     }
 
     async recoverPassword(data:IPasswordRecovery){
-        const userData : IUsersToken = await this._getTokenDataAndVerify(data.recoveryCode)
+        const userData : IUsersAcessToken = await this._getTokenDataAndVerify(data.recoveryCode)
         const user = await this.userService.getUserByLoginOrEmail(userData.email)
         if(!user){
             return
@@ -108,4 +126,6 @@ export class AuthService{
         await this.userService.changePassword(data.newPassword, user)
         return
     }
+
+    async 
 }

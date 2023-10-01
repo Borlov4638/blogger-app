@@ -2,8 +2,9 @@ import { Body, Controller, Post, Req, Res, UseGuards } from "@nestjs/common";
 import { LoginUserDto, PasswordRecoveryDto } from "./dto/auth.dto";
 import { AuthService } from "./auth.service";
 import { Request, Response } from "express";
-import { BearerRefreshAuthGuard } from "./guards/auth.bearer.guard";
+import { BearerAccessAuthGuard, BearerRefreshAuthGuard } from "./guards/auth.bearer.guard";
 import { CreateUserDto } from "src/users/dto/users.dto";
+import { SessionService } from "./sessions.service";
 
 interface ITokens{
     accessToken: string;
@@ -12,10 +13,10 @@ interface ITokens{
 
 @Controller('auth')
 export class AuthController {
-    constructor(private readonly authService:AuthService) {}
+    constructor(private readonly authService:AuthService, private readonly sessionService : SessionService) {}
     @Post('login')
-    async loginUser(@Body() credentials:LoginUserDto, @Res() response : Response){
-        const tokens = await this.authService.loginUser(credentials)
+    async loginUser(@Body() credentials:LoginUserDto, @Res() response : Response, @Req() request:Request){
+        const tokens : ITokens = await this.authService.loginUser(credentials, request)
         response.cookie('refreshToken', tokens.refreshToken)
         return response.status(201).json({accessToken:tokens.accessToken})
     }
@@ -23,6 +24,7 @@ export class AuthController {
     @UseGuards(BearerRefreshAuthGuard)
     @Post('refresh-token')
     async getNewTokenPair(@Req() request : Request, @Res() response : Response){
+        await this.sessionService.validateSession(request)
         const tokens = await this.authService.getNewTokenPair(request)
         response.cookie('refreshToken', tokens.refreshToken)
         return response.status(201).json({accessToken:tokens.accessToken})
@@ -51,5 +53,12 @@ export class AuthController {
     @Post('new-password')
     async newPassword(@Body() data:PasswordRecoveryDto){
         this.authService.recoverPassword(data)
+    }
+    
+    @UseGuards(BearerAccessAuthGuard, BearerRefreshAuthGuard)
+    @Post('logout')
+    async logoutUser(@Req() request:Request){
+        await this.sessionService.validateSession(request)
+        await this.sessionService.deleteCurrentSession(request)
     }
 } 

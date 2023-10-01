@@ -8,6 +8,9 @@ export class BearerAccessAuthGuard implements CanActivate {
     constructor(private jwtService : JwtService){}
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
         const request : Request = context.switchToHttp().getRequest()
+        if(!request.headers.authorization){
+            throw new UnauthorizedException()
+        }
         const token = request.headers.authorization.split(' ')[1]
         if(!token){
             throw new UnauthorizedException()

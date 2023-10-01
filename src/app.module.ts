@@ -11,6 +11,7 @@ import { Post, postSchema } from './entyties/posts.schema';
 import { User, usersSchema } from './entyties/users.chema';
 import { AuthModule } from './auth/auth.module';
 import { UtilsModule } from './utils/utils.moduls';
+import { Session, sessionSchema } from './entyties/session.schema';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { UtilsModule } from './utils/utils.moduls';
       { name: Blog.name, schema: BlogSchema },
       { name: Post.name, schema: postSchema },
       { name: User.name, schema: usersSchema },
+      { name: Session.name, schema: sessionSchema}
     ]),
   ],
   controllers: [AppController],
