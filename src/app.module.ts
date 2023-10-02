@@ -13,6 +13,7 @@ import { AuthModule } from './auth/auth.module';
 import { UtilsModule } from './utils/utils.moduls';
 import { Session, sessionSchema } from './entyties/session.schema';
 import { SecDevModule } from './security-devices/sec-dev.module';
+import { Comment, commentsSchema } from './entyties/comments.schema';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { SecDevModule } from './security-devices/sec-dev.module';
     UtilsModule,
     SecDevModule,
     MongooseModule.forFeature([
+      { name: Comment.name, schema: commentsSchema },
       { name: Blog.name, schema: BlogSchema },
       { name: Post.name, schema: postSchema },
       { name: User.name, schema: usersSchema },
