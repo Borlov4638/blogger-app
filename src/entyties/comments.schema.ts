@@ -1,6 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Date, Types } from 'mongoose';
+import { Date, HydratedDocument, Types } from 'mongoose';
 import { LikeStatus } from 'src/enums/like-status.enum';
+
+export type CommentDocument = HydratedDocument<Comment>
 
 @Schema()
 export class Comment {
@@ -10,7 +12,7 @@ export class Comment {
   id: Types.ObjectId;
   @Prop()
   content: string;
-  @Prop({ type: { userId: String, userLogin: String } })
+  @Prop({ type: { userId: String, userLogin: String }, _id:false })
   commentatorInfo: {
     userId: string;
     userLogin: string;
@@ -20,7 +22,7 @@ export class Comment {
   @Prop()
   postId: Types.ObjectId;
   @Prop({ type: { usersWhoLiked: [String], usersWhoDisliked: [String] },
-    default:{usersWhoLiked:[], usersWhoDisliked:[]}
+    default:{usersWhoLiked:[], usersWhoDisliked:[]}, _id:false
   })
   likesInfo: {
     usersWhoLiked: Array<string>;

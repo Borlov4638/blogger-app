@@ -38,3 +38,9 @@ export class PostUpdateDto {
   @Length(24,24)
   blogId: string;
 }
+export class PostsCommentsPaganation{
+  pageNumber:string
+  pageSize:string
+  sortBy:string
+  sortDirection:string
+}
