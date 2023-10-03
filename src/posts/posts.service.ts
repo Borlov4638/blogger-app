@@ -224,12 +224,12 @@ export class PostsService {
       .sort(sotringQuery)
       .skip(itemsToSkip)
       .limit(pageSize)
-      .lean()
+
     let token :string
     if(request.headers.authorization){
       token = request.headers.authorization.split(' ')[1]
     }
-    const commentsToSend = selectedComments.map(comm => {
+    const commentsToSend = selectedComments.map(comm  => {
       let myStatus = LikeStatus.NONE
       if(token){
           const user : IUsersAcessToken = this.jwtService.verify(token)
@@ -239,7 +239,7 @@ export class PostsService {
       }
       const likesCount = comm.likesInfo.usersWhoLiked.length
       const dislikesCount = comm.likesInfo.usersWhoDisliked.length
-      return {...comm, likesInfo:{likesCount, dislikesCount, myStatus}}
+      return {...comm.toObject(), likesInfo:{likesCount, dislikesCount, myStatus}}
     })
     const totalCountOfItems = (await this.commentModel.find({postId})).length
     const mappedResponse = {

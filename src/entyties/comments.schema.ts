@@ -30,6 +30,7 @@ export class Comment {
   };
   like:Function
   dislike:Function
+  removeStatus:Function
   getLikeStatus:Function
 }
 
@@ -79,8 +80,8 @@ commentsSchema.pre('save', function(next){
     this.createdAt = new Date().toISOString()
   }
   if(!this._id){
-    this._id = new Types.ObjectId()
-    this.id = this._id
-    next()
+    this._id = this.id = new Types.ObjectId()
   }
+  next()
+
 })
