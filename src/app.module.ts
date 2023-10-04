@@ -14,6 +14,7 @@ import { UtilsModule } from './utils/utils.moduls';
 import { Session, sessionSchema } from './entyties/session.schema';
 import { SecDevModule } from './security-devices/sec-dev.module';
 import { Comment, commentsSchema } from './entyties/comments.schema';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -34,8 +35,15 @@ import { Comment, commentsSchema } from './entyties/comments.schema';
       { name: User.name, schema: usersSchema },
       { name: Session.name, schema: sessionSchema}
     ]),
+    ThrottlerModule.forRoot([{
+      ttl: 10000,
+      limit:5
+    }])
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, {
+    provide:'APP_GUARD',
+    useClass:ThrottlerGuard
+  }],
 })
 export class AppModule {}
