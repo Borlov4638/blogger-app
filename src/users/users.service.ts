@@ -2,7 +2,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CryptoService } from '../crypto/crypto.service';
 import { User, UserDocument } from '../entyties/users.chema';
-import { NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { UtilsService } from '../utils/utils.service';
 
@@ -67,7 +67,7 @@ export class UsersService {
             { email: { $regex: searchEmailTerm, $options: 'i' } },
           ],
         },
-        { _id: false, password: false, __v: false },
+        { _id: false, password: false, __v: false, emailConfirmation:false },
       )
       .sort(sotringQuery)
       .skip(itemsToSkip)
@@ -131,12 +131,14 @@ export class UsersService {
 
   async confirmUserByCode(code:string){
     const user = await this.userModel.findOne({'emailConfirmation.confirmationCode': code})
-    console.log(user)
     if(!user){
-      return
+      throw new BadRequestException('invalid code')
     }
     if(user.emailConfirmation.expirationDate > +new Date()){
       return
+    }
+    if(user.emailConfirmation.isConfirmed === true){
+      throw new BadRequestException('invalid code')
     }
     await user.confirm()
     await user.save()

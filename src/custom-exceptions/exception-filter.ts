@@ -12,7 +12,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     const errorResponse : any = exception.getResponse()
     const errors = errorResponse.message
-    if(status ===400 && (exception.message === 'registration email' || exception.message === 'registration login')){
+    if(status ===400 && (exception.message === 'registration email' || exception.message === 'registration login' || exception.message === 'invalid code' || exception.message === 'invalid email')){
       response
       .status(status)
       .json({errorsMessages:[{message:exception.message, field:exception.message.split(' ')[1]}]})

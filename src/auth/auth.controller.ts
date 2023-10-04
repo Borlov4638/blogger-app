@@ -36,11 +36,13 @@ export class AuthController {
         return await this.authService.registrateUser(data)
     }
 
+    @HttpCode(HttpStatus.NO_CONTENT)
     @Post('registration-confirmation')
     async confirmRegistration(@Body("code") token: string){
         this.authService.confirmRegistration(token)
     }
 
+    @HttpCode(HttpStatus.NO_CONTENT)
     @Post('registration-email-resending')
     async resendConfirmationEmail(@Body('email') email:string){
         this.authService.resendConfirmationEmail(email)
