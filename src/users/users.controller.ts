@@ -30,6 +30,7 @@ export class UsersController {
   async createUser(
     @Body() data: CreateUserDto
   ) {
+    debugger;
     return await this.usersService.createUser(data, true);
   }
 

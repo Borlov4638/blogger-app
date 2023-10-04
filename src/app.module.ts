@@ -35,15 +35,17 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
       { name: User.name, schema: usersSchema },
       { name: Session.name, schema: sessionSchema}
     ]),
-    ThrottlerModule.forRoot([{
-      ttl: 10000,
-      limit:5
-    }])
+    // ThrottlerModule.forRoot([{
+    //   ttl: 10000,
+    //   limit:5
+    // }])
   ],
   controllers: [AppController],
-  providers: [AppService, {
-    provide:'APP_GUARD',
-    useClass:ThrottlerGuard
-  }],
+  providers: [AppService, 
+    // {
+    // provide:'APP_GUARD',
+    // useClass:ThrottlerGuard
+    // }
+  ],
 })
 export class AppModule {}

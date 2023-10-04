@@ -102,6 +102,7 @@ export class UsersService {
       newUser.confirm()
     }else{
       newUser = new this.userModel({ ...data, password: hashedPassword });
+      await this.utilsService.sendConfirmationViaEmail(data.email, newUser.emailConfirmation.confirmationCode)
     }
 
 
@@ -111,9 +112,9 @@ export class UsersService {
       delete plainUser._id;
       delete plainUser.__v;
       delete plainUser.password;
+      delete plainUser.emailConfirmation
       return plainUser;
     });
-    await this.utilsService.sendConfirmationViaEmail(data.email, newUser.emailConfirmation.confirmationCode)
     return userToReturn
   }
 
