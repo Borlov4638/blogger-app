@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Comment } from '../entyties/comments.schema';
 import { Request } from 'express';
-import { LikeStatus } from 'src/enums/like-status.enum';
+import { LikeStatus } from '../enums/like-status.enum';
 import { JwtService } from '@nestjs/jwt';
 interface IUsersAcessToken{
   id:string

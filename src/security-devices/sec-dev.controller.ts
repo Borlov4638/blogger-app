@@ -1,8 +1,8 @@
 import { Controller, Delete, Get, Param, Req, UseGuards } from "@nestjs/common";
 import { Request } from "express";
-import { BearerAccessAuthGuard, BearerRefreshAuthGuard } from "src/auth/guards/auth.bearer.guard";
+import { BearerAccessAuthGuard, BearerRefreshAuthGuard } from "../auth/guards/auth.bearer.guard";
 import { SecDevService } from "./sec-dev.service";
-import { SessionService } from "src/auth/sessions.service";
+import { SessionService } from "../auth/sessions.service";
 
 @Controller('security')
 export class SecDevController{

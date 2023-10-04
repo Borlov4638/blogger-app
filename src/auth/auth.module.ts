@@ -1,12 +1,12 @@
 import { Global, Module } from "@nestjs/common";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
-import { CrytoModule } from "src/crypto/crypto.module";
-import { UsersModule } from "src/users/users.module";
+import { CrytoModule } from "../crypto/crypto.module";
+import { UsersModule } from "../users/users.module";
 import { JwtModule } from "@nestjs/jwt";
 import { SessionService } from "./sessions.service";
 import { MongooseModule } from "@nestjs/mongoose";
-import { Session, sessionSchema } from "src/entyties/session.schema";
+import { Session, sessionSchema } from "../entyties/session.schema";
 @Global()
 @Module({
     controllers:[AuthController],

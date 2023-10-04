@@ -19,11 +19,11 @@ import {
   PostUpdateDto,
   PostsCommentsPaganation,
 } from './dto/post.dto';
-import { BasicAuthGuard } from 'src/auth/guards/auth.basic.guard';
+import { BasicAuthGuard } from '../auth/guards/auth.basic.guard';
 import { Request } from 'express';
-import { BearerAccessAuthGuard } from 'src/auth/guards/auth.bearer.guard';
-import { SessionService } from 'src/auth/sessions.service';
-import { LikeStatus } from 'src/enums/like-status.enum';
+import { BearerAccessAuthGuard } from '../auth/guards/auth.bearer.guard';
+import { SessionService } from '../auth/sessions.service';
+import { LikeStatus } from '../enums/like-status.enum';
 
 @Controller('posts')
 export class PostController {

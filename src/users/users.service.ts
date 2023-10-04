@@ -4,7 +4,7 @@ import { CryptoService } from '../crypto/crypto.service';
 import { User, UserDocument } from '../entyties/users.chema';
 import { NotFoundException } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
-import { UtilsService } from 'src/utils/utils.service';
+import { UtilsService } from '../utils/utils.service';
 
 interface ICreateUser {
   email: string;

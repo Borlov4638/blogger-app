@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Request } from "express";
-import { SessionService } from "src/auth/sessions.service";
+import { SessionService } from "../auth/sessions.service";
 
 interface IUsersRefreshToken{
     id:string

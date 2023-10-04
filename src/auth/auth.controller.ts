@@ -3,7 +3,7 @@ import { LoginUserDto, PasswordRecoveryDto } from "./dto/auth.dto";
 import { AuthService } from "./auth.service";
 import { Request, Response } from "express";
 import { BearerAccessAuthGuard, BearerRefreshAuthGuard } from "./guards/auth.bearer.guard";
-import { CreateUserDto } from "src/users/dto/users.dto";
+import { CreateUserDto } from "../users/dto/users.dto";
 import { SessionService } from "./sessions.service";
 
 interface ITokens{

@@ -18,8 +18,8 @@ import {
 } from './dto/blogs.dto';
 import { BlogsService } from './blogs.service';
 import { PostsService } from '../posts/posts.service';
-import { PostPaganationQuery } from 'src/posts/dto/post.dto';
-import { BasicAuthGuard } from 'src/auth/guards/auth.basic.guard';
+import { PostPaganationQuery } from '../posts/dto/post.dto';
+import { BasicAuthGuard } from '../auth/guards/auth.basic.guard';
 
 @Controller('blogs')
 export class BlogsController {

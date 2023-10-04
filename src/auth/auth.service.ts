@@ -1,12 +1,12 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Request } from "express";
-import { CryptoService } from "src/crypto/crypto.service";
-import { UserDocument } from "src/entyties/users.chema";
-import { UsersService } from "src/users/users.service";
-import { UtilsService } from "src/utils/utils.service";
+import { CryptoService } from "../crypto/crypto.service";
+import { UserDocument } from "../entyties/users.chema";
+import { UsersService } from "../users/users.service";
+import { UtilsService } from "../utils/utils.service";
 import { SessionService } from "./sessions.service";
-import { SessionDocument } from "src/entyties/session.schema";
+import { SessionDocument } from "../entyties/session.schema";
 
 interface ILoginUser{
     loginOrEmail:string

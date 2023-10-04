@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { Request } from "express";
-import { UserDocument } from "src/entyties/users.chema";
+import { UserDocument } from "../entyties/users.chema";
 import { v4 as uuidv4 } from 'uuid';
 import { add, compareAsc, format } from "date-fns"
 import { InjectModel } from "@nestjs/mongoose";
-import { Session } from "src/entyties/session.schema";
+import { Session } from "../entyties/session.schema";
 import { Model, Types } from "mongoose";
 import { JwtService } from "@nestjs/jwt";
 

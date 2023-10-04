@@ -4,10 +4,10 @@ import { Model, Types } from 'mongoose';
 import { Blog } from '../entyties/blogs.schema';
 import { Post, PostDocument } from '../entyties/posts.schema';
 import { PostRepository } from './posts.repository';
-import { Comment, CommentDocument } from 'src/entyties/comments.schema';
+import { Comment, CommentDocument } from '../entyties/comments.schema';
 import { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
-import { LikeStatus } from 'src/enums/like-status.enum';
+import { LikeStatus } from '../enums/like-status.enum';
 import { PostsCommentsPaganation } from './dto/post.dto';
 
 interface ICreatePost {

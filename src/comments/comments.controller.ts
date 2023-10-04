@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, Put, Req, UseGuards } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { Request } from 'express';
-import { SessionService } from 'src/auth/sessions.service';
-import { BearerAccessAuthGuard } from 'src/auth/guards/auth.bearer.guard';
-import { LikeStatus } from 'src/enums/like-status.enum';
+import { SessionService } from '../auth/sessions.service';
+import { BearerAccessAuthGuard } from '../auth/guards/auth.bearer.guard';
+import { LikeStatus } from '../enums/like-status.enum';
 
 @Controller('comments')
 export class CommentsController {
