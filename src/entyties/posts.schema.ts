@@ -66,9 +66,45 @@ export class Post {
         ]
       | [];
   };
+  like:Function
+  dislike:Function
+  resetLikeStatus:Function
+  getStatus:Function
 }
 
 export const postSchema = SchemaFactory.createForClass(Post);
+
+postSchema.methods.getStatus = function (userId:string){
+  const plainUsersWhoLiked = this.likesInfo.usersWhoLiked.map(user => user.userId)
+  const likeIndex = plainUsersWhoLiked.indexOf(userId)
+  const dislikeIndex = this.likesInfo.usersWhoDisliked.indexOf(userId)
+  if(likeIndex > -1){
+    return LikeStatus.LIKE
+  }else if(dislikeIndex > -1){
+    return  LikeStatus.DISLIKE
+  }else{
+    return LikeStatus.NONE
+  }
+}
+postSchema.methods.resetLikeStatus = function(userId:string){
+  const plainUsersWhoLiked = this.likesInfo.usersWhoLiked.map(user => user.userId)
+  const likeIndex = plainUsersWhoLiked.indexOf(userId)
+  const dislikeIndex = this.likesInfo.usersWhoDisliked.indexOf(userId)
+  if(likeIndex > -1){
+    this.likesInfo.usersWhoLiked.splice(likeIndex, 1)
+  }else if(dislikeIndex > -1){
+    this.likesInfo.usersWhoDisliked.splice(dislikeIndex, 1)
+  }
+}
+
+postSchema.methods.like = function (login:string, userId:string){
+  this.resetLikeStatus(userId)
+  this.likesInfo.usersWhoLiked.push({addedAt: Math.floor(+new Date()/1000)*1000, userId, login})
+}
+postSchema.methods.dislike = function (userId:string){
+  this.resetLikeStatus(userId)
+  this.likesInfo.usersWhoDisliked.push(userId)
+}
 
 postSchema.pre('save', function (next) {
   if (!this.likesInfo) {
@@ -82,7 +118,6 @@ postSchema.pre('save', function (next) {
       newestLikes: [],
     };
   }
-
   if (!this.createdAt) {
     this.createdAt = new Date().toISOString();
   }

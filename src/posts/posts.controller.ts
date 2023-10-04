@@ -23,19 +23,20 @@ import { BasicAuthGuard } from 'src/auth/guards/auth.basic.guard';
 import { Request } from 'express';
 import { BearerAccessAuthGuard } from 'src/auth/guards/auth.bearer.guard';
 import { SessionService } from 'src/auth/sessions.service';
+import { LikeStatus } from 'src/enums/like-status.enum';
 
 @Controller('posts')
 export class PostController {
   constructor(private readonly postService: PostsService, private readonly sessionService : SessionService) {}
 
   @Get()
-  async getAllPosts(@Query() postPagonationQuery: PostPaganationQuery) {
-    return await this.postService.getAllPosts(postPagonationQuery);
+  async getAllPosts(@Query() postPagonationQuery: PostPaganationQuery, @Req() request: Request) {
+    return await this.postService.getAllPosts(postPagonationQuery, request);
   }
 
   @Get(':id')
-  async getPostById(@Param('id') postId: string) {
-    return await this.postService.getPostById(postId);
+  async getPostById(@Param('id') postId: string, @Req() request : Request) {
+    return await this.postService.getPostById(postId, request);
   }
 
   @UseGuards(BasicAuthGuard)
@@ -69,5 +70,12 @@ export class PostController {
   @Get(":id/comments")
   async getAllPostsComments(@Param('id') postId:string, @Query() postsCommentsPaganation : PostsCommentsPaganation, @Req() request: Request) {
     return await this.postService.getAllPostsComments(postId, postsCommentsPaganation, request)
+  }
+
+  @UseGuards(BearerAccessAuthGuard)
+  @Put(':id/like-status')
+  async changeLikeStatus(@Param('id') postId:string, @Body('likeStatus') likeStatus:LikeStatus, @Req() request:Request){
+    await this.sessionService.validateSession
+    return  await this.postService.changeLikeStatus(postId, likeStatus, request)
   }
 }

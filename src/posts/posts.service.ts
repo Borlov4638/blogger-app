@@ -1,4 +1,4 @@
-import { NotFoundException, Query } from '@nestjs/common';
+import { NotFoundException, Query, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Blog } from '../entyties/blogs.schema';
@@ -46,7 +46,7 @@ export class PostsService {
     private readonly jwtService : JwtService
   ) {}
 
-  async getAllPosts(postPagonationQuery: IPostPaganationQuery) {
+  async getAllPosts(postPagonationQuery: IPostPaganationQuery, request:Request) {
     const sortBy = postPagonationQuery.sortBy
       ? postPagonationQuery.sortBy
       : 'createdAt';
@@ -61,10 +61,46 @@ export class PostsService {
     const itemsToSkip = (pageNumber - 1) * pageSize;
 
     const findedPosts = await this.postModel
-      .find({}, { _id: false, __v: false, likesInfo: false })
+      .find({}, { _id: false, __v: false})
       .sort(sotringQuery)
       .skip(itemsToSkip)
       .limit(pageSize);
+
+      
+    const token = request.headers.authorization
+    let myStatus : string = LikeStatus.NONE
+    let user : IUsersAcessToken
+    const postsToShow = findedPosts.map(post =>{
+      if(token){
+        try{
+          user  = this.jwtService.verify(request.headers.authorization.split(' ')[1])
+        }
+        catch{
+          user = null
+        }
+        if(user){
+          console.log(post)
+          myStatus = post.getStatus(user.id)
+        }
+      }
+      //@ts-ignore
+      const newestLikes  = post.likesInfo.usersWhoLiked.sort((a,b) => a.addedAt - b.addedAt).slice(0,3)
+  
+      const extendedLikesInfo = {
+        likesCount:post.likesInfo.usersWhoLiked.length,
+        dislikesCount:post.likesInfo.usersWhoDisliked.length,
+        myStatus,
+        newestLikes: newestLikes.map(usr => {
+        return {userId:usr.userId, login:usr.login, addedAt: new Date(usr.addedAt).toISOString() } 
+        })
+      }
+      const postToReturn = {...(post.toObject())}
+      delete postToReturn.likesInfo
+      console.log(extendedLikesInfo)
+      return {...postToReturn, extendedLikesInfo }
+  
+    })
+  
 
     const totalCountOfItems = (await this.postModel.find({})).length;
 
@@ -73,24 +109,52 @@ export class PostsService {
       page: pageNumber,
       pageSize: pageSize,
       totalCount: totalCountOfItems,
-      items: [...findedPosts],
+      items: [...postsToShow],
     };
 
     return mappedResponse;
   }
 
-  async getPostById(postId: string) {
+  async getPostById(postId: string, request:Request) {
     const findedPost = await this.postModel
       .findById(
         new Types.ObjectId(postId),
-        { _id: false, __v: false, likesInfo: false },
+        { _id: false, __v: false },
         { sort: { _id: -1 } },
       )
-      .exec();
+      
     if (!findedPost) {
       throw new NotFoundException('no such post');
     }
-    return findedPost;
+    const token = request.headers.authorization
+    let myStatus  = LikeStatus.NONE
+    let user: IUsersAcessToken
+    if(token){
+      try{
+        const decodedToken= request.headers.authorization.split(' ')[1]
+        user = await this.jwtService.verifyAsync(decodedToken)
+      }
+      catch{
+        user = null
+      }
+      if(user){
+        myStatus = findedPost.getStatus(user.id)
+      }
+    }
+    //@ts-ignore
+    const newestLikes  = findedPost.likesInfo.usersWhoLiked.sort((a,b) => a.addedAt - b.addedAt).slice(0,3)
+    
+    const extendedLikesInfo = {
+      likesCount:findedPost.likesInfo.usersWhoLiked.length,
+      dislikesCount:findedPost.likesInfo.usersWhoDisliked.length,
+      myStatus,
+      newestLikes: newestLikes.map(usr => {
+      return {userId:usr.userId, login:usr.login, addedAt: new Date(usr.addedAt).toISOString() } 
+      })
+    }
+    const postToReturn = {...(findedPost.toObject())}
+    delete postToReturn.likesInfo
+    return {...postToReturn, extendedLikesInfo }
   }
 
   async createNewPost(data: ICreatePost, blogId: string) {
@@ -190,7 +254,17 @@ export class PostsService {
     return mappedResponse;
   }
   async commentPostById(postId : string, request : Request, content: string){
-    const postToComment = await this.getPostById(postId)
+    const postToComment = await this.postModel
+    .findById(
+      new Types.ObjectId(postId),
+      { _id: false, __v: false },
+      { sort: { _id: -1 } },
+    )
+    .exec();
+    if (!postToComment) {
+      throw new NotFoundException('no such post');
+    }
+
     const token = request.headers.authorization.split(' ')[1]
     const tokenData : IUsersAcessToken = await this.jwtService.verifyAsync(token)
     const commentatorInfo = {
@@ -211,7 +285,16 @@ export class PostsService {
     })
   }
   async getAllPostsComments(postId : string, postsCommentsPaganation: PostsCommentsPaganation, request:Request){
-    await this.getPostById(postId)
+    const postToComment = await this.postModel
+    .findById(
+      new Types.ObjectId(postId),
+      { _id: false, __v: false },
+      { sort: { _id: -1 } },
+    )
+    .exec();
+    if (!postToComment) {
+      throw new NotFoundException('no such post');
+    }
 
     const sortBy = (postsCommentsPaganation.sortBy) ? postsCommentsPaganation.sortBy : "createdAt"
     const sortDirection = (postsCommentsPaganation.sortDirection === "asc") ? 1 : -1
@@ -231,11 +314,19 @@ export class PostsService {
     }
     const commentsToSend = selectedComments.map(comm  => {
       let myStatus = LikeStatus.NONE
+      let user: IUsersAcessToken
       if(token){
-          const user : IUsersAcessToken = this.jwtService.verify(token)
+          try{
+          user = this.jwtService.verify(token)
+          }
+          catch{
+            user = null
+          }
+
           if(user){
               myStatus = comm.getLikeStatus(user.id)
           }
+          
       }
       const likesCount = comm.likesInfo.usersWhoLiked.length
       const dislikesCount = comm.likesInfo.usersWhoDisliked.length
@@ -250,6 +341,28 @@ export class PostsService {
         items: [...commentsToSend]
     }
     return mappedResponse
+  }
+  async changeLikeStatus(postId:string, likeStatus: LikeStatus, request: Request){
+    const post = await this.postModel.findById(new Types.ObjectId(postId))
+    if(!post){
+      throw new NotFoundException()
+    }
+    const user : IUsersAcessToken = await this.jwtService.verifyAsync(request.headers.authorization.split(' ')[1])
+    switch(likeStatus){
+      case LikeStatus.LIKE:
+        post.like(user.login, user.id)
+        await post.save()
+        break;
+      case LikeStatus.DISLIKE:
+        post.dislike(user.id)
+        await post.save()
+        break;
+      case LikeStatus.NONE:
+        post.resetLikeStatus(user.id)
+        await post.save()
+        break;
+    }
+    return
   }
 
 }

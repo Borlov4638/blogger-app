@@ -8,6 +8,7 @@ export class BearerAccessAuthGuard implements CanActivate {
     constructor(private jwtService : JwtService){}
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
         const request : Request = context.switchToHttp().getRequest()
+
         if(!request.headers.authorization){
             throw new UnauthorizedException()
         }
@@ -16,12 +17,8 @@ export class BearerAccessAuthGuard implements CanActivate {
             throw new UnauthorizedException()
         }
         try{
-            const tokenIsValid = this.jwtService.verify(token)
-            if(!tokenIsValid){
-                throw new UnauthorizedException()
-            }
-    
-        }catch(err){
+            this.jwtService.verify(token)
+        }catch{
             throw new UnauthorizedException()
         }
         return true;
@@ -39,12 +36,8 @@ export class BearerRefreshAuthGuard implements CanActivate {
             throw new UnauthorizedException()
         }
         try{
-            const tokenIsValid = this.jwtService.verify(token)
-            if(!tokenIsValid){
-                throw new UnauthorizedException()
-            }
-    
-        }catch(err){
+            this.jwtService.verify(token)
+        }catch{
             throw new UnauthorizedException()
         }
         return true;
