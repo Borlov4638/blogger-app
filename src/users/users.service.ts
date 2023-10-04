@@ -95,17 +95,13 @@ export class UsersService {
 
   async createUser(data: ICreateUser, isConfirmed:boolean) {
     const hashedPassword = await this.cryptoService.getHash(data.password, 10);
-
     let newUser : UserDocument
     if(isConfirmed){
       newUser = new this.userModel({ ...data, password: hashedPassword});
       newUser.confirm()
     }else{
       newUser = new this.userModel({ ...data, password: hashedPassword });
-      this.utilsService.sendConfirmationViaEmail(data.email, newUser.emailConfirmation.confirmationCode)
     }
-
-
 
     const userToReturn = await newUser.save().then((newUser) => {
       const plainUser: UserDocument = newUser.toObject();
@@ -115,6 +111,7 @@ export class UsersService {
       delete plainUser.emailConfirmation
       return plainUser;
     });
+    await this.utilsService.sendConfirmationViaEmail(data.email, newUser.emailConfirmation.confirmationCode)
     return userToReturn
   }
 
