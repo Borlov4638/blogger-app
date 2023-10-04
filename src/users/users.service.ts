@@ -134,14 +134,15 @@ export class UsersService {
     if(!user){
       throw new BadRequestException('invalid code')
     }
-    if(user.emailConfirmation.expirationDate > +new Date()){
-      return
+    if(user.emailConfirmation.expirationDate < +new Date()){
+      throw new BadRequestException('invalid code')
     }
     if(user.emailConfirmation.isConfirmed === true){
       throw new BadRequestException('invalid code')
     }
     await user.confirm()
     await user.save()
+    console.log(user)
     return
   }
 

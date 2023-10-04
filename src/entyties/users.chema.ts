@@ -41,7 +41,7 @@ usersSchema.methods.newConfirmationCode = function (){
 
 usersSchema.pre('save', function (next) {
   if(!this.emailConfirmation.expirationDate){
-    this.emailConfirmation.expirationDate = +new Date()+1800000
+    this.emailConfirmation.expirationDate = +new Date()+18000000
   }
   if(!this.emailConfirmation.confirmationCode){
     this.emailConfirmation.confirmationCode = uuidv4()
