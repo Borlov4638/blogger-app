@@ -26,12 +26,17 @@ export class User {
     isConfirmed:boolean
   }
   confirm : Function
+  newConfirmationCode:Function
 }
 
 export const usersSchema = SchemaFactory.createForClass(User);
 
 usersSchema.methods.confirm = function (){
   this.emailConfirmation.isConfirmed=true
+}
+
+usersSchema.methods.newConfirmationCode = function (){
+  return this.emailConfirmation.confirmationCode = uuidv4()
 }
 
 usersSchema.pre('save', function (next) {

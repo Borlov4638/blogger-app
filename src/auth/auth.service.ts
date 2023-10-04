@@ -103,7 +103,7 @@ export class AuthService{
     }
 
     async confirmRegistration(code:string){
-        this.userService.confirmUserByCode(code)
+        await this.userService.confirmUserByCode(code)
     }
 
     async resendConfirmationEmail(email:string){
@@ -114,7 +114,9 @@ export class AuthService{
         if(user.emailConfirmation.isConfirmed === true){
             throw new BadRequestException('invalid email')
         }
-        await this.utilsService.sendConfirmationViaEmail(user.email, user.emailConfirmation.confirmationCode)
+        const newCode = user.newConfirmationCode()
+        await user.save()
+        await this.utilsService.sendConfirmationViaEmail(user.email, newCode)
         return
     }
 
