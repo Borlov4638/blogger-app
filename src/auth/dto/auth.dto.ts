@@ -17,3 +17,9 @@ export class PasswordRecoveryDto{
     @IsString()
     recoveryCode:string
 }
+
+export class RegistrationEmailResendingDto{
+    @IsNotEmpty()
+    @IsString()
+    email:string
+}

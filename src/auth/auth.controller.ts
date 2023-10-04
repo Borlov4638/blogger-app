@@ -1,5 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from "@nestjs/common";
-import { LoginUserDto, PasswordRecoveryDto } from "./dto/auth.dto";
+import { LoginUserDto, PasswordRecoveryDto, RegistrationEmailResendingDto } from "./dto/auth.dto";
 import { AuthService } from "./auth.service";
 import { Request, Response } from "express";
 import { BearerAccessAuthGuard, BearerRefreshAuthGuard } from "./guards/auth.bearer.guard";
@@ -39,13 +39,13 @@ export class AuthController {
     @HttpCode(HttpStatus.NO_CONTENT)
     @Post('registration-confirmation')
     async confirmRegistration(@Body("code") token: string){
-        this.authService.confirmRegistration(token)
+        await this.authService.confirmRegistration(token)
     }
 
     @HttpCode(HttpStatus.NO_CONTENT)
     @Post('registration-email-resending')
-    async resendConfirmationEmail(@Body('email') email:string){
-        this.authService.resendConfirmationEmail(email)
+    async resendConfirmationEmail(@Body() data:RegistrationEmailResendingDto){
+        await this.authService.resendConfirmationEmail(data.email)
     }
 
     @Post('password-recovery')
@@ -55,7 +55,7 @@ export class AuthController {
 
     @Post('new-password')
     async newPassword(@Body() data:PasswordRecoveryDto){
-        this.authService.recoverPassword(data)
+        await this.authService.recoverPassword(data)
     }
     
     @UseGuards(BearerAccessAuthGuard, BearerRefreshAuthGuard)
