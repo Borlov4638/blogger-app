@@ -102,7 +102,7 @@ export class UsersService {
       newUser.confirm()
     }else{
       newUser = new this.userModel({ ...data, password: hashedPassword });
-      await this.utilsService.sendConfirmationViaEmail(data.email, newUser.emailConfirmation.confirmationCode)
+      this.utilsService.sendConfirmationViaEmail(data.email, newUser.emailConfirmation.confirmationCode)
     }
 
 

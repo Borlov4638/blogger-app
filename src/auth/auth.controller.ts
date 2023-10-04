@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from "@nestjs/common";
 import { LoginUserDto, PasswordRecoveryDto } from "./dto/auth.dto";
 import { AuthService } from "./auth.service";
 import { Request, Response } from "express";
@@ -18,7 +18,7 @@ export class AuthController {
     async loginUser(@Body() credentials:LoginUserDto, @Res() response : Response, @Req() request:Request){
         const tokens : ITokens = await this.authService.loginUser(credentials, request)
         response.cookie('refreshToken', tokens.refreshToken)
-        return response.status(201).json({accessToken:tokens.accessToken})
+        return response.status(200).json({accessToken:tokens.accessToken})
     }
 
     @UseGuards(BearerRefreshAuthGuard)
@@ -27,9 +27,10 @@ export class AuthController {
         await this.sessionService.validateSession(request)
         const tokens = await this.authService.getNewTokenPair(request)
         response.cookie('refreshToken', tokens.refreshToken)
-        return response.status(201).json({accessToken:tokens.accessToken})
+        return response.status(200).json({accessToken:tokens.accessToken})
     }
 
+    @HttpCode(HttpStatus.NO_CONTENT)
     @Post('registration')
     async registrateUser(@Body() data: CreateUserDto){
         return await this.authService.registrateUser(data)

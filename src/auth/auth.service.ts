@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Request } from "express";
 import { CryptoService } from "../crypto/crypto.service";
@@ -91,6 +91,14 @@ export class AuthService{
     }
 
     async registrateUser(data:INewUsersData){
+        const isUserExistsbyEmail = await this.userService.getUserByLoginOrEmail(data.email)
+        if(isUserExistsbyEmail){
+            throw new BadRequestException('registration email')
+        }
+        const isUserExistsbyLogin = await this.userService.getUserByLoginOrEmail(data.login)
+        if(isUserExistsbyLogin){
+            throw new BadRequestException('registration login')
+        }
         return await this.userService.createUser(data, false)
     }
 
