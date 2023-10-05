@@ -78,7 +78,7 @@ export class PostController {
   @UseGuards(BearerAccessAuthGuard)
   @Put(':id/like-status')
   async changeLikeStatus(@Param('id') postId:string, @Body() data:PostLikeStatusDto, @Req() request:Request){
-    await this.sessionService.validateSession
+    await this.sessionService.validateSession(request)
     return  await this.postService.changeLikeStatus(postId, data.likeStatus, request)
   }
 }
