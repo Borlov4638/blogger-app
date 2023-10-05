@@ -20,7 +20,7 @@ export class AuthController {
     @Post('login')
     async loginUser(@Body() credentials:LoginUserDto, @Res() response : Response, @Req() request:Request){
         const tokens : ITokens = await this.authService.loginUser(credentials, request)
-        response.cookie('refreshToken', tokens.refreshToken)
+        response.cookie('refreshToken', tokens.refreshToken, {httpOnly:true, secure:true})
         return response.status(200).json({accessToken:tokens.accessToken})
     }
 
@@ -30,7 +30,7 @@ export class AuthController {
     async getNewTokenPair(@Req() request : Request, @Res() response : Response){
         await this.sessionService.validateSession(request)
         const tokens = await this.authService.getNewTokenPair(request)
-        response.cookie('refreshToken', tokens.refreshToken)
+        response.cookie('refreshToken', tokens.refreshToken, {httpOnly:true, secure:true})
         return response.status(200).json({accessToken:tokens.accessToken})
     }
 
