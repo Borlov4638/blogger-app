@@ -14,7 +14,9 @@ import {
 import {
   BlogPaganationQuery,
   CreateBlogDto,
+  CreatePostByBlogIdDto,
   UpdateBlogDto,
+  
 } from './dto/blogs.dto';
 import { BlogsService } from './blogs.service';
 import { PostsService } from '../posts/posts.service';
@@ -73,12 +75,10 @@ export class BlogsController {
   @Post(':blogId/posts')
   async createPostByBlogId(
     @Param('blogId') blogId: string,
-    @Body('title') title: string,
-    @Body('shortDescription') shortDescription: string,
-    @Body('content') content: string,
+    @Body() data: CreatePostByBlogIdDto,
   ) {
     return await this.postService.createNewPost(
-      { title, shortDescription, content },
+      data,
       blogId,
     );
   }
