@@ -66,7 +66,7 @@ export class PostController {
   @UseGuards(BearerAccessAuthGuard)
   @Post(":id/comments")
   async commentPostById(@Param('id') postId: string, @Req() request : Request, @Body('content') content:string){
-    await this.sessionService.validateSession(request)
+    // await this.sessionService.validateSession(request)
     return await this.postService.commentPostById(postId, request, content)
   }
   @Get(":id/comments")
@@ -78,7 +78,7 @@ export class PostController {
   @UseGuards(BearerAccessAuthGuard)
   @Put(':id/like-status')
   async changeLikeStatus(@Param('id') postId:string, @Body() data:PostLikeStatusDto, @Req() request:Request){
-    await this.sessionService.validateSession(request)
+    // await this.sessionService.validateSession(request)
     return  await this.postService.changeLikeStatus(postId, data.likeStatus, request)
   }
 }

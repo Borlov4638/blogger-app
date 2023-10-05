@@ -17,20 +17,20 @@ export class CommentsController {
   @UseGuards(BearerAccessAuthGuard)
   @Put(':id')
   async updateComment(@Body('content') updatedContent: string, @Param('id') postId : string, @Req() request: Request){
-    await this.sessionService.validateSession(request)
+    // await this.sessionService.validateSession(request)
     return  await this.commentsService.updateComment(updatedContent, postId);
   }
 
   @UseGuards(BearerAccessAuthGuard)
   @Put(':id/like-status')
   async changeLikeStatus(@Param('id') id: string, @Body('likeStatus') body : LikeStatus, @Req() request: Request){
-    await this.sessionService.validateSession(request)
+    // await this.sessionService.validateSession(request)
     return await this.commentsService.changeLikeStatus(request, id, body)
   }
   @UseGuards(BearerAccessAuthGuard)
   @Delete(':id')
   async deleteCommentById(@Param('id') commentId:string, @Req() request:Request){
-    await this.sessionService.validateSession(request)
+    // await this.sessionService.validateSession(request)
     await this.commentsService.deleteCommentById(commentId)
     return 
   }
