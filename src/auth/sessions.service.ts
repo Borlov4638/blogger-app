@@ -58,13 +58,7 @@ export class SessionService{
         return
     }
     async validateSession(request:Request){
-        let tokenData : IUsersRefreshToken
-        try{
-            tokenData = await this.jwtService.verifyAsync(request.cookies.refreshToken)
-        }
-        catch{
-            throw new UnauthorizedException()
-        }
+        const tokenData : IUsersRefreshToken = await this.jwtService.verifyAsync(request.cookies.refreshToken)
         const session = await this.findSessionById(tokenData.deviceId)
         if(!session){
             throw new UnauthorizedException()

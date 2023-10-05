@@ -22,7 +22,7 @@ import {
 } from './dto/post.dto';
 import { BasicAuthGuard } from '../auth/guards/auth.basic.guard';
 import { Request } from 'express';
-import { BearerAccessAuthGuard, BearerRefreshAuthGuard } from '../auth/guards/auth.bearer.guard';
+import { BearerAccessAuthGuard } from '../auth/guards/auth.bearer.guard';
 import { SessionService } from '../auth/sessions.service';
 import { LikeStatus } from '../enums/like-status.enum';
 
@@ -63,7 +63,7 @@ export class PostController {
     return await this.postService.deletePostById(postId);
   }
   @HttpCode(HttpStatus.CREATED)
-  @UseGuards(BearerAccessAuthGuard, BearerRefreshAuthGuard)
+  @UseGuards(BearerAccessAuthGuard)
   @Post(":id/comments")
   async commentPostById(@Param('id') postId: string, @Req() request : Request, @Body('content') content:string){
     await this.sessionService.validateSession(request)

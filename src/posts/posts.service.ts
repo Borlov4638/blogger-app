@@ -237,7 +237,7 @@ export class PostsService {
     const itemsToSkip = (pageNumber - 1) * pageSize;
 
     const findedPosts = await this.postModel
-      .find({ blogId }, { _id: false, __v: false, likesInfo: false })
+      .find({ blogId }, { _id: false, __v: false })
       .sort(sotringQuery)
       .skip(itemsToSkip)
       .limit(pageSize);
@@ -258,9 +258,15 @@ export class PostsService {
             myStatus = post.getStatus(user.id)
           }
         }
+        let newestLikes
+        console.log(post)
+        try{
         //@ts-ignore
-        const newestLikes  = post.likesInfo.usersWhoLiked.sort((a,b) => b.addedAt - a.addedAt).slice(0,2)
-    
+          newestLikes  = post.likesInfo.usersWhoLiked.sort((a,b) => b.addedAt - a.addedAt).slice(0,2)
+        }
+        catch{
+          newestLikes = []
+        }
         const extendedLikesInfo = {
           likesCount:post.likesInfo.usersWhoLiked.length,
           dislikesCount:post.likesInfo.usersWhoDisliked.length,
@@ -271,9 +277,8 @@ export class PostsService {
         }
         const postToReturn = {...(post.toObject())}
         delete postToReturn.likesInfo
-        console.log(extendedLikesInfo)
+        console.log(postToReturn)
         return {...postToReturn, extendedLikesInfo }
-    
       })
 
     const totalCountOfItems = (await this.postModel.find({ blogId })).length;
@@ -283,7 +288,7 @@ export class PostsService {
       page: pageNumber,
       pageSize: pageSize,
       totalCount: totalCountOfItems,
-      items: [...findedPosts],
+      items: [...postsToShow],
     };
 
     return mappedResponse;
