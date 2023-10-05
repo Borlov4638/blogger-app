@@ -29,10 +29,14 @@ export class CommentsService {
     if(request.headers.authorization){
       token = request.headers.authorization.split(' ')[1]
     }
-    
+      let user : IUsersAcessToken
       let myStatus = LikeStatus.NONE
       if(token){
-          const user : IUsersAcessToken = this.jwtService.verify(token)
+        try{
+          user = this.jwtService.verify(token)
+        }catch{
+          user = null
+        }
           if(user){
               myStatus = foundedComment.getLikeStatus(user.id)
               console.log(myStatus)

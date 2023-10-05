@@ -9,6 +9,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -22,6 +23,7 @@ import { BlogsService } from './blogs.service';
 import { PostsService } from '../posts/posts.service';
 import { PostPaganationQuery } from '../posts/dto/post.dto';
 import { BasicAuthGuard } from '../auth/guards/auth.basic.guard';
+import { Request } from 'express';
 
 @Controller('blogs')
 export class BlogsController {
@@ -67,8 +69,9 @@ export class BlogsController {
   getAllPostsInBlog(
     @Param('blogId') id: string,
     @Query() paganation: PostPaganationQuery,
+    @Req() request : Request
   ) {
-    return this.postService.getAllPostsInBlog(paganation, id);
+    return this.postService.getAllPostsInBlog(paganation, id, request);
   }
   
   @UseGuards(BasicAuthGuard)

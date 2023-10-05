@@ -84,7 +84,7 @@ export class PostsService {
         }
       }
       //@ts-ignore
-      const newestLikes  = post.likesInfo.usersWhoLiked.sort((a,b) => a.addedAt - b.addedAt).slice(0,3)
+      const newestLikes  = post.likesInfo.usersWhoLiked.sort((a,b) => a.addedAt - b.addedAt).slice(0,2)
   
       const extendedLikesInfo = {
         likesCount:post.likesInfo.usersWhoLiked.length,
@@ -142,7 +142,7 @@ export class PostsService {
       }
     }
     //@ts-ignore
-    const newestLikes  = findedPost.likesInfo.usersWhoLiked.sort((a,b) => a.addedAt - b.addedAt).slice(0,3)
+    const newestLikes  = findedPost.likesInfo.usersWhoLiked.sort((a,b) => a.addedAt - b.addedAt).slice(0,2)
     
     const extendedLikesInfo = {
       likesCount:findedPost.likesInfo.usersWhoLiked.length,
@@ -214,6 +214,7 @@ export class PostsService {
   async getAllPostsInBlog(
     postPagonationQuery: IPostPaganationQuery,
     blogId: string,
+    request:Request
   ) {
     const blogToFindPosts = await this.blogModel.findById(
       new Types.ObjectId(blogId),
@@ -240,6 +241,40 @@ export class PostsService {
       .sort(sotringQuery)
       .skip(itemsToSkip)
       .limit(pageSize);
+
+      const token = request.headers.authorization
+      let myStatus : string = LikeStatus.NONE
+      let user : IUsersAcessToken
+      const postsToShow = findedPosts.map(post =>{
+        if(token){
+          try{
+            user  = this.jwtService.verify(request.headers.authorization.split(' ')[1])
+          }
+          catch{
+            user = null
+          }
+          if(user){
+            console.log(post)
+            myStatus = post.getStatus(user.id)
+          }
+        }
+        //@ts-ignore
+        const newestLikes  = post.likesInfo.usersWhoLiked.sort((a,b) => a.addedAt - b.addedAt).slice(0,2)
+    
+        const extendedLikesInfo = {
+          likesCount:post.likesInfo.usersWhoLiked.length,
+          dislikesCount:post.likesInfo.usersWhoDisliked.length,
+          myStatus,
+          newestLikes: newestLikes.map(usr => {
+          return {userId:usr.userId, login:usr.login, addedAt: new Date(usr.addedAt).toISOString() } 
+          })
+        }
+        const postToReturn = {...(post.toObject())}
+        delete postToReturn.likesInfo
+        console.log(extendedLikesInfo)
+        return {...postToReturn, extendedLikesInfo }
+    
+      })
 
     const totalCountOfItems = (await this.postModel.find({ blogId })).length;
 

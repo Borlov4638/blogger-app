@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsString, Length } from "class-validator";
+import { IsEnum, IsNotEmpty, IsString, Length } from "class-validator";
+import { LikeStatus } from "src/enums/like-status.enum";
 
 export class CreatePostDto {
   @IsNotEmpty()
@@ -43,4 +44,10 @@ export class PostsCommentsPaganation{
   pageSize:string
   sortBy:string
   sortDirection:string
+}
+
+export class PostLikeStatusDto{
+  @IsNotEmpty()
+  @IsEnum(LikeStatus)
+  likeStatus: LikeStatus
 }

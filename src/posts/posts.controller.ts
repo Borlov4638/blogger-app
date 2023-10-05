@@ -15,6 +15,7 @@ import {
 import { PostsService } from './posts.service';
 import {
   CreatePostDto,
+  PostLikeStatusDto,
   PostPaganationQuery,
   PostUpdateDto,
   PostsCommentsPaganation,
@@ -76,8 +77,8 @@ export class PostController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(BearerAccessAuthGuard)
   @Put(':id/like-status')
-  async changeLikeStatus(@Param('id') postId:string, @Body('likeStatus') likeStatus:LikeStatus, @Req() request:Request){
+  async changeLikeStatus(@Param('id') postId:string, @Body() data:PostLikeStatusDto, @Req() request:Request){
     await this.sessionService.validateSession
-    return  await this.postService.changeLikeStatus(postId, likeStatus, request)
+    return  await this.postService.changeLikeStatus(postId, data.likeStatus, request)
   }
 }
