@@ -61,6 +61,7 @@ export class PostController {
   async deletePostById(@Param('id') postId: string) {
     return await this.postService.deletePostById(postId);
   }
+  @HttpCode(HttpStatus.CREATED)
   @UseGuards(BearerAccessAuthGuard)
   @Post(":id/comments")
   async commentPostById(@Param('id') postId: string, @Req() request : Request, @Body('content') content:string){
@@ -72,6 +73,7 @@ export class PostController {
     return await this.postService.getAllPostsComments(postId, postsCommentsPaganation, request)
   }
 
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(BearerAccessAuthGuard)
   @Put(':id/like-status')
   async changeLikeStatus(@Param('id') postId:string, @Body('likeStatus') likeStatus:LikeStatus, @Req() request:Request){
