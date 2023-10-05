@@ -5,6 +5,7 @@ import { Request, Response } from "express";
 import { BearerAccessAuthGuard, BearerRefreshAuthGuard } from "./guards/auth.bearer.guard";
 import { CreateUserDto } from "../users/dto/users.dto";
 import { SessionService } from "./sessions.service";
+import { ThrottlerGuard } from "@nestjs/throttler";
 
 interface ITokens{
     accessToken: string;
@@ -14,12 +15,15 @@ interface ITokens{
 @Controller('auth')
 export class AuthController {
     constructor(private readonly authService:AuthService, private readonly sessionService : SessionService) {}
+
+    @UseGuards(ThrottlerGuard)
     @Post('login')
     async loginUser(@Body() credentials:LoginUserDto, @Res() response : Response, @Req() request:Request){
         const tokens : ITokens = await this.authService.loginUser(credentials, request)
         response.cookie('refreshToken', tokens.refreshToken)
         return response.status(200).json({accessToken:tokens.accessToken})
     }
+
 
     @UseGuards(BearerRefreshAuthGuard)
     @Post('refresh-token')
@@ -30,29 +34,34 @@ export class AuthController {
         return response.status(200).json({accessToken:tokens.accessToken})
     }
 
+    @UseGuards(ThrottlerGuard)
     @HttpCode(HttpStatus.NO_CONTENT)
     @Post('registration')
     async registrateUser(@Body() data: CreateUserDto){
         return await this.authService.registrateUser(data)
     }
 
+    @UseGuards(ThrottlerGuard)
     @HttpCode(HttpStatus.NO_CONTENT)
     @Post('registration-confirmation')
     async confirmRegistration(@Body("code") token: string){
         await this.authService.confirmRegistration(token)
     }
 
+    @UseGuards(ThrottlerGuard)
     @HttpCode(HttpStatus.NO_CONTENT)
     @Post('registration-email-resending')
     async resendConfirmationEmail(@Body() data:RegistrationEmailResendingDto){
         await this.authService.resendConfirmationEmail(data.email)
     }
 
+    @UseGuards(ThrottlerGuard)
     @Post('password-recovery')
     async sendPasswordRecoveryCode(@Body('email') email: string) {
         await this.authService.sendPasswordRecoveryCode(email);
     }
 
+    @UseGuards(ThrottlerGuard)
     @Post('new-password')
     async newPassword(@Body() data:PasswordRecoveryDto){
         await this.authService.recoverPassword(data)
