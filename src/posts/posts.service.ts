@@ -84,7 +84,7 @@ export class PostsService {
         }
       }
       //@ts-ignore
-      const newestLikes  = post.likesInfo.usersWhoLiked.sort((a,b) => a.addedAt - b.addedAt).slice(0,2)
+      const newestLikes  = post.likesInfo.usersWhoLiked.sort((a,b) => b.addedAt - a.addedAt).slice(0,2)
   
       const extendedLikesInfo = {
         likesCount:post.likesInfo.usersWhoLiked.length,
@@ -142,7 +142,7 @@ export class PostsService {
       }
     }
     //@ts-ignore
-    const newestLikes  = findedPost.likesInfo.usersWhoLiked.sort((a,b) => a.addedAt - b.addedAt).slice(0,2)
+    const newestLikes  = findedPost.likesInfo.usersWhoLiked.sort((a,b) => b.addedAt - a.addedAt).slice(0,2)
     
     const extendedLikesInfo = {
       likesCount:findedPost.likesInfo.usersWhoLiked.length,
@@ -259,7 +259,7 @@ export class PostsService {
           }
         }
         //@ts-ignore
-        const newestLikes  = post.likesInfo.usersWhoLiked.sort((a,b) => a.addedAt - b.addedAt).slice(0,2)
+        const newestLikes  = post.likesInfo.usersWhoLiked.sort((a,b) => b.addedAt - a.addedAt).slice(0,2)
     
         const extendedLikesInfo = {
           likesCount:post.likesInfo.usersWhoLiked.length,
