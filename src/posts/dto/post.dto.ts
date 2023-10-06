@@ -38,23 +38,24 @@ export class CustomBlogIdValidation implements ValidatorConstraintInterface {
     }
   }
   defaultMessage(validationArguments?: ValidationArguments): string {
-    return 'blog is already exists'
+    return 'blog does not exists'
   }
 }
 
 export class CreatePostDto {
-  @IsNotEmpty()
   @IsString()
   @Transform(({value}) => value.trim())
+  @IsNotEmpty()
   @Length(0,30)
   title: string;
   @IsString()
   @Transform(({value}) => value.trim())
+  @IsNotEmpty()
   @Length(0,100)
   shortDescription: string;
-  @IsNotEmpty()
   @IsString()
   @Transform(({value}) => value.trim())
+  @IsNotEmpty()
   @Length(0,1000)
   content: string;
   @IsNotEmpty()
@@ -73,18 +74,25 @@ export class PostPaganationQuery {
 
 export class PostUpdateDto {
   @IsString()
+  @Transform(({value}) => value.trim())
+  @IsNotEmpty()
   @Length(0,30)
   title: string;
   @IsString()
+  @Transform(({value}) => value.trim())
+  @IsNotEmpty()
   @Length(0,100)
   shortDescription: string;
   @IsString()
+  @Transform(({value}) => value.trim())
+  @IsNotEmpty()
   @Length(0,1000)
   content: string;
+  @IsNotEmpty()
   @IsString()
   @Length(24,24)
   @isBlogIdValid()
-  blogId: string;
+  blogId:string
 }
 export class PostsCommentsPaganation{
   pageNumber:string
