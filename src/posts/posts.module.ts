@@ -6,6 +6,7 @@ import { PostsService } from './posts.service';
 import { Blog, BlogSchema } from '../entyties/blogs.schema';
 import { PostRepository } from './posts.repository';
 import { Comment, commentsSchema } from '../entyties/comments.schema';
+import { CustomBlogIdValidation } from './dto/post.dto';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { Comment, commentsSchema } from '../entyties/comments.schema';
     ]),
   ],
   controllers: [PostController],
-  providers: [PostsService, PostRepository],
+  providers: [PostsService, PostRepository,CustomBlogIdValidation],
   exports: [PostsService],
 })
 export class PostsModule {}
