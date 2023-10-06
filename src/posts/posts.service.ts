@@ -84,7 +84,7 @@ export class PostsService {
         }
       }
       //@ts-ignore
-      const newestLikes  = post.likesInfo.usersWhoLiked.slice(0,2).sort((a,b) => a.addedAt - b.addedAt)
+      const newestLikes  = post.likesInfo.usersWhoLiked.slice(0,2).sort((b,a) => a.addedAt - b.addedAt)
   
       const extendedLikesInfo = {
         likesCount:post.likesInfo.usersWhoLiked.length,
@@ -262,7 +262,7 @@ export class PostsService {
         console.log(post)
         try{
         //@ts-ignore
-          newestLikes  = post.likesInfo.usersWhoLiked.slice(0,2).sort((a,b) => a.addedAt - b.addedAt)
+          newestLikes  = post.likesInfo.usersWhoLiked.slice(0,2).sort((b,a) => a.addedAt - b.addedAt)
         }
         catch{
           newestLikes = []
