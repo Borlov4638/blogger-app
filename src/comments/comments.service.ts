@@ -70,6 +70,7 @@ export class CommentsService {
 
   async changeLikeStatus(request: Request, commentId: string, likeStatus: LikeStatus){
     const comment = await this.commentModel.findById(new Types.ObjectId(commentId))
+    console.log('as')
     if(!comment){
       throw new NotFoundException()
     }

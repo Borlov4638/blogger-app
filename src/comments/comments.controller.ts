@@ -5,6 +5,7 @@ import { SessionService } from '../auth/sessions.service';
 import { BearerAccessAuthGuard } from '../auth/guards/auth.bearer.guard';
 import { LikeStatus } from '../enums/like-status.enum';
 import { PostCreateNewCommentDto } from 'src/posts/dto/post.dto';
+import { CommentChangeLikeStatusDto } from './dto/comments.dto';
 
 @Controller('comments')
 export class CommentsController {
@@ -14,7 +15,7 @@ export class CommentsController {
   async getCommentById(@Param('id') comId: string, @Req() request: Request) {
     return await this.commentsService.getCommentById(comId, request);
   }
-
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(BearerAccessAuthGuard)
   @Put(':id')
   async updateComment(@Body() data: PostCreateNewCommentDto, @Param('id') postId : string, @Req() request: Request){
@@ -25,9 +26,9 @@ export class CommentsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(BearerAccessAuthGuard)
   @Put(':id/like-status')
-  async changeLikeStatus(@Param('id') id: string, @Body('likeStatus') body : LikeStatus, @Req() request: Request){
+  async changeLikeStatus(@Param('id') id: string, @Body() body : CommentChangeLikeStatusDto, @Req() request: Request){
     // await this.sessionService.validateSession(request)
-    return await this.commentsService.changeLikeStatus(request, id, body)
+    return await this.commentsService.changeLikeStatus(request, id, body.likeStatus)
   }
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(BearerAccessAuthGuard)
