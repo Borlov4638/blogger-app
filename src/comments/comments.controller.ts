@@ -27,7 +27,8 @@ export class CommentsController {
   @UseGuards(BearerAccessAuthGuard)
   @Put(':id/like-status')
   async changeLikeStatus(@Param('id') id: string, @Body() body : CommentChangeLikeStatusDto, @Req() request: Request){
-    // await this.sessionService.validateSession(request)
+    // await this.sessionService.validateSession(request)  @UseGuards(BearerAccessAuthGuard)
+
     return await this.commentsService.changeLikeStatus(request, id, body.likeStatus)
   }
   @HttpCode(HttpStatus.NO_CONTENT)

@@ -19,7 +19,7 @@ export class CommentsService {
   async getCommentById(id: string, request: Request) {
     const foundedComment = await this.commentModel.findById(
       new Types.ObjectId(id),
-      {__v:false, _id:false, postId:false}
+      {__v:false, _id:false}
     )
     if (!foundedComment) {
       throw new NotFoundException();
