@@ -142,7 +142,7 @@ export class PostsService {
       }
     }
     //@ts-ignore
-    const newestLikes  = findedPost.likesInfo.usersWhoLiked.slice(0,2).sort((a,b) => a.addedAt - b.addedAt)
+    const newestLikes  = findedPost.likesInfo.usersWhoLiked.slice(0,2).sort((b,a) => a.addedAt - b.addedAt)
     
     const extendedLikesInfo = {
       likesCount:findedPost.likesInfo.usersWhoLiked.length,
