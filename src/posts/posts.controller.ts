@@ -15,6 +15,7 @@ import {
 import { PostsService } from './posts.service';
 import {
   CreatePostDto,
+  PostCreateNewCommentDto,
   PostLikeStatusDto,
   PostPaganationQuery,
   PostUpdateDto,
@@ -65,9 +66,9 @@ export class PostController {
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(BearerAccessAuthGuard)
   @Post(":id/comments")
-  async commentPostById(@Param('id') postId: string, @Req() request : Request, @Body('content') content:string){
+  async commentPostById(@Param('id') postId: string, @Req() request : Request, @Body() data:PostCreateNewCommentDto){
     // await this.sessionService.validateSession(request)
-    return await this.postService.commentPostById(postId, request, content)
+    return await this.postService.commentPostById(postId, request, data.content)
   }
   @Get(":id/comments")
   async getAllPostsComments(@Param('id') postId:string, @Query() postsCommentsPaganation : PostsCommentsPaganation, @Req() request: Request) {

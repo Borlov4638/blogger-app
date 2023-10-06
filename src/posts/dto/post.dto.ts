@@ -51,3 +51,10 @@ export class PostLikeStatusDto{
   @IsEnum(LikeStatus)
   likeStatus: LikeStatus
 }
+
+export class PostCreateNewCommentDto{
+  @IsNotEmpty()
+  @IsString()
+  @Length(20, 300)
+  content:string
+}

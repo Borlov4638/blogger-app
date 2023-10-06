@@ -1,4 +1,4 @@
-import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Comment } from '../entyties/comments.schema';
@@ -19,7 +19,7 @@ export class CommentsService {
   async getCommentById(id: string, request: Request) {
     const foundedComment = await this.commentModel.findById(
       new Types.ObjectId(id),
-      {__v:false, _id:false}
+      {__v:false, _id:false, postId:false}
     )
     if (!foundedComment) {
       throw new NotFoundException();
@@ -47,12 +47,25 @@ export class CommentsService {
       return {...(foundedComment.toObject()), likesInfo:{likesCount, dislikesCount, myStatus}}
   }
 
-  async updateComment(newContent: string, postId:string){
+  async updateComment(newContent: string, postId:string, request:Request){
+    let user: IUsersAcessToken
+    try{
+      const token = request.headers.authorization.split(' ')[1]
+      user = await this.jwtService.verifyAsync(token)
+    }
+    catch{
+      throw new UnauthorizedException()
+    }
     const comment = await this.commentModel.findOneAndUpdate({_id: new Types.ObjectId(postId)}, {$set: {content:newContent}})
     if(!comment){
       throw new NotFoundException()
     }
+    if(comment.commentatorInfo.userId !== user.id){
+      throw new ForbiddenException("You can't edit other users comments")
+    }
     return comment
+
+
   }
 
   async changeLikeStatus(request: Request, commentId: string, likeStatus: LikeStatus){
@@ -77,11 +90,24 @@ export class CommentsService {
     return
   }
 
-  async deleteCommentById(id:string){
-    const comment = await this.commentModel.findOneAndDelete({_id:new Types.ObjectId(id)})
+  async deleteCommentById(id:string, request:Request){
+    let user: IUsersAcessToken
+    try{
+      const token = request.headers.authorization.split(' ')[1]
+      user = await this.jwtService.verifyAsync(token)
+    }
+    catch{
+      throw new UnauthorizedException()
+    }
+
+    const comment = await this.commentModel.findById(new Types.ObjectId(id))
     if(!comment){
       throw new NotFoundException('no such comment')
     }
+    if(comment.commentatorInfo.userId !== user.id){
+      throw new ForbiddenException()
+    }
+    comment.deleteOne()
     return
   }
 }
