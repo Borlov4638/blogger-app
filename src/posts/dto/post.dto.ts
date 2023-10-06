@@ -10,6 +10,7 @@ import {
 import { InjectModel } from "@nestjs/mongoose";
 import { Blog } from "src/entyties/blogs.schema";
 import { Model, Types } from "mongoose";
+import { Transform } from "class-transformer";
 
 export function isBlogIdValid(validationOptions?: ValidationOptions) :PropertyDecorator {
   return function (object: any, propertyName: string) {
@@ -44,13 +45,16 @@ export class CustomBlogIdValidation implements ValidatorConstraintInterface {
 export class CreatePostDto {
   @IsNotEmpty()
   @IsString()
+  @Transform(({value}) => value.trim())
   @Length(0,30)
   title: string;
   @IsString()
+  @Transform(({value}) => value.trim())
   @Length(0,100)
   shortDescription: string;
   @IsNotEmpty()
   @IsString()
+  @Transform(({value}) => value.trim())
   @Length(0,1000)
   content: string;
   @IsNotEmpty()
