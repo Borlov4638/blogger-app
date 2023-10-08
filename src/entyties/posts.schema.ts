@@ -98,11 +98,11 @@ postSchema.methods.resetLikeStatus = function(userId:string){
 }
 
 postSchema.methods.like = function (login:string, userId:string){
-  // this.resetLikeStatus(userId)
+  this.resetLikeStatus(userId)
   this.likesInfo.usersWhoLiked.push({addedAt: Math.floor(+new Date()/1000)*1000, userId, login})
 }
 postSchema.methods.dislike = function (userId:string){
-  // this.resetLikeStatus(userId)
+  this.resetLikeStatus(userId)
   this.likesInfo.usersWhoDisliked.push(userId)
 }
 
