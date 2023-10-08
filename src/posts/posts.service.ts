@@ -387,7 +387,7 @@ export class PostsService {
       throw new NotFoundException()
     }
     const user : IUsersAcessToken = await this.jwtService.verifyAsync(request.headers.authorization.split(' ')[1])
-    console.log(user)
+    console.log({user:user.login, status:likeStatus})
     const currentLikeStatus = post.getStatus(user.id)
     switch(likeStatus){
       case LikeStatus.LIKE:
