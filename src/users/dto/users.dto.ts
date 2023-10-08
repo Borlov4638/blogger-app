@@ -1,4 +1,4 @@
-import { IsString, Length, Matches } from "class-validator";
+import { IsString, Length, Matches } from 'class-validator';
 
 export class UsersPaganationQuery {
   sortBy: string;
@@ -11,13 +11,13 @@ export class UsersPaganationQuery {
 
 export class CreateUserDto {
   @IsString()
-  @Length(3,10)
+  @Length(3, 10)
   @Matches(/^[a-zA-Z0-9_-]*$/)
-  login:string
+  login: string;
   @IsString()
-  @Length(6,20)
-  password:string
+  @Length(6, 20)
+  password: string;
   @IsString()
   @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
-  email:string
+  email: string;
 }

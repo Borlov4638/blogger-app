@@ -13,6 +13,6 @@ import { UsersRepository } from './users.repository';
     CrytoModule,
     MongooseModule.forFeature([{ name: User.name, schema: usersSchema }]),
   ],
-  exports:[UsersService]
+  exports: [UsersService],
 })
 export class UsersModule {}

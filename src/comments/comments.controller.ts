@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, Put, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  NotFoundException,
+  Param,
+  Put,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { Request } from 'express';
 import { SessionService } from '../auth/sessions.service';
@@ -9,7 +21,10 @@ import { CommentChangeLikeStatusDto } from './dto/comments.dto';
 
 @Controller('comments')
 export class CommentsController {
-  constructor(private readonly commentsService: CommentsService, private sessionService : SessionService) {}
+  constructor(
+    private readonly commentsService: CommentsService,
+    private sessionService: SessionService,
+  ) {}
 
   @Get(':id')
   async getCommentById(@Param('id') comId: string, @Req() request: Request) {
@@ -18,25 +33,44 @@ export class CommentsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(BearerAccessAuthGuard)
   @Put(':id')
-  async updateComment(@Body() data: PostCreateNewCommentDto, @Param('id') commentId : string, @Req() request: Request){
+  async updateComment(
+    @Body() data: PostCreateNewCommentDto,
+    @Param('id') commentId: string,
+    @Req() request: Request,
+  ) {
     // await this.sessionService.validateSession(request)
-    return  await this.commentsService.updateComment(data.content, commentId, request);
+    return await this.commentsService.updateComment(
+      data.content,
+      commentId,
+      request,
+    );
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(BearerAccessAuthGuard)
   @Put(':id/like-status')
-  async changeLikeStatus(@Param('id') id: string, @Body() body : CommentChangeLikeStatusDto, @Req() request: Request){
+  async changeLikeStatus(
+    @Param('id') id: string,
+    @Body() body: CommentChangeLikeStatusDto,
+    @Req() request: Request,
+  ) {
     // await this.sessionService.validateSession(request)  @UseGuards(BearerAccessAuthGuard)
 
-    return await this.commentsService.changeLikeStatus(request, id, body.likeStatus)
+    return await this.commentsService.changeLikeStatus(
+      request,
+      id,
+      body.likeStatus,
+    );
   }
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(BearerAccessAuthGuard)
   @Delete(':id')
-  async deleteCommentById(@Param('id') commentId:string, @Req() request:Request){
+  async deleteCommentById(
+    @Param('id') commentId: string,
+    @Req() request: Request,
+  ) {
     // await this.sessionService.validateSession(request)
-    await this.commentsService.deleteCommentById(commentId, request)
-    return 
+    await this.commentsService.deleteCommentById(commentId, request);
+    return;
   }
 }

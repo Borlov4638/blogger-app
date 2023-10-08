@@ -17,7 +17,7 @@ import { CustomBlogIdValidation } from './dto/post.dto';
     ]),
   ],
   controllers: [PostController],
-  providers: [PostsService, PostRepository,CustomBlogIdValidation],
+  providers: [PostsService, PostRepository, CustomBlogIdValidation],
   exports: [PostsService],
 })
 export class PostsModule {}

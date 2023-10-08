@@ -5,7 +5,7 @@ export class CryptoService {
     return await bcrypt.hash(data, saltOrRounds);
   }
 
-  async validateHash(data:string, hashedData:string){
-    return await bcrypt.compare(data ,hashedData);
+  async validateHash(data: string, hashedData: string) {
+    return await bcrypt.compare(data, hashedData);
   }
 }

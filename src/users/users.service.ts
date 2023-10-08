@@ -21,10 +21,9 @@ interface IUsersPaganationQuery {
   searchEmailTerm: string;
 }
 
-
-interface ILoginUser{
-  loginOrEmail:string
-  password:string
+interface ILoginUser {
+  loginOrEmail: string;
+  password: string;
 }
 
 export class UsersService {
@@ -32,7 +31,7 @@ export class UsersService {
     @InjectModel(User.name) private userModel: Model<User>,
     private readonly cryptoService: CryptoService,
     private usersRepository: UsersRepository,
-    private utilsService: UtilsService
+    private utilsService: UtilsService,
   ) {}
 
   async getAllUsers(paganation: IUsersPaganationQuery) {
@@ -67,7 +66,7 @@ export class UsersService {
             { email: { $regex: searchEmailTerm, $options: 'i' } },
           ],
         },
-        { _id: false, password: false, __v: false, emailConfirmation:false },
+        { _id: false, password: false, __v: false, emailConfirmation: false },
       )
       .sort(sotringQuery)
       .skip(itemsToSkip)
@@ -93,13 +92,13 @@ export class UsersService {
     return mappedResponse;
   }
 
-  async createUser(data: ICreateUser, isConfirmed:boolean) {
+  async createUser(data: ICreateUser, isConfirmed: boolean) {
     const hashedPassword = await this.cryptoService.getHash(data.password, 10);
-    let newUser : UserDocument
-    if(isConfirmed){
-      newUser = new this.userModel({ ...data, password: hashedPassword});
-      newUser.confirm()
-    }else{
+    let newUser: UserDocument;
+    if (isConfirmed) {
+      newUser = new this.userModel({ ...data, password: hashedPassword });
+      newUser.confirm();
+    } else {
       newUser = new this.userModel({ ...data, password: hashedPassword });
     }
 
@@ -108,11 +107,14 @@ export class UsersService {
       delete plainUser._id;
       delete plainUser.__v;
       delete plainUser.password;
-      delete plainUser.emailConfirmation
+      delete plainUser.emailConfirmation;
       return plainUser;
     });
-    await this.utilsService.sendConfirmationViaEmail(data.email, newUser.emailConfirmation.confirmationCode)
-    return userToReturn
+    await this.utilsService.sendConfirmationViaEmail(
+      data.email,
+      newUser.emailConfirmation.confirmationCode,
+    );
+    return userToReturn;
   }
 
   async deleteUserById(id: string) {
@@ -125,31 +127,34 @@ export class UsersService {
     return;
   }
 
-  async getUserByLoginOrEmail(loginOrEmail:string): Promise<UserDocument>{
-    return await this.userModel.findOne({$or:[{login:loginOrEmail}, {email:loginOrEmail}]})
+  async getUserByLoginOrEmail(loginOrEmail: string): Promise<UserDocument> {
+    return await this.userModel.findOne({
+      $or: [{ login: loginOrEmail }, { email: loginOrEmail }],
+    });
   }
 
-  async confirmUserByCode(code:string){
-    const user = await this.userModel.findOne({'emailConfirmation.confirmationCode': code})
-    if(!user){
-      throw new BadRequestException('invalid code')
+  async confirmUserByCode(code: string) {
+    const user = await this.userModel.findOne({
+      'emailConfirmation.confirmationCode': code,
+    });
+    if (!user) {
+      throw new BadRequestException('invalid code');
     }
-    if(user.emailConfirmation.expirationDate < +new Date()){
-      throw new BadRequestException('invalid code')
+    if (user.emailConfirmation.expirationDate < +new Date()) {
+      throw new BadRequestException('invalid code');
     }
-    if(user.emailConfirmation.isConfirmed === true){
-      throw new BadRequestException('invalid code')
+    if (user.emailConfirmation.isConfirmed === true) {
+      throw new BadRequestException('invalid code');
     }
-    await user.confirm()
-    await user.save()
-    console.log(user)
-    return
+    await user.confirm();
+    await user.save();
+    console.log(user);
+    return;
   }
 
-  async changePassword(newPassword:string, user:UserDocument){
-    user.password = await this.cryptoService.getHash(newPassword, 10)
-    user.save()
-    return
+  async changePassword(newPassword: string, user: UserDocument) {
+    user.password = await this.cryptoService.getHash(newPassword, 10);
+    user.save();
+    return;
   }
-
 }

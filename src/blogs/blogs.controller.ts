@@ -17,7 +17,6 @@ import {
   CreateBlogDto,
   CreatePostByBlogIdDto,
   UpdateBlogDto,
-  
 } from './dto/blogs.dto';
 import { BlogsService } from './blogs.service';
 import { PostsService } from '../posts/posts.service';
@@ -69,20 +68,17 @@ export class BlogsController {
   getAllPostsInBlog(
     @Param('blogId') id: string,
     @Query() paganation: PostPaganationQuery,
-    @Req() request : Request
+    @Req() request: Request,
   ) {
     return this.postService.getAllPostsInBlog(paganation, id, request);
   }
-  
+
   @UseGuards(BasicAuthGuard)
   @Post(':blogId/posts')
   async createPostByBlogId(
     @Param('blogId') blogId: string,
     @Body() data: CreatePostByBlogIdDto,
   ) {
-    return await this.postService.createNewPost(
-      data,
-      blogId,
-    );
+    return await this.postService.createNewPost(data, blogId);
   }
 }

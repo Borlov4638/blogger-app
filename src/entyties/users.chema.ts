@@ -17,34 +17,40 @@ export class User {
   password: string;
   @Prop()
   email: string;
-  @Prop({type:{confirmationCode:String, expirationDate: Number, isConfirmed:Boolean},
-    default:{ isConfirmed:false}, _id:false
+  @Prop({
+    type: {
+      confirmationCode: String,
+      expirationDate: Number,
+      isConfirmed: Boolean,
+    },
+    default: { isConfirmed: false },
+    _id: false,
   })
-  emailConfirmation:{
-    confirmationCode:string,
-    expirationDate:number,
-    isConfirmed:boolean
-  }
-  confirm : Function
-  newConfirmationCode:Function
+  emailConfirmation: {
+    confirmationCode: string;
+    expirationDate: number;
+    isConfirmed: boolean;
+  };
+  confirm: Function;
+  newConfirmationCode: Function;
 }
 
 export const usersSchema = SchemaFactory.createForClass(User);
 
-usersSchema.methods.confirm = function (){
-  this.emailConfirmation.isConfirmed=true
-}
+usersSchema.methods.confirm = function () {
+  this.emailConfirmation.isConfirmed = true;
+};
 
-usersSchema.methods.newConfirmationCode = function (){
-  return this.emailConfirmation.confirmationCode = uuidv4()
-}
+usersSchema.methods.newConfirmationCode = function () {
+  return (this.emailConfirmation.confirmationCode = uuidv4());
+};
 
 usersSchema.pre('save', function (next) {
-  if(!this.emailConfirmation.expirationDate){
-    this.emailConfirmation.expirationDate = +new Date()+18000000
+  if (!this.emailConfirmation.expirationDate) {
+    this.emailConfirmation.expirationDate = +new Date() + 18000000;
   }
-  if(!this.emailConfirmation.confirmationCode){
-    this.emailConfirmation.confirmationCode = uuidv4()
+  if (!this.emailConfirmation.confirmationCode) {
+    this.emailConfirmation.confirmationCode = uuidv4();
   }
   if (!this.createdAt) {
     this.createdAt = new Date().toISOString();

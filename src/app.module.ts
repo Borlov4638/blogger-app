@@ -33,13 +33,14 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
       { name: Blog.name, schema: BlogSchema },
       { name: Post.name, schema: postSchema },
       { name: User.name, schema: usersSchema },
-      { name: Session.name, schema: sessionSchema}
+      { name: Session.name, schema: sessionSchema },
     ]),
-    ThrottlerModule.forRoot([{
-      ttl: 10000,
-      limit:5,
-      
-    }])
+    ThrottlerModule.forRoot([
+      {
+        ttl: 10000,
+        limit: 5,
+      },
+    ]),
   ],
   controllers: [AppController],
   providers: [AppService],

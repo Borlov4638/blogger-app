@@ -17,7 +17,7 @@ import { BasicAuthGuard } from '../auth/guards/auth.basic.guard';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-  
+
   @UseGuards(BasicAuthGuard)
   @Get()
   async getAllUsers(@Query() paganation: UsersPaganationQuery) {
@@ -27,9 +27,7 @@ export class UsersController {
   @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.CREATED)
   @Post()
-  async createUser(
-    @Body() data: CreateUserDto
-  ) {
+  async createUser(@Body() data: CreateUserDto) {
     debugger;
     return await this.usersService.createUser(data, true);
   }

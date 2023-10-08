@@ -14,14 +14,14 @@ export class AppService {
     @InjectModel(Post.name) private postModel: Model<Post>,
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Comment.name) private commentModel: Model<Comment>,
-    @InjectModel(Session.name) private sessionModel: Model<Session>
+    @InjectModel(Session.name) private sessionModel: Model<Session>,
   ) {}
   async deleteAllData(): Promise<void> {
     await this.blogsModel.deleteMany({});
     await this.postModel.deleteMany({});
     await this.userModel.deleteMany({});
     await this.commentModel.deleteMany({});
-    await this.sessionModel.deleteMany({})
+    await this.sessionModel.deleteMany({});
     return;
   }
 }

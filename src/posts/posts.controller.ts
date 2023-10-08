@@ -29,15 +29,21 @@ import { LikeStatus } from '../enums/like-status.enum';
 
 @Controller('posts')
 export class PostController {
-  constructor(private readonly postService: PostsService, private readonly sessionService : SessionService) {}
+  constructor(
+    private readonly postService: PostsService,
+    private readonly sessionService: SessionService,
+  ) {}
 
   @Get()
-  async getAllPosts(@Query() postPagonationQuery: PostPaganationQuery, @Req() request: Request) {
+  async getAllPosts(
+    @Query() postPagonationQuery: PostPaganationQuery,
+    @Req() request: Request,
+  ) {
     return await this.postService.getAllPosts(postPagonationQuery, request);
   }
 
   @Get(':id')
-  async getPostById(@Param('id') postId: string, @Req() request : Request) {
+  async getPostById(@Param('id') postId: string, @Req() request: Request) {
     return await this.postService.getPostById(postId, request);
   }
 
@@ -65,21 +71,45 @@ export class PostController {
   }
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(BearerAccessAuthGuard)
-  @Post(":id/comments")
-  async commentPostById(@Param('id') postId: string, @Req() request : Request, @Body() data:PostCreateNewCommentDto){
+  @Post(':id/comments')
+  async commentPostById(
+    @Param('id') postId: string,
+    @Req() request: Request,
+    @Body() data: PostCreateNewCommentDto,
+  ) {
     // await this.sessionService.validateSession(request)
-    return await this.postService.commentPostById(postId, request, data.content)
+    return await this.postService.commentPostById(
+      postId,
+      request,
+      data.content,
+    );
   }
-  @Get(":id/comments")
-  async getAllPostsComments(@Param('id') postId:string, @Query() postsCommentsPaganation : PostsCommentsPaganation, @Req() request: Request) {
-    return await this.postService.getAllPostsComments(postId, postsCommentsPaganation, request)
+  @Get(':id/comments')
+  async getAllPostsComments(
+    @Param('id') postId: string,
+    @Query() postsCommentsPaganation: PostsCommentsPaganation,
+    @Req() request: Request,
+  ) {
+    return await this.postService.getAllPostsComments(
+      postId,
+      postsCommentsPaganation,
+      request,
+    );
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(BearerAccessAuthGuard)
   @Put(':id/like-status')
-  async changeLikeStatus(@Param('id') postId:string, @Body() data:PostLikeStatusDto, @Req() request:Request){
+  async changeLikeStatus(
+    @Param('id') postId: string,
+    @Body() data: PostLikeStatusDto,
+    @Req() request: Request,
+  ) {
     // await this.sessionService.validateSession(request)
-    return  await this.postService.changeLikeStatus(postId, data.likeStatus, request)
+    return await this.postService.changeLikeStatus(
+      postId,
+      data.likeStatus,
+      request,
+    );
   }
 }
