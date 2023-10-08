@@ -315,6 +315,7 @@ export class PostsService {
       delete plainComment._id
       delete plainComment.__v
       delete plainComment.likesInfo
+      delete plainComment.postId
       return {...plainComment, likesInfo:{
         likesCount:0,
         dislikesCount:0,
