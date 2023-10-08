@@ -119,8 +119,7 @@ export class PostsService {
     const findedPost = await this.postModel
       .findById(
         new Types.ObjectId(postId),
-        { _id: false, __v: false },
-        { sort: { _id: -1 } },
+        { _id: false, __v: false }
       )
       
     if (!findedPost) {
@@ -388,6 +387,7 @@ export class PostsService {
       throw new NotFoundException()
     }
     const user : IUsersAcessToken = await this.jwtService.verifyAsync(request.headers.authorization.split(' ')[1])
+    console.log(user)
     switch(likeStatus){
       case LikeStatus.LIKE:
         post.like(user.login, user.id)
