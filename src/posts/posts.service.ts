@@ -388,12 +388,19 @@ export class PostsService {
     }
     const user : IUsersAcessToken = await this.jwtService.verifyAsync(request.headers.authorization.split(' ')[1])
     console.log(user)
+    const currentLikeStatus = post.getStatus(user.id)
     switch(likeStatus){
       case LikeStatus.LIKE:
+        if(currentLikeStatus === LikeStatus.LIKE){
+          break;
+        }
         post.like(user.login, user.id)
         await post.save()
         break;
       case LikeStatus.DISLIKE:
+        if(currentLikeStatus === LikeStatus.DISLIKE){
+          break
+        }
         post.dislike(user.id)
         await post.save()
         break;
