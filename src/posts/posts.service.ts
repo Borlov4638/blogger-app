@@ -296,8 +296,7 @@ export class PostsService {
     const postToComment = await this.postModel
     .findById(
       new Types.ObjectId(postId),
-      { _id: false, __v: false },
-      { sort: { _id: -1 } },
+      { _id: false, __v: false }
     )
     .exec();
     if (!postToComment) {
@@ -327,8 +326,7 @@ export class PostsService {
     const postToComment = await this.postModel
     .findById(
       new Types.ObjectId(postId),
-      { _id: false, __v: false },
-      { sort: { _id: -1 } },
+      { _id: false, __v: false }
     )
     .exec();
     if (!postToComment) {
@@ -342,7 +340,7 @@ export class PostsService {
     const pageSize = (postsCommentsPaganation.pageSize) ? +postsCommentsPaganation.pageSize : 10
     const itemsToSkip = (pageNumber - 1) * pageSize
     
-    const selectedComments = await this.commentModel.find({postId:postId},{_id:false, postId:false, __v:false})
+    const selectedComments = await this.commentModel.find({postId},{_id:false, postId:false, __v:false})
       .sort(sotringQuery)
       .skip(itemsToSkip)
       .limit(pageSize)

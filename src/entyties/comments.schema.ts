@@ -20,7 +20,7 @@ export class Comment {
   @Prop()
   createdAt: string;
   @Prop()
-  postId: Types.ObjectId;
+  postId: string;
   @Prop({ type: { usersWhoLiked: [String], usersWhoDisliked: [String] },
     default:{usersWhoLiked:[], usersWhoDisliked:[]}, _id:false
   })

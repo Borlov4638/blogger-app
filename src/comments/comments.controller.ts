@@ -18,9 +18,9 @@ export class CommentsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(BearerAccessAuthGuard)
   @Put(':id')
-  async updateComment(@Body() data: PostCreateNewCommentDto, @Param('id') postId : string, @Req() request: Request){
+  async updateComment(@Body() data: PostCreateNewCommentDto, @Param('id') commentId : string, @Req() request: Request){
     // await this.sessionService.validateSession(request)
-    return  await this.commentsService.updateComment(data.content, postId, request);
+    return  await this.commentsService.updateComment(data.content, commentId, request);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)

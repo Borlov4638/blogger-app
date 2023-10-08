@@ -39,7 +39,6 @@ export class CommentsService {
         }
           if(user){
               myStatus = foundedComment.getLikeStatus(user.id)
-              console.log(myStatus)
           }
       }
       const likesCount = foundedComment.likesInfo.usersWhoLiked.length
@@ -47,7 +46,7 @@ export class CommentsService {
       return {...(foundedComment.toObject()), likesInfo:{likesCount, dislikesCount, myStatus}}
   }
 
-  async updateComment(newContent: string, postId:string, request:Request){
+  async updateComment(newContent: string, commentId:string, request:Request){
     let user: IUsersAcessToken
     try{
       const token = request.headers.authorization.split(' ')[1]
@@ -56,7 +55,7 @@ export class CommentsService {
     catch{
       throw new UnauthorizedException()
     }
-    const comment = await this.commentModel.findOneAndUpdate({_id: new Types.ObjectId(postId)}, {$set: {content:newContent}})
+    const comment = await this.commentModel.findOneAndUpdate({_id: new Types.ObjectId(commentId)}, {$set: {content:newContent}})
     if(!comment){
       throw new NotFoundException()
     }
