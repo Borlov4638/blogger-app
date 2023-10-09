@@ -18,6 +18,6 @@ import { CustomBlogIdValidation } from './dto/post.dto';
   ],
   controllers: [PostController],
   providers: [PostsService, PostRepository, CustomBlogIdValidation],
-  exports: [PostsService],
+  exports: [PostsService, PostRepository],
 })
-export class PostsModule {}
+export class PostsModule { }

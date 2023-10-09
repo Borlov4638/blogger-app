@@ -18,23 +18,22 @@ import {
   CreatePostByBlogIdDto,
   UpdateBlogDto,
 } from './dto/blogs.dto';
-import { BlogsService } from './blogs.service';
-import { PostsService } from '../posts/posts.service';
 import { PostPaganationQuery } from '../posts/dto/post.dto';
 import { BasicAuthGuard } from '../auth/guards/auth.basic.guard';
 import { Request } from 'express';
-import { GetAllBlogsCommand, GetAllBlogsUseCase } from './use-cases/get-all-blogs-with-pagonation';
-import { CreateBlogCommand, CreateBlogUseCase } from './use-cases/create-blog';
-import { GetBlogByIdCommand, GetBlogByIdUseCase } from './use-cases/get-blog-by-id';
-import { UpdateBlogByIdCommand, UpdateBlogByIdUseCase } from './use-cases/update-blog-by-id';
-import { DeleteBlogByIdCommand, DeleteBlogByIdUseCase } from './use-cases/delete-blog-by-id';
+import { GetAllBlogsCommand } from './use-cases/get-all-blogs-with-pagonation';
+import { CreateBlogCommand } from './use-cases/create-blog';
+import { GetBlogByIdCommand } from './use-cases/get-blog-by-id';
+import { UpdateBlogByIdCommand } from './use-cases/update-blog-by-id';
+import { DeleteBlogByIdCommand } from './use-cases/delete-blog-by-id';
 import { CommandBus } from '@nestjs/cqrs';
+import { GetAllPostsInBlogCommand } from 'src/posts/use-cases/get-posts-by-blog-id';
+import { CreatePostCommand } from 'src/posts/use-cases/create-post';
 
 @Controller('blogs')
 export class BlogsController {
   constructor(
     private commandBus: CommandBus,
-    private readonly postService: PostsService,
   ) { }
 
   @Get()
@@ -76,7 +75,7 @@ export class BlogsController {
     @Query() paganation: PostPaganationQuery,
     @Req() request: Request,
   ) {
-    return this.postService.getAllPostsInBlog(paganation, id, request);
+    return this.commandBus.execute(new GetAllPostsInBlogCommand(paganation, id, request))
   }
 
   @UseGuards(BasicAuthGuard)
@@ -85,6 +84,6 @@ export class BlogsController {
     @Param('blogId') blogId: string,
     @Body() data: CreatePostByBlogIdDto,
   ) {
-    return await this.postService.createNewPost(data, blogId);
+    return await this.commandBus.execute(new CreatePostCommand(data, blogId));
   }
 }

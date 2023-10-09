@@ -11,20 +11,25 @@ import { GetBlogByIdUseCase } from './use-cases/get-blog-by-id';
 import { UpdateBlogByIdUseCase } from './use-cases/update-blog-by-id';
 import { DeleteBlogByIdUseCase } from './use-cases/delete-blog-by-id';
 import { CqrsModule } from '@nestjs/cqrs';
+import { GetAllPostsInBlogUseCase } from 'src/posts/use-cases/get-posts-by-blog-id';
+import { Post, postSchema } from 'src/entyties/posts.schema';
+import { CreatePostUseCase } from 'src/posts/use-cases/create-post';
 
 const useCases = [
   GetAllBlogsUseCase,
   CreateBlogUseCase,
   GetBlogByIdUseCase,
   UpdateBlogByIdUseCase,
-  DeleteBlogByIdUseCase
+  DeleteBlogByIdUseCase,
+  GetAllPostsInBlogUseCase,
+  CreatePostUseCase
 ]
 
 
 @Module({
   controllers: [BlogsController],
   imports: [
-    MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
+    MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }, { name: Post.name, schema: postSchema }]),
     PostsModule,
     CqrsModule
   ],
