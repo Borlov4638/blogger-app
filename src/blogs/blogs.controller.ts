@@ -23,28 +23,34 @@ import { PostsService } from '../posts/posts.service';
 import { PostPaganationQuery } from '../posts/dto/post.dto';
 import { BasicAuthGuard } from '../auth/guards/auth.basic.guard';
 import { Request } from 'express';
+import { GetAllBlogsCommand, GetAllBlogsUseCase } from './use-cases/get-all-blogs-with-pagonation';
+import { CreateBlogCommand, CreateBlogUseCase } from './use-cases/create-blog';
+import { GetBlogByIdCommand, GetBlogByIdUseCase } from './use-cases/get-blog-by-id';
+import { UpdateBlogByIdCommand, UpdateBlogByIdUseCase } from './use-cases/update-blog-by-id';
+import { DeleteBlogByIdCommand, DeleteBlogByIdUseCase } from './use-cases/delete-blog-by-id';
+import { CommandBus } from '@nestjs/cqrs';
 
 @Controller('blogs')
 export class BlogsController {
   constructor(
-    private readonly blogsService: BlogsService,
+    private commandBus: CommandBus,
     private readonly postService: PostsService,
-  ) {}
+  ) { }
 
   @Get()
-  getAllBlog(@Query() query: BlogPaganationQuery) {
-    return this.blogsService.getAllBlogs(query);
+  async getAllBlog(@Query() query: BlogPaganationQuery) {
+    return await this.commandBus.execute(new GetAllBlogsCommand(query))
   }
 
   @UseGuards(BasicAuthGuard)
   @Post()
-  async createBlog(@Body() createBlogDto: CreateBlogDto) {
-    return await this.blogsService.createNewBlog(createBlogDto);
+  async createBlog(@Body() data: CreateBlogDto) {
+    return await this.commandBus.execute(new CreateBlogCommand(data));
   }
 
   @Get(':id')
   async getBlogById(@Param('id') id: string) {
-    return await this.blogsService.getBlogById(id);
+    return await this.commandBus.execute(new GetBlogByIdCommand(id));
   }
 
   @HttpCode(204)
@@ -52,16 +58,16 @@ export class BlogsController {
   @Put(':id')
   async updateBlog(
     @Param('id') id: string,
-    @Body() updateBlogDto: UpdateBlogDto,
+    @Body() data: UpdateBlogDto,
   ) {
-    return await this.blogsService.updateBlogById(id, updateBlogDto);
+    return await this.commandBus.execute(new UpdateBlogByIdCommand(id, data))
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(BasicAuthGuard)
   @Delete(':id')
   async deleteBlogById(@Param('id') id: string) {
-    return await this.blogsService.deleteBlogById(id);
+    return await this.commandBus.execute(new DeleteBlogByIdCommand(id));
   }
 
   @Get(':blogId/posts')

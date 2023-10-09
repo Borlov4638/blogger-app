@@ -47,7 +47,7 @@ export class PostsService {
     @InjectModel(Comment.name) private commentModel: Model<Comment>,
     private readonly postRepo: PostRepository,
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
   async getAllPosts(
     postPagonationQuery: IPostPaganationQuery,
@@ -89,8 +89,8 @@ export class PostsService {
           myStatus = post.getStatus(user.id);
         }
       }
-      //@ts-ignore
       const newestLikes = post.likesInfo.usersWhoLiked
+        //@ts-ignore
         .sort((a, b) => b.addedAt - a.addedAt)
         .slice(0, 3);
 
@@ -148,8 +148,8 @@ export class PostsService {
         myStatus = findedPost.getStatus(user.id);
       }
     }
-    //@ts-ignore
     const newestLikes = findedPost.likesInfo.usersWhoLiked
+      //@ts-ignore
       .sort((a, b) => b.addedAt - a.addedAt)
       .slice(0, 3);
 
@@ -275,8 +275,8 @@ export class PostsService {
       let newestLikes;
       console.log(post);
       try {
-        //@ts-ignore
         newestLikes = post.likesInfo.usersWhoLiked
+          //@ts-ignore
           .sort((a, b) => b.addedAt - a.addedAt)
           .slice(0, 3);
       } catch {
