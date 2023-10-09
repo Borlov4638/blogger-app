@@ -24,15 +24,16 @@ import {
 import { BasicAuthGuard } from '../auth/guards/auth.basic.guard';
 import { Request } from 'express';
 import { BearerAccessAuthGuard } from '../auth/guards/auth.bearer.guard';
-import { SessionService } from '../auth/sessions.service';
-import { LikeStatus } from '../enums/like-status.enum';
+import { CommandBus } from '@nestjs/cqrs';
+import { CreatePostCommand } from './use-cases/create-post';
+import { GetPostByIdCommand } from './use-cases/get-post-by-id';
 
 @Controller('posts')
 export class PostController {
   constructor(
     private readonly postService: PostsService,
-    private readonly sessionService: SessionService,
-  ) {}
+    private commandBus: CommandBus
+  ) { }
 
   @Get()
   async getAllPosts(
@@ -44,7 +45,7 @@ export class PostController {
 
   @Get(':id')
   async getPostById(@Param('id') postId: string, @Req() request: Request) {
-    return await this.postService.getPostById(postId, request);
+    return await this.commandBus.execute(new GetPostByIdCommand(postId, request));
   }
 
   @UseGuards(BasicAuthGuard)
@@ -54,7 +55,7 @@ export class PostController {
     @Body() data: CreatePostDto,
     @Body('blogId') blogId: string,
   ) {
-    return await this.postService.createNewPost(data, blogId);
+    return await this.commandBus.execute(new CreatePostCommand(data, blogId));
   }
 
   @UseGuards(BasicAuthGuard)

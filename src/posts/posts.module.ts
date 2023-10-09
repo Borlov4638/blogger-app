@@ -7,6 +7,12 @@ import { Blog, BlogSchema } from '../entyties/blogs.schema';
 import { PostRepository } from './posts.repository';
 import { Comment, commentsSchema } from '../entyties/comments.schema';
 import { CustomBlogIdValidation } from './dto/post.dto';
+import { CqrsModule } from '@nestjs/cqrs';
+import { CreatePostUseCase } from './use-cases/create-post';
+import { GetPostByIdUseCase } from './use-cases/get-post-by-id';
+
+const UseCases = [CreatePostUseCase, GetPostByIdUseCase]
+
 
 @Module({
   imports: [
@@ -15,9 +21,10 @@ import { CustomBlogIdValidation } from './dto/post.dto';
       { name: Blog.name, schema: BlogSchema },
       { name: Comment.name, schema: commentsSchema },
     ]),
+    CqrsModule
   ],
   controllers: [PostController],
-  providers: [PostsService, PostRepository, CustomBlogIdValidation],
+  providers: [PostsService, PostRepository, CustomBlogIdValidation, ...UseCases],
   exports: [PostsService, PostRepository],
 })
 export class PostsModule { }
