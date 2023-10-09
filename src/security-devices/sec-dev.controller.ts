@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param, Req, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, HttpCode, HttpStatus, Param, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import {
   BearerRefreshAuthGuard,
@@ -25,6 +25,7 @@ export class SecDevController {
     await this.sessionService.validateSession(request);
     return await this.sessionService.deleteOtherSessions(request);
   }
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(BearerRefreshAuthGuard)
   @Delete('devices/:id')
   async deleteSessionById(@Req() request: Request, @Param('id') id: string) {

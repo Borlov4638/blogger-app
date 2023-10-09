@@ -119,17 +119,15 @@ export class AuthService {
     const data: IUsersRefreshToken = await this._getTokenDataAndVerify(
       request.cookies.refreshToken,
     );
-    const reftrsTokenExpDate = 20;
-    await this.sessionService.updateCurrentSession(
-      request,
-      reftrsTokenExpDate,
-      data.deviceId,
-    );
+    const user = await this.userService.getUserByLoginOrEmail(data.login)
+    const reftrsTokenExpDate = 1800;
+    await this.sessionService.deleteCurrentSession(request)
+    const session = await this.sessionService.createNewSession(request, user, reftrsTokenExpDate)
     const accessToken = await this._getUsersAccessToken(data, 10);
     const refreshToken = await this._getUsersRefreshToken(
       data,
       reftrsTokenExpDate,
-      data.deviceId,
+      session.deviceId,
     );
     return { accessToken, refreshToken };
   }
