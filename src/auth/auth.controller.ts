@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
@@ -22,6 +23,8 @@ import {
 import { CreateUserDto } from '../users/dto/users.dto';
 import { SessionService } from './sessions.service';
 import { ThrottlerGuard } from '@nestjs/throttler';
+import { CommandBus } from '@nestjs/cqrs';
+import { GetMyUsersDataCommand } from './use-cases/get-my-users-data';
 
 interface ITokens {
   accessToken: string;
@@ -31,9 +34,10 @@ interface ITokens {
 @Controller('auth')
 export class AuthController {
   constructor(
+    private commandBus: CommandBus,
     private readonly authService: AuthService,
     private readonly sessionService: SessionService,
-  ) {}
+  ) { }
 
   @UseGuards(ThrottlerGuard)
   @Post('login')
@@ -103,5 +107,12 @@ export class AuthController {
   async logoutUser(@Req() request: Request) {
     await this.sessionService.validateSession(request);
     await this.sessionService.deleteCurrentSession(request);
+  }
+
+
+  @UseGuards(BearerAccessAuthGuard)
+  @Get('me')
+  async getMe(@Req() request: Request) {
+    return await this.commandBus.execute(new GetMyUsersDataCommand(request))
   }
 }

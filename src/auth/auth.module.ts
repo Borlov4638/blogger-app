@@ -7,10 +7,16 @@ import { JwtModule } from '@nestjs/jwt';
 import { SessionService } from './sessions.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Session, sessionSchema } from '../entyties/session.schema';
+import { GetMyUsersDataUseCase } from './use-cases/get-my-users-data';
+import { CqrsModule } from '@nestjs/cqrs';
+
+const UseCases = [GetMyUsersDataUseCase]
+
+
 @Global()
 @Module({
   controllers: [AuthController],
-  providers: [AuthService, SessionService],
+  providers: [AuthService, SessionService, ...UseCases],
   imports: [
     CrytoModule,
     UsersModule,
@@ -19,7 +25,8 @@ import { Session, sessionSchema } from '../entyties/session.schema';
       global: true,
     }),
     MongooseModule.forFeature([{ name: Session.name, schema: sessionSchema }]),
+    CqrsModule
   ],
   exports: [SessionService],
 })
-export class AuthModule {}
+export class AuthModule { }

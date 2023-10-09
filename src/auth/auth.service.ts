@@ -48,7 +48,7 @@ export class AuthService {
     private jwtService: JwtService,
     private utilsService: UtilsService,
     private readonly sessionService: SessionService,
-  ) {}
+  ) { }
 
   private async _checkCredentials(credentials: ILoginUser) {
     const user = await this.userService.getUserByLoginOrEmail(
@@ -100,14 +100,14 @@ export class AuthService {
 
   async loginUser(credentials: ILoginUser, request: Request) {
     const user = await this._checkCredentials(credentials);
-    const reftrsTokenExpDate = 3600;
+    const reftrsTokenExpDate = 20;
     const sessionData: SessionDocument =
       await this.sessionService.createNewSession(
         request,
         user,
         reftrsTokenExpDate,
       );
-    const accessToken = await this._getUsersAccessToken(user, 360);
+    const accessToken = await this._getUsersAccessToken(user, 10);
     const refreshToken = await this._getUsersRefreshToken(
       user,
       reftrsTokenExpDate,
@@ -120,13 +120,13 @@ export class AuthService {
     const data: IUsersRefreshToken = await this._getTokenDataAndVerify(
       request.cookies.refreshToken,
     );
-    const reftrsTokenExpDate = 3600;
+    const reftrsTokenExpDate = 20;
     await this.sessionService.updateCurrentSession(
       request,
       reftrsTokenExpDate,
       data.deviceId,
     );
-    const accessToken = await this._getUsersAccessToken(data, 360);
+    const accessToken = await this._getUsersAccessToken(data, 10);
     const refreshToken = await this._getUsersRefreshToken(
       data,
       reftrsTokenExpDate,
