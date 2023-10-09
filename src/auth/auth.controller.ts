@@ -61,6 +61,7 @@ export class AuthController {
   @Post('refresh-token')
   async getNewTokenPair(@Req() request: Request, @Res() response: Response) {
     await this.sessionService.validateSession(request);
+    await this.sessionService.deleteCurrentSession(request)
     const tokens = await this.authService.getNewTokenPair(request);
     response.cookie('refreshToken', tokens.refreshToken, {
       httpOnly: true,
