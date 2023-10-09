@@ -3,7 +3,12 @@ import { AppService } from './app.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly appService: AppService) { }
+
+  @Get()
+  startingPage() {
+    return "project is running"
+  }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('testing/all-data')
