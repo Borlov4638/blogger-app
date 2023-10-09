@@ -24,7 +24,7 @@ export class SessionService {
   constructor(
     @InjectModel(Session.name) private sessionModel: Model<Session>,
     private jwtService: JwtService,
-  ) {}
+  ) { }
   async createNewSession(req: Request, user: UserDocument, expDate: number) {
     const requestIp =
       (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress!;
@@ -102,11 +102,11 @@ export class SessionService {
   }
   async getUserSessions(request: Request) {
     const tokenData: IUsersRefreshToken = await this.jwtService.verifyAsync(
-      request.headers.authorization.split(' ')[1],
+      request.cookies.refreshToken
     );
     return await this.sessionModel.find({
       userId: new Types.ObjectId(tokenData.id),
-    });
+    }, { _id: false, __v: false, expiration: false, userId: false });
   }
   async deleteOtherSessions(request: Request) {
     const tokenData: IUsersRefreshToken = await this.jwtService.verifyAsync(
