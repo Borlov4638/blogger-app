@@ -102,7 +102,7 @@ export class AuthController {
     await this.authService.recoverPassword(data);
   }
 
-  @UseGuards(BearerAccessAuthGuard, BearerRefreshAuthGuard)
+  @UseGuards(BearerRefreshAuthGuard)
   @Post('logout')
   async logoutUser(@Req() request: Request) {
     await this.sessionService.validateSession(request);

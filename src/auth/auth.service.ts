@@ -6,7 +6,6 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { CryptoService } from '../crypto/crypto.service';
-import { UserDocument } from '../entyties/users.chema';
 import { UsersService } from '../users/users.service';
 import { UtilsService } from '../utils/utils.service';
 import { SessionService } from './sessions.service';
