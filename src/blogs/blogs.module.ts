@@ -11,9 +11,9 @@ import { GetBlogByIdUseCase } from './use-cases/get-blog-by-id';
 import { UpdateBlogByIdUseCase } from './use-cases/update-blog-by-id';
 import { DeleteBlogByIdUseCase } from './use-cases/delete-blog-by-id';
 import { CqrsModule } from '@nestjs/cqrs';
-import { GetAllPostsInBlogUseCase } from 'src/posts/use-cases/get-posts-by-blog-id';
-import { Post, postSchema } from 'src/entyties/posts.schema';
-import { CreatePostUseCase } from 'src/posts/use-cases/create-post';
+import { GetAllPostsInBlogUseCase } from '../posts/use-cases/get-posts-by-blog-id';
+import { Post, postSchema } from '../entyties/posts.schema';
+import { CreatePostUseCase } from '../posts/use-cases/create-post';
 
 const useCases = [
   GetAllBlogsUseCase,

@@ -3,10 +3,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
-import { Blog } from 'src/entyties/blogs.schema';
+import { Blog } from '../../entyties/blogs.schema';
 import { PostRepository } from '../posts.repository';
-import { Post, PostDocument } from 'src/entyties/posts.schema';
-import { LikeStatus } from 'src/enums/like-status.enum';
+import { Post, PostDocument } from '../../entyties/posts.schema';
+import { LikeStatus } from '../../enums/like-status.enum';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 interface IPostPaganationQuery {

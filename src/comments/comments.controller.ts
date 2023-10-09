@@ -16,7 +16,7 @@ import { Request } from 'express';
 import { SessionService } from '../auth/sessions.service';
 import { BearerAccessAuthGuard } from '../auth/guards/auth.bearer.guard';
 import { LikeStatus } from '../enums/like-status.enum';
-import { PostCreateNewCommentDto } from 'src/posts/dto/post.dto';
+import { PostCreateNewCommentDto } from '../posts/dto/post.dto';
 import { CommentChangeLikeStatusDto } from './dto/comments.dto';
 
 @Controller('comments')
@@ -24,7 +24,7 @@ export class CommentsController {
   constructor(
     private readonly commentsService: CommentsService,
     private sessionService: SessionService,
-  ) {}
+  ) { }
 
   @Get(':id')
   async getCommentById(@Param('id') comId: string, @Req() request: Request) {

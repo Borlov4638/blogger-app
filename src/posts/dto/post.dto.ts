@@ -8,7 +8,7 @@ import {
   ValidationError,
   registerDecorator,
 } from 'class-validator';
-import { LikeStatus } from 'src/enums/like-status.enum';
+import { LikeStatus } from '../../enums/like-status.enum';
 import {
   BadRequestException,
   Injectable,
@@ -21,7 +21,7 @@ import {
   ValidationOptions,
 } from 'class-validator';
 import { InjectModel } from '@nestjs/mongoose';
-import { Blog } from 'src/entyties/blogs.schema';
+import { Blog } from '../../entyties/blogs.schema';
 import { Model, Types } from 'mongoose';
 import { Transform } from 'class-transformer';
 
@@ -41,7 +41,7 @@ export function isBlogIdValid(
 @ValidatorConstraint({ name: 'email', async: true })
 @Injectable()
 export class CustomBlogIdValidation implements ValidatorConstraintInterface {
-  constructor(@InjectModel(Blog.name) private blogModel: Model<Blog>) {}
+  constructor(@InjectModel(Blog.name) private blogModel: Model<Blog>) { }
 
   async validate(blogId: string): Promise<boolean> {
     const blog = await this.blogModel.findOne({

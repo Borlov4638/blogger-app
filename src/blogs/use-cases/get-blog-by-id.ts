@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Blog } from 'src/entyties/blogs.schema';
+import { Blog } from '../../entyties/blogs.schema';
 
 
 export class GetBlogByIdCommand {

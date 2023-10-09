@@ -109,7 +109,6 @@ export class AuthController {
     await this.sessionService.deleteCurrentSession(request);
   }
 
-
   @UseGuards(BearerAccessAuthGuard)
   @Get('me')
   async getMe(@Req() request: Request) {

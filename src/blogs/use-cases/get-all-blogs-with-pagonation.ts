@@ -1,6 +1,6 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Blog } from 'src/entyties/blogs.schema';
+import { Blog } from '../../entyties/blogs.schema';
 import { BlogsRepository } from '../blogs.repository';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 

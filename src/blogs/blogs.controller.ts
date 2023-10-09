@@ -27,8 +27,8 @@ import { GetBlogByIdCommand } from './use-cases/get-blog-by-id';
 import { UpdateBlogByIdCommand } from './use-cases/update-blog-by-id';
 import { DeleteBlogByIdCommand } from './use-cases/delete-blog-by-id';
 import { CommandBus } from '@nestjs/cqrs';
-import { GetAllPostsInBlogCommand } from 'src/posts/use-cases/get-posts-by-blog-id';
-import { CreatePostCommand } from 'src/posts/use-cases/create-post';
+import { GetAllPostsInBlogCommand } from '../posts/use-cases/get-posts-by-blog-id';
+import { CreatePostCommand } from '../posts/use-cases/create-post';
 
 @Controller('blogs')
 export class BlogsController {

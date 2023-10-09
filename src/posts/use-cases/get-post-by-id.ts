@@ -5,8 +5,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
-import { Post } from 'src/entyties/posts.schema';
-import { LikeStatus } from 'src/enums/like-status.enum';
+import { Post } from '../../entyties/posts.schema';
+import { LikeStatus } from '../../enums/like-status.enum';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 interface IUsersAcessToken {
