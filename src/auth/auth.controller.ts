@@ -102,6 +102,7 @@ export class AuthController {
     await this.authService.recoverPassword(data);
   }
 
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(BearerRefreshAuthGuard)
   @Post('logout')
   async logoutUser(@Req() request: Request) {
