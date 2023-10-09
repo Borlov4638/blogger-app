@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { SessionService } from '../auth/sessions.service';
@@ -14,16 +14,21 @@ interface IUsersRefreshToken {
 export class SecDevService {
   constructor(
     private readonly sessionService: SessionService,
-    private jwtService: JwtService,
-  ) {}
+  ) { }
+
   async getUserDevices(request: Request) {
     return await this.sessionService.getUserSessions(request);
   }
-  async deleteSessionById(id: string) {
-    const session = await this.sessionService.deleteSessionById(id);
-    if (!session) {
-      throw new NotFoundException();
+  async deleteSessionById(request: Request, id: string) {
+    const sessionToDelete = await this.sessionService.findSessionById(id)
+    if (!sessionToDelete) {
+      throw new NotFoundException()
     }
+    const usersSessions = (await this.sessionService.getUserSessions(request)).map(session => session.deviceId)
+    if (usersSessions.indexOf(id) === -1) {
+      throw new ForbiddenException()
+    }
+    await this.sessionService.deleteSessionById(id);
     return;
   }
 }

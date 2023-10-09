@@ -30,6 +30,6 @@ export class SecDevController {
   @Delete('devices/:id')
   async deleteSessionById(@Req() request: Request, @Param('id') id: string) {
     await this.sessionService.validateSession(request);
-    return await this.secDevService.deleteSessionById(id);
+    await this.secDevService.deleteSessionById(request, id)
   }
 }
