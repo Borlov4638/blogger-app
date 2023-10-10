@@ -10,7 +10,9 @@ import { CryptoService } from '../crypto/crypto.service';
 import { UsersService } from '../users/users.service';
 import { UtilsService } from '../utils/utils.service';
 import { SessionService } from './sessions.service';
-import { SessionDocument } from '../entyties/session.schema';
+import { CommandBus } from '@nestjs/cqrs';
+import { CreateSessionCommand } from './use-cases/session-use-cases/create-session';
+import { RefreshCurrentSessionCommand } from './use-cases/session-use-cases/refresh-current-session';
 
 interface ILoginUser {
   loginOrEmail: string;
@@ -43,6 +45,7 @@ interface IPasswordRecovery {
 @Injectable()
 export class AuthService {
   constructor(
+    private commandBus: CommandBus,
     private readonly userService: UsersService,
     private cryptoService: CryptoService,
     private jwtService: JwtService,
@@ -110,13 +113,13 @@ export class AuthService {
     );
     const refreshHash = refreshToken.split('.')[2]
 
-    await this.sessionService.createNewSession(
+    await this.commandBus.execute(new CreateSessionCommand(
       request,
       user,
       reftrsTokenExpDate,
       deviceId,
       refreshHash
-    );
+    ));
     return { accessToken, refreshToken };
   }
 
@@ -132,7 +135,7 @@ export class AuthService {
       data.deviceId,
     );
     const refreshHash = refreshToken.split('.')[2]
-    await this.sessionService.updateCurrentSession(request, reftrsTokenExpDate, data.deviceId, refreshHash)
+    await this.commandBus.execute(new RefreshCurrentSessionCommand(request, reftrsTokenExpDate, data.deviceId, refreshHash))
     return { accessToken, refreshToken };
   }
 

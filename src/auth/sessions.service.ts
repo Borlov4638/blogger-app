@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { UserDocument } from '../entyties/users.chema';
-import { add, compareAsc, format } from 'date-fns';
+import { add } from 'date-fns';
 import { InjectModel } from '@nestjs/mongoose';
 import { Session } from '../entyties/session.schema';
 import { Model, Types } from 'mongoose';

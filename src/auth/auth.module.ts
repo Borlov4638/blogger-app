@@ -9,8 +9,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Session, sessionSchema } from '../entyties/session.schema';
 import { GetMyUsersDataUseCase } from './use-cases/get-my-users-data';
 import { CqrsModule } from '@nestjs/cqrs';
+import { CreateSessionUseCase } from './use-cases/session-use-cases/create-session';
+import { RefreshCurrentSessionUseCase } from './use-cases/session-use-cases/refresh-current-session';
 
-const UseCases = [GetMyUsersDataUseCase]
+const UseCases = [GetMyUsersDataUseCase, CreateSessionUseCase, RefreshCurrentSessionUseCase]
 
 
 @Global()
