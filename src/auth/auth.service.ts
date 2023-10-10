@@ -3,6 +3,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { CryptoService } from '../crypto/crypto.service';
@@ -100,17 +101,21 @@ export class AuthService {
   async loginUser(credentials: ILoginUser, request: Request) {
     const user = await this._checkCredentials(credentials);
     const reftrsTokenExpDate = 20;
-    const sessionData: SessionDocument =
-      await this.sessionService.createNewSession(
-        request,
-        user,
-        reftrsTokenExpDate,
-      );
+    const deviceId = uuidv4();
     const accessToken = await this._getUsersAccessToken(user, 10);
     const refreshToken = await this._getUsersRefreshToken(
       user,
       reftrsTokenExpDate,
-      sessionData.deviceId,
+      deviceId,
+    );
+    const refreshHash = refreshToken.split('.')[2]
+
+    await this.sessionService.createNewSession(
+      request,
+      user,
+      reftrsTokenExpDate,
+      deviceId,
+      refreshHash
     );
     return { accessToken, refreshToken };
   }
@@ -119,16 +124,15 @@ export class AuthService {
     const data: IUsersRefreshToken = await this._getTokenDataAndVerify(
       request.cookies.refreshToken,
     );
-    const user = await this.userService.getUserByLoginOrEmail(data.login)
-    const reftrsTokenExpDate = 1800;
-    await this.sessionService.deleteCurrentSession(request)
-    const session = await this.sessionService.createNewSession(request, user, reftrsTokenExpDate)
+    const reftrsTokenExpDate = 20;
     const accessToken = await this._getUsersAccessToken(data, 10);
     const refreshToken = await this._getUsersRefreshToken(
       data,
       reftrsTokenExpDate,
-      session.deviceId,
+      data.deviceId,
     );
+    const refreshHash = refreshToken.split('.')[2]
+    await this.sessionService.updateCurrentSession(request, reftrsTokenExpDate, data.deviceId, refreshHash)
     return { accessToken, refreshToken };
   }
 

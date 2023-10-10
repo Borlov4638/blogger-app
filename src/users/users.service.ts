@@ -32,7 +32,7 @@ export class UsersService {
     private readonly cryptoService: CryptoService,
     private usersRepository: UsersRepository,
     private utilsService: UtilsService,
-  ) {}
+  ) { }
 
   async getAllUsers(paganation: IUsersPaganationQuery) {
     const searchLoginTerm = paganation.searchLoginTerm
@@ -110,10 +110,12 @@ export class UsersService {
       delete plainUser.emailConfirmation;
       return plainUser;
     });
-    await this.utilsService.sendConfirmationViaEmail(
-      data.email,
-      newUser.emailConfirmation.confirmationCode,
-    );
+    if (!isConfirmed) {
+      await this.utilsService.sendConfirmationViaEmail(
+        data.email,
+        newUser.emailConfirmation.confirmationCode,
+      );
+    }
     return userToReturn;
   }
 

@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { UserDocument } from '../entyties/users.chema';
-import { v4 as uuidv4 } from 'uuid';
 import { add, compareAsc, format } from 'date-fns';
 import { InjectModel } from '@nestjs/mongoose';
 import { Session } from '../entyties/session.schema';
@@ -25,15 +24,13 @@ export class SessionService {
     @InjectModel(Session.name) private sessionModel: Model<Session>,
     private jwtService: JwtService,
   ) { }
-  async createNewSession(req: Request, user: UserDocument, expDate: number) {
+  async createNewSession(req: Request, user: UserDocument, expDate: number, deviceId: string, refreshHash: string) {
     const requestIp =
       (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress!;
 
     const userAgent = req.headers['user-agent']
       ? req.headers['user-agent']
       : 'Chrome 105';
-
-    const deviceId = uuidv4();
 
     const refreshTokenExpirationDate = add(new Date(), {
       seconds: expDate,
@@ -48,11 +45,12 @@ export class SessionService {
       title: userAgent,
       lastActiveDate: new Date(lastActiveDate).toISOString(),
       expiration: refreshTokenExpirationDate,
+      refreshHash
     });
     await newSession.save();
     return newSession;
   }
-  async updateCurrentSession(req: Request, expDate: number, deviceId: string) {
+  async updateCurrentSession(req: Request, expDate: number, deviceId: string, refreshHash) {
     const requestIp =
       (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress!;
 
@@ -73,6 +71,7 @@ export class SessionService {
         title: userAgent,
         lastActiveDate: new Date(lastActiveDate).toISOString(),
         expiration: refreshTokenExpirationDate,
+        refreshHash
       },
     );
     return updatedSession;
@@ -90,11 +89,13 @@ export class SessionService {
     await this.deleteSessionById(tokenData.deviceId);
     return;
   }
+  async findSessionByRefreshHash(refreshHash: string) {
+    return await this.sessionModel.findOne({ refreshHash })
+  }
+
   async validateSession(request: Request) {
-    const tokenData: IUsersRefreshToken = await this.jwtService.verifyAsync(
-      request.cookies.refreshToken,
-    );
-    const session = await this.findSessionById(tokenData.deviceId);
+    const refreshHash = request.cookies.refreshToken.split('.')[2]
+    const session = await this.findSessionByRefreshHash(refreshHash);
     if (!session) {
       throw new UnauthorizedException();
     }

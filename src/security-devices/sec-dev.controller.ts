@@ -12,6 +12,7 @@ export class SecDevController {
     private readonly secDevService: SecDevService,
     private readonly sessionService: SessionService,
   ) { }
+
   @UseGuards(BearerRefreshAuthGuard)
   @Get('devices')
   async getUserDevices(@Req() request: Request) {
@@ -19,6 +20,7 @@ export class SecDevController {
     return await this.secDevService.getUserDevices(request);
   }
 
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(BearerRefreshAuthGuard)
   @Delete('devices')
   async deleteOtherSessions(@Req() request: Request) {

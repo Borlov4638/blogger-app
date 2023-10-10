@@ -17,6 +17,8 @@ export class Session {
   deviceId: string;
   @Prop()
   expiration: string;
+  @Prop()
+  refreshHash: string;
 }
 
 export const sessionSchema = SchemaFactory.createForClass(Session);
