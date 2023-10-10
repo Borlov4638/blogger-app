@@ -107,7 +107,7 @@ export class SessionService {
     );
     return await this.sessionModel.find({
       userId: new Types.ObjectId(tokenData.id),
-    }, { _id: false, __v: false, expiration: false, userId: false });
+    }, { _id: false, __v: false, expiration: false, userId: false, refreshHash: false });
   }
   async deleteOtherSessions(request: Request) {
     const tokenData: IUsersRefreshToken = await this.jwtService.verifyAsync(
