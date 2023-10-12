@@ -25,6 +25,9 @@ import { SessionService } from './sessions.service';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { CommandBus } from '@nestjs/cqrs';
 import { GetMyUsersDataCommand } from './use-cases/get-my-users-data';
+import { LoginUserCommand } from './use-cases/login-user';
+import { ValidateSessionCommand } from './use-cases/session-use-cases/validate -session';
+import { GetNewTokenPairCommand } from './use-cases/get-new-token-pare';
 
 interface ITokens {
   accessToken: string;
@@ -46,10 +49,10 @@ export class AuthController {
     @Res() response: Response,
     @Req() request: Request,
   ) {
-    const tokens: ITokens = await this.authService.loginUser(
+    const tokens: ITokens = await this.commandBus.execute(new LoginUserCommand(
       credentials,
       request,
-    );
+    ))
     response.cookie('refreshToken', tokens.refreshToken, {
       httpOnly: true,
       secure: true,
@@ -60,8 +63,8 @@ export class AuthController {
   @UseGuards(BearerRefreshAuthGuard)
   @Post('refresh-token')
   async getNewTokenPair(@Req() request: Request, @Res() response: Response) {
-    await this.sessionService.validateSession(request);
-    const tokens = await this.authService.getNewTokenPair(request);
+    await this.commandBus.execute(new ValidateSessionCommand(request));
+    const tokens = await this.commandBus.execute(new GetNewTokenPairCommand(request));
     response.cookie('refreshToken', tokens.refreshToken, {
       httpOnly: true,
       secure: true,

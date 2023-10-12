@@ -11,14 +11,19 @@ import { GetMyUsersDataUseCase } from './use-cases/get-my-users-data';
 import { CqrsModule } from '@nestjs/cqrs';
 import { CreateSessionUseCase } from './use-cases/session-use-cases/create-session';
 import { RefreshCurrentSessionUseCase } from './use-cases/session-use-cases/refresh-current-session';
+import { LoginUserUseCase } from './use-cases/login-user';
+import { AuthRepository } from './auth.repository';
+import { SessionRepository } from './session.repository';
+import { ValidateSessionUseCase } from './use-cases/session-use-cases/validate -session';
+import { GetNewTokenPairUseCase } from './use-cases/get-new-token-pare';
 
-const UseCases = [GetMyUsersDataUseCase, CreateSessionUseCase, RefreshCurrentSessionUseCase]
+const UseCases = [GetMyUsersDataUseCase, LoginUserUseCase, CreateSessionUseCase, RefreshCurrentSessionUseCase, ValidateSessionUseCase, GetNewTokenPairUseCase]
 
 
 @Global()
 @Module({
   controllers: [AuthController],
-  providers: [AuthService, SessionService, ...UseCases],
+  providers: [AuthService, SessionService, ...UseCases, AuthRepository, SessionRepository],
   imports: [
     CrytoModule,
     UsersModule,
