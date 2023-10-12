@@ -17,8 +17,13 @@ import { SessionRepository } from './session.repository';
 import { ValidateSessionUseCase } from './use-cases/session-use-cases/validate -session';
 import { GetNewTokenPairUseCase } from './use-cases/get-new-token-pare';
 import { RegistrateUserUseCase } from './use-cases/registrate-user';
+import { ConfirmRegistartionUseCase } from './use-cases/confirm-registration';
+import { ResendEmailUseCase } from './use-cases/resend-confirmation-email';
+import { SendPassRecoveryCodeUseCase } from './use-cases/send-password-rec-code';
+import { RecoverPasswordUseCase } from './use-cases/recover-password';
+import { DeleteCurrenSessionUseCase } from './use-cases/session-use-cases/delete-current-session';
 
-const UseCases = [RegistrateUserUseCase, GetMyUsersDataUseCase, LoginUserUseCase, CreateSessionUseCase, RefreshCurrentSessionUseCase, ValidateSessionUseCase, GetNewTokenPairUseCase]
+const UseCases = [DeleteCurrenSessionUseCase, RecoverPasswordUseCase, SendPassRecoveryCodeUseCase, ResendEmailUseCase, ConfirmRegistartionUseCase, RegistrateUserUseCase, GetMyUsersDataUseCase, LoginUserUseCase, CreateSessionUseCase, RefreshCurrentSessionUseCase, ValidateSessionUseCase, GetNewTokenPairUseCase]
 
 
 @Global()

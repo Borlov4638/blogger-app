@@ -23,4 +23,8 @@ export class SessionRepository {
         );
         return updatedSession
     }
+    async deleteSessionById(deviceId: string) {
+        return await this.sessionModel.findOneAndDelete({ deviceId });
+    }
+
 }
