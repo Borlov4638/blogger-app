@@ -7,12 +7,13 @@ import { v4 as uuidv4 } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { CryptoService } from '../crypto/crypto.service';
-import { UsersService } from '../users/users.service';
 import { UtilsService } from '../utils/utils.service';
 import { SessionService } from './sessions.service';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateSessionCommand } from './use-cases/session-use-cases/create-session';
 import { RefreshCurrentSessionCommand } from './use-cases/session-use-cases/refresh-current-session';
+import { UsersRepository } from 'src/users/users.repository';
+import { CreateUserCommand } from 'src/users/use-cases/create-user';
 
 interface ILoginUser {
   loginOrEmail: string;
@@ -46,7 +47,7 @@ interface IPasswordRecovery {
 export class AuthService {
   constructor(
     private commandBus: CommandBus,
-    private readonly userService: UsersService,
+    private readonly usersRepo: UsersRepository,
     private cryptoService: CryptoService,
     private jwtService: JwtService,
     private utilsService: UtilsService,
@@ -54,7 +55,7 @@ export class AuthService {
   ) { }
 
   private async _checkCredentials(credentials: ILoginUser) {
-    const user = await this.userService.getUserByLoginOrEmail(
+    const user = await this.usersRepo.getUserByLoginOrEmail(
       credentials.loginOrEmail,
     );
 
@@ -140,27 +141,27 @@ export class AuthService {
   }
 
   async registrateUser(data: INewUsersData) {
-    const isUserExistsbyEmail = await this.userService.getUserByLoginOrEmail(
+    const isUserExistsbyEmail = await this.usersRepo.getUserByLoginOrEmail(
       data.email,
     );
     if (isUserExistsbyEmail) {
       throw new BadRequestException('registration email');
     }
-    const isUserExistsbyLogin = await this.userService.getUserByLoginOrEmail(
+    const isUserExistsbyLogin = await this.usersRepo.getUserByLoginOrEmail(
       data.login,
     );
     if (isUserExistsbyLogin) {
       throw new BadRequestException('registration login');
     }
-    return await this.userService.createUser(data, false);
+    return await this.commandBus.execute(new CreateUserCommand(data, false));
   }
 
   async confirmRegistration(code: string) {
-    await this.userService.confirmUserByCode(code);
+    await this.usersRepo.confirmUserByCode(code);
   }
 
   async resendConfirmationEmail(email: string) {
-    const user = await this.userService.getUserByLoginOrEmail(email);
+    const user = await this.usersRepo.getUserByLoginOrEmail(email);
     if (!user) {
       throw new BadRequestException('invalid email');
     }
@@ -174,7 +175,7 @@ export class AuthService {
   }
 
   async sendPasswordRecoveryCode(email: string) {
-    const user = await this.userService.getUserByLoginOrEmail(email);
+    const user = await this.usersRepo.getUserByLoginOrEmail(email);
     if (!user) {
       return;
     }
@@ -187,11 +188,11 @@ export class AuthService {
     const userData: IUsersAcessToken = await this._getTokenDataAndVerify(
       data.recoveryCode,
     );
-    const user = await this.userService.getUserByLoginOrEmail(userData.email);
+    const user = await this.usersRepo.getUserByLoginOrEmail(userData.email);
     if (!user) {
       return;
     }
-    await this.userService.changePassword(data.newPassword, user);
+    await this.usersRepo.changePassword(data.newPassword, user);
     return;
   }
 

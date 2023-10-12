@@ -10,32 +10,36 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
 import { CreateUserDto, UsersPaganationQuery } from './dto/users.dto';
 import { BasicAuthGuard } from '../auth/guards/auth.basic.guard';
+import { CommandBus } from '@nestjs/cqrs';
+import { GetAllUsersCommand } from './use-cases/get-all-users';
+import { CreateUserCommand } from './use-cases/create-user';
+import { DeleteUserByIdCommand } from './use-cases/delete-user-by-id';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private commandBus: CommandBus
+  ) { }
 
   @UseGuards(BasicAuthGuard)
   @Get()
   async getAllUsers(@Query() paganation: UsersPaganationQuery) {
-    return await this.usersService.getAllUsers(paganation);
+    return await this.commandBus.execute(new GetAllUsersCommand(paganation));
   }
 
   @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.CREATED)
   @Post()
   async createUser(@Body() data: CreateUserDto) {
-    debugger;
-    return await this.usersService.createUser(data, true);
+    return await this.commandBus.execute(new CreateUserCommand(data, true));
   }
 
   @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   async deleteUserById(@Param('id') id: string) {
-    return await this.usersService.deleteUserById(id);
+    return await this.commandBus.execute(new DeleteUserByIdCommand(id));
   }
 }
