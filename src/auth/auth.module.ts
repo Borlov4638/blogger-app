@@ -16,8 +16,9 @@ import { AuthRepository } from './auth.repository';
 import { SessionRepository } from './session.repository';
 import { ValidateSessionUseCase } from './use-cases/session-use-cases/validate -session';
 import { GetNewTokenPairUseCase } from './use-cases/get-new-token-pare';
+import { RegistrateUserUseCase } from './use-cases/registrate-user';
 
-const UseCases = [GetMyUsersDataUseCase, LoginUserUseCase, CreateSessionUseCase, RefreshCurrentSessionUseCase, ValidateSessionUseCase, GetNewTokenPairUseCase]
+const UseCases = [RegistrateUserUseCase, GetMyUsersDataUseCase, LoginUserUseCase, CreateSessionUseCase, RefreshCurrentSessionUseCase, ValidateSessionUseCase, GetNewTokenPairUseCase]
 
 
 @Global()

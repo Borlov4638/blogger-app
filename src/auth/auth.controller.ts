@@ -28,6 +28,7 @@ import { GetMyUsersDataCommand } from './use-cases/get-my-users-data';
 import { LoginUserCommand } from './use-cases/login-user';
 import { ValidateSessionCommand } from './use-cases/session-use-cases/validate -session';
 import { GetNewTokenPairCommand } from './use-cases/get-new-token-pare';
+import { RegistrateUserCommand } from './use-cases/registrate-user';
 
 interface ITokens {
   accessToken: string;
@@ -76,7 +77,7 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration')
   async registrateUser(@Body() data: CreateUserDto) {
-    return await this.authService.registrateUser(data);
+    return await this.commandBus.execute(new RegistrateUserCommand(data));
   }
 
   @UseGuards(ThrottlerGuard)

@@ -96,22 +96,25 @@ export class UsersRepository {
 
   async createUser(login: string, email: string, password: string, isConfirmed: boolean) {
     let newUser: UserDocument
+    let userToReturn
+
     if (isConfirmed) {
       newUser = new this.userModel({ email, login, password });
       newUser.confirm();
+      return userToReturn = await newUser.save().then((newUser) => {
+        const plainUser: UserDocument = newUser.toObject();
+        delete plainUser._id;
+        delete plainUser.__v;
+        delete plainUser.password;
+        delete plainUser.emailConfirmation;
+        return plainUser;
+      });
+
     } else {
       newUser = new this.userModel({ email, login, password });
+      return await newUser.save()
     }
 
-    const userToReturn = await newUser.save().then((newUser) => {
-      const plainUser: UserDocument = newUser.toObject();
-      delete plainUser._id;
-      delete plainUser.__v;
-      delete plainUser.password;
-      delete plainUser.emailConfirmation;
-      return plainUser;
-    });
-    return userToReturn;
   }
 
   async deleteUserById(id: string) {
