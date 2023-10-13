@@ -12,7 +12,6 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { CreateSessionUseCase } from './use-cases/session-use-cases/create-session';
 import { RefreshCurrentSessionUseCase } from './use-cases/session-use-cases/refresh-current-session';
 import { LoginUserUseCase } from './use-cases/login-user';
-import { AuthRepository } from './auth.repository';
 import { SessionRepository } from './session.repository';
 import { ValidateSessionUseCase } from './use-cases/session-use-cases/validate -session';
 import { GetNewTokenPairUseCase } from './use-cases/get-new-token-pare';
@@ -29,7 +28,7 @@ const UseCases = [DeleteCurrenSessionUseCase, RecoverPasswordUseCase, SendPassRe
 @Global()
 @Module({
   controllers: [AuthController],
-  providers: [AuthService, SessionService, ...UseCases, AuthRepository, SessionRepository],
+  providers: [AuthService, SessionService, ...UseCases, SessionRepository],
   imports: [
     CrytoModule,
     UsersModule,
@@ -40,6 +39,6 @@ const UseCases = [DeleteCurrenSessionUseCase, RecoverPasswordUseCase, SendPassRe
     MongooseModule.forFeature([{ name: Session.name, schema: sessionSchema }]),
     CqrsModule
   ],
-  exports: [SessionService],
+  exports: [SessionRepository, SessionService],
 })
 export class AuthModule { }

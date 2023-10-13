@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { Session } from '../../../entyties/session.schema';
 import { UserDocument } from '../../../entyties/users.chema';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { SessionRepository } from 'src/auth/session.repository';
 
 
 export class CreateSessionCommand {
@@ -13,7 +14,7 @@ export class CreateSessionCommand {
 
 @CommandHandler(CreateSessionCommand)
 export class CreateSessionUseCase implements ICommandHandler<CreateSessionCommand> {
-    constructor(@InjectModel(Session.name) private sessionModel: Model<Session>) { }
+    constructor(private sessionRepo: SessionRepository) { }
 
     async execute(command: CreateSessionCommand) {
         const requestIp =
@@ -29,16 +30,15 @@ export class CreateSessionUseCase implements ICommandHandler<CreateSessionComman
 
         const lastActiveDate = Math.floor(+new Date() / 1000) * 1000;
 
-        const newSession = new this.sessionModel({
-            userId: command.user.id,
-            deviceId: command.deviceId,
-            ip: requestIp,
-            title: userAgent,
-            lastActiveDate: new Date(lastActiveDate).toISOString(),
-            expiration: refreshTokenExpirationDate,
-            refreshHash: command.refreshHash
-        });
-        await newSession.save();
+        const newSession = await this.sessionRepo.createSession(
+            command.user.id,
+            command.deviceId,
+            requestIp,
+            userAgent,
+            lastActiveDate,
+            refreshTokenExpirationDate,
+            command.refreshHash
+        );
         return newSession;
     }
 }

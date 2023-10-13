@@ -2,6 +2,7 @@ import { ForbiddenException, Injectable, NotFoundException, UnauthorizedExceptio
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { SessionService } from '../auth/sessions.service';
+import { SessionRepository } from 'src/auth/session.repository';
 
 interface IUsersRefreshToken {
   id: string;
@@ -13,22 +14,38 @@ interface IUsersRefreshToken {
 @Injectable()
 export class SecDevService {
   constructor(
-    private readonly sessionService: SessionService,
+    private jwtService: JwtService,
+    private readonly sessionRepo: SessionRepository,
+
   ) { }
 
   async getUserDevices(request: Request) {
-    return await this.sessionService.getUserSessions(request);
+    const tokenData: IUsersRefreshToken = await this.jwtService.verifyAsync(
+      request.cookies.refreshToken
+    );
+    return await this.sessionRepo.getUserSessions(tokenData.id);
   }
   async deleteSessionById(request: Request, id: string) {
-    const sessionToDelete = await this.sessionService.findSessionById(id)
+    const sessionToDelete = await this.sessionRepo.findSessionById(id)
     if (!sessionToDelete) {
       throw new NotFoundException()
     }
-    const usersSessions = (await this.sessionService.getUserSessions(request)).map(session => session.deviceId)
+    const tokenData: IUsersRefreshToken = await this.jwtService.verifyAsync(
+      request.cookies.refreshToken,
+    );
+    const usersSessions = (await this.sessionRepo.getUserSessions(tokenData.id)).map(session => session.deviceId)
     if (usersSessions.indexOf(id) === -1) {
       throw new ForbiddenException()
     }
-    await this.sessionService.deleteSessionById(id);
+    await this.sessionRepo.deleteSessionById(id);
     return;
+  }
+
+  async deleteOtherSessions(request: Request) {
+    const tokenData: IUsersRefreshToken = await this.jwtService.verifyAsync(
+      request.cookies.refreshToken,
+    );
+    await this.sessionRepo.deleteOtherSessions(tokenData.id, tokenData.deviceId)
+    return
   }
 }
