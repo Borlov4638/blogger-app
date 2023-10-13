@@ -40,9 +40,7 @@ interface ITokens {
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private commandBus: CommandBus,
-  ) { }
+  constructor(private commandBus: CommandBus) {}
 
   @UseGuards(ThrottlerGuard)
   @Post('login')
@@ -51,10 +49,9 @@ export class AuthController {
     @Res() response: Response,
     @Req() request: Request,
   ) {
-    const tokens: ITokens = await this.commandBus.execute(new LoginUserCommand(
-      credentials,
-      request,
-    ))
+    const tokens: ITokens = await this.commandBus.execute(
+      new LoginUserCommand(credentials, request),
+    );
     response.cookie('refreshToken', tokens.refreshToken, {
       httpOnly: true,
       secure: true,
@@ -66,7 +63,9 @@ export class AuthController {
   @Post('refresh-token')
   async getNewTokenPair(@Req() request: Request, @Res() response: Response) {
     await this.commandBus.execute(new ValidateSessionCommand(request));
-    const tokens = await this.commandBus.execute(new GetNewTokenPairCommand(request));
+    const tokens = await this.commandBus.execute(
+      new GetNewTokenPairCommand(request),
+    );
     response.cookie('refreshToken', tokens.refreshToken, {
       httpOnly: true,
       secure: true,
@@ -118,6 +117,6 @@ export class AuthController {
   @UseGuards(BearerAccessAuthGuard)
   @Get('me')
   async getMe(@Req() request: Request) {
-    return await this.commandBus.execute(new GetMyUsersDataCommand(request))
+    return await this.commandBus.execute(new GetMyUsersDataCommand(request));
   }
 }

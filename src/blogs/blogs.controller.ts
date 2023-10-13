@@ -32,13 +32,11 @@ import { CreatePostCommand } from '../posts/use-cases/create-post';
 
 @Controller('blogs')
 export class BlogsController {
-  constructor(
-    private commandBus: CommandBus,
-  ) { }
+  constructor(private commandBus: CommandBus) {}
 
   @Get()
   async getAllBlog(@Query() query: BlogPaganationQuery) {
-    return await this.commandBus.execute(new GetAllBlogsCommand(query))
+    return await this.commandBus.execute(new GetAllBlogsCommand(query));
   }
 
   @UseGuards(BasicAuthGuard)
@@ -55,11 +53,8 @@ export class BlogsController {
   @HttpCode(204)
   @UseGuards(BasicAuthGuard)
   @Put(':id')
-  async updateBlog(
-    @Param('id') id: string,
-    @Body() data: UpdateBlogDto,
-  ) {
-    return await this.commandBus.execute(new UpdateBlogByIdCommand(id, data))
+  async updateBlog(@Param('id') id: string, @Body() data: UpdateBlogDto) {
+    return await this.commandBus.execute(new UpdateBlogByIdCommand(id, data));
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -75,7 +70,9 @@ export class BlogsController {
     @Query() paganation: PostPaganationQuery,
     @Req() request: Request,
   ) {
-    return this.commandBus.execute(new GetAllPostsInBlogCommand(paganation, id, request))
+    return this.commandBus.execute(
+      new GetAllPostsInBlogCommand(paganation, id, request),
+    );
   }
 
   @UseGuards(BasicAuthGuard)

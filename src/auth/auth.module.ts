@@ -1,10 +1,8 @@
 import { Global, Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
 import { CrytoModule } from '../crypto/crypto.module';
 import { UsersModule } from '../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
-import { SessionService } from './sessions.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Session, sessionSchema } from '../entyties/session.schema';
 import { GetMyUsersDataUseCase } from './use-cases/get-my-users-data';
@@ -22,13 +20,25 @@ import { SendPassRecoveryCodeUseCase } from './use-cases/send-password-rec-code'
 import { RecoverPasswordUseCase } from './use-cases/recover-password';
 import { DeleteCurrenSessionUseCase } from './use-cases/session-use-cases/delete-current-session';
 
-const UseCases = [DeleteCurrenSessionUseCase, RecoverPasswordUseCase, SendPassRecoveryCodeUseCase, ResendEmailUseCase, ConfirmRegistartionUseCase, RegistrateUserUseCase, GetMyUsersDataUseCase, LoginUserUseCase, CreateSessionUseCase, RefreshCurrentSessionUseCase, ValidateSessionUseCase, GetNewTokenPairUseCase]
-
+const UseCases = [
+  DeleteCurrenSessionUseCase,
+  RecoverPasswordUseCase,
+  SendPassRecoveryCodeUseCase,
+  ResendEmailUseCase,
+  ConfirmRegistartionUseCase,
+  RegistrateUserUseCase,
+  GetMyUsersDataUseCase,
+  LoginUserUseCase,
+  CreateSessionUseCase,
+  RefreshCurrentSessionUseCase,
+  ValidateSessionUseCase,
+  GetNewTokenPairUseCase,
+];
 
 @Global()
 @Module({
   controllers: [AuthController],
-  providers: [AuthService, SessionService, ...UseCases, SessionRepository],
+  providers: [...UseCases, SessionRepository],
   imports: [
     CrytoModule,
     UsersModule,
@@ -37,8 +47,8 @@ const UseCases = [DeleteCurrenSessionUseCase, RecoverPasswordUseCase, SendPassRe
       global: true,
     }),
     MongooseModule.forFeature([{ name: Session.name, schema: sessionSchema }]),
-    CqrsModule
+    CqrsModule,
   ],
-  exports: [SessionRepository, SessionService],
+  exports: [SessionRepository],
 })
-export class AuthModule { }
+export class AuthModule {}

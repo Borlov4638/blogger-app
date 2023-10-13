@@ -11,15 +11,14 @@ interface IUpdateBlog {
 }
 
 export class UpdateBlogByIdCommand {
-  constructor(public blogId: string, public data: IUpdateBlog) { }
+  constructor(public blogId: string, public data: IUpdateBlog) {}
 }
 
 @CommandHandler(UpdateBlogByIdCommand)
-export class UpdateBlogByIdUseCase implements ICommandHandler<UpdateBlogByIdCommand> {
-  constructor(
-    @InjectModel(Blog.name) private blogModel: Model<Blog>,
-  ) { }
-
+export class UpdateBlogByIdUseCase
+  implements ICommandHandler<UpdateBlogByIdCommand>
+{
+  constructor(@InjectModel(Blog.name) private blogModel: Model<Blog>) {}
 
   async execute(command: UpdateBlogByIdCommand) {
     const blogToUpdate = await this.blogModel.findById(
@@ -34,6 +33,4 @@ export class UpdateBlogByIdUseCase implements ICommandHandler<UpdateBlogByIdComm
     await blogToUpdate.save();
     return;
   }
-
-
 }

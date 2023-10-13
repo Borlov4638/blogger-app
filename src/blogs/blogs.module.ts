@@ -22,17 +22,19 @@ const useCases = [
   UpdateBlogByIdUseCase,
   DeleteBlogByIdUseCase,
   GetAllPostsInBlogUseCase,
-  CreatePostUseCase
-]
-
+  CreatePostUseCase,
+];
 
 @Module({
   controllers: [BlogsController],
   imports: [
-    MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }, { name: Post.name, schema: postSchema }]),
+    MongooseModule.forFeature([
+      { name: Blog.name, schema: BlogSchema },
+      { name: Post.name, schema: postSchema },
+    ]),
     PostsModule,
-    CqrsModule
+    CqrsModule,
   ],
   providers: [BlogsService, BlogsRepository, ...useCases],
 })
-export class BlogsModule { }
+export class BlogsModule {}

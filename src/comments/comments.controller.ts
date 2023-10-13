@@ -13,18 +13,13 @@ import {
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { Request } from 'express';
-import { SessionService } from '../auth/sessions.service';
 import { BearerAccessAuthGuard } from '../auth/guards/auth.bearer.guard';
-import { LikeStatus } from '../enums/like-status.enum';
 import { PostCreateNewCommentDto } from '../posts/dto/post.dto';
 import { CommentChangeLikeStatusDto } from './dto/comments.dto';
 
 @Controller('comments')
 export class CommentsController {
-  constructor(
-    private readonly commentsService: CommentsService,
-    private sessionService: SessionService,
-  ) { }
+  constructor(private readonly commentsService: CommentsService) {}
 
   @Get(':id')
   async getCommentById(@Param('id') comId: string, @Req() request: Request) {
@@ -38,7 +33,6 @@ export class CommentsController {
     @Param('id') commentId: string,
     @Req() request: Request,
   ) {
-    // await this.sessionService.validateSession(request)
     return await this.commentsService.updateComment(
       data.content,
       commentId,
@@ -54,8 +48,6 @@ export class CommentsController {
     @Body() body: CommentChangeLikeStatusDto,
     @Req() request: Request,
   ) {
-    // await this.sessionService.validateSession(request)  @UseGuards(BearerAccessAuthGuard)
-
     return await this.commentsService.changeLikeStatus(
       request,
       id,
@@ -69,7 +61,6 @@ export class CommentsController {
     @Param('id') commentId: string,
     @Req() request: Request,
   ) {
-    // await this.sessionService.validateSession(request)
     await this.commentsService.deleteCommentById(commentId, request);
     return;
   }

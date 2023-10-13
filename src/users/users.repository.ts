@@ -1,8 +1,8 @@
-import { InjectModel } from "@nestjs/mongoose";
-import { Model, Types } from "mongoose";
-import { User, UserDocument } from "../entyties/users.chema";
-import { BadRequestException } from "@nestjs/common";
-import { CryptoService } from "src/crypto/crypto.service";
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, Types } from 'mongoose';
+import { User, UserDocument } from '../entyties/users.chema';
+import { BadRequestException } from '@nestjs/common';
+import { CryptoService } from 'src/crypto/crypto.service';
 
 interface IUsersPaganationQuery {
   sortBy: string;
@@ -13,12 +13,11 @@ interface IUsersPaganationQuery {
   searchEmailTerm: string;
 }
 
-
-
 export class UsersRepository {
-  constructor(@InjectModel(User.name) private userModel: Model<User>,
-    private cryptoService: CryptoService
-  ) { }
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    private cryptoService: CryptoService,
+  ) {}
 
   usersSortingQuery(sortBy: string, sortDirection: number): {} {
     switch (sortBy) {
@@ -48,10 +47,7 @@ export class UsersRepository {
 
     const sortDirection = paganation.sortDirection === 'asc' ? 1 : -1;
 
-    const sotringQuery = this.usersSortingQuery(
-      sortBy,
-      sortDirection,
-    );
+    const sotringQuery = this.usersSortingQuery(sortBy, sortDirection);
 
     const pageNumber = paganation.pageNumber ? +paganation.pageNumber : 1;
 
@@ -91,30 +87,32 @@ export class UsersRepository {
     };
 
     return mappedResponse;
-
   }
 
-  async createUser(login: string, email: string, password: string, isConfirmed: boolean) {
-    let newUser: UserDocument
-    let userToReturn
+  async createUser(
+    login: string,
+    email: string,
+    password: string,
+    isConfirmed: boolean,
+  ) {
+    let newUser: UserDocument;
+    let userToReturn;
 
     if (isConfirmed) {
       newUser = new this.userModel({ email, login, password });
       newUser.confirm();
-      return userToReturn = await newUser.save().then((newUser) => {
+      return (userToReturn = await newUser.save().then((newUser) => {
         const plainUser: UserDocument = newUser.toObject();
         delete plainUser._id;
         delete plainUser.__v;
         delete plainUser.password;
         delete plainUser.emailConfirmation;
         return plainUser;
-      });
-
+      }));
     } else {
       newUser = new this.userModel({ email, login, password });
-      return await newUser.save()
+      return await newUser.save();
     }
-
   }
 
   async deleteUserById(id: string) {
@@ -154,7 +152,4 @@ export class UsersRepository {
     user.save();
     return;
   }
-
-
-
 }

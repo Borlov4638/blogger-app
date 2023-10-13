@@ -7,6 +7,6 @@ import { AuthModule } from 'src/auth/auth.module';
 @Module({
   controllers: [SecDevController],
   providers: [SecDevService],
-  imports: [CqrsModule, AuthModule]
+  imports: [CqrsModule, AuthModule],
 })
-export class SecDevModule { }
+export class SecDevModule {}

@@ -9,8 +9,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { CreateUserUseCase } from './use-cases/create-user';
 import { DeleteUserByIdCommand } from './use-cases/delete-user-by-id';
 
-const useCases = [GetAllUsersUseCase, CreateUserUseCase, DeleteUserByIdCommand]
-
+const useCases = [GetAllUsersUseCase, CreateUserUseCase, DeleteUserByIdCommand];
 
 @Module({
   controllers: [UsersController],
@@ -22,4 +21,4 @@ const useCases = [GetAllUsersUseCase, CreateUserUseCase, DeleteUserByIdCommand]
   ],
   exports: [UsersRepository],
 })
-export class UsersModule { }
+export class UsersModule {}

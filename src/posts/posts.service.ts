@@ -47,7 +47,7 @@ export class PostsService {
     @InjectModel(Comment.name) private commentModel: Model<Comment>,
     private readonly postRepo: PostRepository,
     private readonly jwtService: JwtService,
-  ) { }
+  ) {}
 
   async getAllPosts(
     postPagonationQuery: IPostPaganationQuery,

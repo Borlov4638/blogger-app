@@ -21,31 +21,27 @@ export class HttpExceptionFilter implements ExceptionFilter {
       (exception.message === 'invalid code' ||
         exception.message === 'invalid email')
     ) {
-      response
-        .status(status)
-        .json({
-          errorsMessages: [
-            {
-              message: exception.message,
-              field: exception.message.split(' ')[1],
-            },
-          ],
-        });
+      response.status(status).json({
+        errorsMessages: [
+          {
+            message: exception.message,
+            field: exception.message.split(' ')[1],
+          },
+        ],
+      });
     } else if (
       status === 400 &&
       (exception.message === 'registration email' ||
         exception.message === 'registration login')
     ) {
-      response
-        .status(status)
-        .json({
-          errorsMessages: [
-            {
-              message: exception.message,
-              field: exception.message.split(' ')[1],
-            },
-          ],
-        });
+      response.status(status).json({
+        errorsMessages: [
+          {
+            message: exception.message,
+            field: exception.message.split(' ')[1],
+          },
+        ],
+      });
     } else if (status === 400) {
       response.status(status).json({ errorsMessages: errors });
     } else {

@@ -4,17 +4,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Blog } from '../../entyties/blogs.schema';
 
-
 export class GetBlogByIdCommand {
-  constructor(public blogId: string) { }
+  constructor(public blogId: string) {}
 }
 
 @CommandHandler(GetBlogByIdCommand)
 export class GetBlogByIdUseCase implements ICommandHandler<GetBlogByIdCommand> {
-  constructor(
-    @InjectModel(Blog.name) private blogModel: Model<Blog>,
-
-  ) { }
+  constructor(@InjectModel(Blog.name) private blogModel: Model<Blog>) {}
 
   async execute(command: GetBlogByIdCommand) {
     const findedBlog = await this.blogModel

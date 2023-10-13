@@ -19,9 +19,7 @@ import { DeleteUserByIdCommand } from './use-cases/delete-user-by-id';
 
 @Controller('users')
 export class UsersController {
-  constructor(
-    private commandBus: CommandBus
-  ) { }
+  constructor(private commandBus: CommandBus) {}
 
   @UseGuards(BasicAuthGuard)
   @Get()

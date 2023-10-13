@@ -32,8 +32,8 @@ import { GetPostByIdCommand } from './use-cases/get-post-by-id';
 export class PostController {
   constructor(
     private readonly postService: PostsService,
-    private commandBus: CommandBus
-  ) { }
+    private commandBus: CommandBus,
+  ) {}
 
   @Get()
   async getAllPosts(
@@ -45,7 +45,9 @@ export class PostController {
 
   @Get(':id')
   async getPostById(@Param('id') postId: string, @Req() request: Request) {
-    return await this.commandBus.execute(new GetPostByIdCommand(postId, request));
+    return await this.commandBus.execute(
+      new GetPostByIdCommand(postId, request),
+    );
   }
 
   @UseGuards(BasicAuthGuard)

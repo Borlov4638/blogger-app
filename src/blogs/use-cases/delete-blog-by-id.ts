@@ -5,15 +5,14 @@ import { Model, Types } from 'mongoose';
 import { Blog } from '../../entyties/blogs.schema';
 
 export class DeleteBlogByIdCommand {
-  constructor(public blogId: string) { }
+  constructor(public blogId: string) {}
 }
 
-
 @CommandHandler(DeleteBlogByIdCommand)
-export class DeleteBlogByIdUseCase implements ICommandHandler<DeleteBlogByIdCommand> {
-  constructor(
-    @InjectModel(Blog.name) private blogModel: Model<Blog>,
-  ) { }
+export class DeleteBlogByIdUseCase
+  implements ICommandHandler<DeleteBlogByIdCommand>
+{
+  constructor(@InjectModel(Blog.name) private blogModel: Model<Blog>) {}
 
   async execute(command: DeleteBlogByIdCommand) {
     const blogToDelete = await this.blogModel.findOneAndDelete({
@@ -24,5 +23,4 @@ export class DeleteBlogByIdUseCase implements ICommandHandler<DeleteBlogByIdComm
     }
     return;
   }
-
 }

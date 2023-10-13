@@ -41,7 +41,7 @@ export function isBlogIdValid(
 @ValidatorConstraint({ name: 'email', async: true })
 @Injectable()
 export class CustomBlogIdValidation implements ValidatorConstraintInterface {
-  constructor(@InjectModel(Blog.name) private blogModel: Model<Blog>) { }
+  constructor(@InjectModel(Blog.name) private blogModel: Model<Blog>) {}
 
   async validate(blogId: string): Promise<boolean> {
     const blog = await this.blogModel.findOne({

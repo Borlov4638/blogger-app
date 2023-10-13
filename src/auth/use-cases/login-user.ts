@@ -1,6 +1,4 @@
-import {
-  Injectable, UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { Request } from 'express';
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
@@ -25,9 +23,8 @@ interface IUsersAcessToken {
   login: string;
 }
 
-
 export class LoginUserCommand {
-  constructor(public credentials: ILoginUser, public request: Request) { }
+  constructor(public credentials: ILoginUser, public request: Request) {}
 }
 
 @CommandHandler(LoginUserCommand)
@@ -37,9 +34,7 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
     private jwtService: JwtService,
     private usersRepo: UsersRepository,
     private cryptoService: CryptoService,
-
-  ) { }
-
+  ) {}
 
   async execute(command: LoginUserCommand) {
     const user = await this.checkCredentials(command.credentials);
@@ -51,15 +46,17 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
       reftrsTokenExpDate,
       deviceId,
     );
-    const refreshHash = refreshToken.split('.')[2]
+    const refreshHash = refreshToken.split('.')[2];
 
-    await this.commandBus.execute(new CreateSessionCommand(
-      command.request,
-      user,
-      reftrsTokenExpDate,
-      deviceId,
-      refreshHash
-    ));
+    await this.commandBus.execute(
+      new CreateSessionCommand(
+        command.request,
+        user,
+        reftrsTokenExpDate,
+        deviceId,
+        refreshHash,
+      ),
+    );
     return { accessToken, refreshToken };
   }
   async checkCredentials(credentials: ILoginUser) {
@@ -80,10 +77,7 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
     }
     return user;
   }
-  async getUsersAccessToken(
-    user: IUsersAcessToken,
-    exp: number | string,
-  ) {
+  async getUsersAccessToken(user: IUsersAcessToken, exp: number | string) {
     return await this.jwtService.signAsync(
       { id: user.id, email: user.email, login: user.login },
       { expiresIn: exp },
@@ -99,5 +93,4 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
       { expiresIn: exp },
     );
   }
-
 }

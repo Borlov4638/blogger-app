@@ -13,7 +13,7 @@ interface IBlogPaganationQuery {
 }
 
 export class GetAllBlogsCommand {
-  constructor(public paganationQuery: IBlogPaganationQuery) { }
+  constructor(public paganationQuery: IBlogPaganationQuery) {}
 }
 
 @CommandHandler(GetAllBlogsCommand)
@@ -21,10 +21,10 @@ export class GetAllBlogsUseCase implements ICommandHandler<GetAllBlogsCommand> {
   constructor(
     @InjectModel(Blog.name) private blogModel: Model<Blog>,
     private readonly blogsRepo: BlogsRepository,
-  ) { }
+  ) {}
 
   async execute(command: GetAllBlogsCommand) {
-    const pagonation = this.getPagonation(command.paganationQuery)
+    const pagonation = this.getPagonation(command.paganationQuery);
 
     const findedBlogs = await this.blogModel
       .find(
@@ -76,8 +76,7 @@ export class GetAllBlogsUseCase implements ICommandHandler<GetAllBlogsCommand> {
       sotringQuery,
       pageNumber,
       pageSize,
-      itemsToSkip
-    }
+      itemsToSkip,
+    };
   }
-
 }

@@ -9,9 +9,8 @@ interface ICreateUser {
   password: string;
 }
 
-
 export class CreateUserCommand {
-  constructor(public data: ICreateUser, public isConfirmed: boolean) { }
+  constructor(public data: ICreateUser, public isConfirmed: boolean) {}
 }
 
 @CommandHandler(CreateUserCommand)
@@ -19,12 +18,20 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
   constructor(
     private readonly cryptoService: CryptoService,
     private usersRepository: UsersRepository,
-    private utilsService: UtilsService
-  ) { }
+    private utilsService: UtilsService,
+  ) {}
 
   async execute(command: CreateUserCommand) {
-    const hashedPassword = await this.cryptoService.getHash(command.data.password, 10);
-    const newUser = await this.usersRepository.createUser(command.data.login, command.data.email, hashedPassword, command.isConfirmed)
+    const hashedPassword = await this.cryptoService.getHash(
+      command.data.password,
+      10,
+    );
+    const newUser = await this.usersRepository.createUser(
+      command.data.login,
+      command.data.email,
+      hashedPassword,
+      command.isConfirmed,
+    );
     if (!command.isConfirmed) {
       await this.utilsService.sendConfirmationViaEmail(
         command.data.email,
@@ -33,5 +40,4 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
     }
     return newUser;
   }
-
 }

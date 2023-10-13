@@ -11,8 +11,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { CreatePostUseCase } from './use-cases/create-post';
 import { GetPostByIdUseCase } from './use-cases/get-post-by-id';
 
-const UseCases = [CreatePostUseCase, GetPostByIdUseCase]
-
+const UseCases = [CreatePostUseCase, GetPostByIdUseCase];
 
 @Module({
   imports: [
@@ -21,10 +20,15 @@ const UseCases = [CreatePostUseCase, GetPostByIdUseCase]
       { name: Blog.name, schema: BlogSchema },
       { name: Comment.name, schema: commentsSchema },
     ]),
-    CqrsModule
+    CqrsModule,
   ],
   controllers: [PostController],
-  providers: [PostsService, PostRepository, CustomBlogIdValidation, ...UseCases],
+  providers: [
+    PostsService,
+    PostRepository,
+    CustomBlogIdValidation,
+    ...UseCases,
+  ],
   exports: [PostsService, PostRepository],
 })
-export class PostsModule { }
+export class PostsModule {}
