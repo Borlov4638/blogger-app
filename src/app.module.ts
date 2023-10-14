@@ -18,6 +18,9 @@ import { Session, sessionSchema } from './entyties/session.schema';
 import { SecDevModule } from './security-devices/sec-dev.module';
 import { Comment, commentsSchema } from './entyties/comments.schema';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
+import { UserPg } from './entyties/postgres_entyties/users.model';
 
 let imports = []
 if (process.env.DATABASE === 'mongo') {
@@ -34,7 +37,16 @@ if (process.env.DATABASE === 'mongo') {
     ]),
   ]
 } else if (process.env.DATABASE === 'postgres') {
-
+  imports = [TypeOrmModule.forRoot({
+    type: 'postgres',
+    host: 'localhost',
+    port: 5432,
+    username: 'root',
+    password: '12345',
+    database: 'incubator',
+    entities: [],
+    synchronize: true
+  })]
 }
 
 
@@ -56,7 +68,13 @@ if (process.env.DATABASE === 'mongo') {
       },
     ]),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [
+    //  AppController
+  ],
+  providers: [
+    //  AppService
+  ],
 })
-export class AppModule { }
+export class AppModule {
+  constructor(private dataSource: DataSource) { }
+}

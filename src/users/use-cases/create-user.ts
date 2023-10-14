@@ -1,7 +1,7 @@
 import { UtilsService } from '../../utils/utils.service';
 import { CryptoService } from '../../crypto/crypto.service';
-import { UsersRepository } from '../users.repository';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { UsersRepository } from '../users.repository-pg';
 
 interface ICreateUser {
   email: string;
@@ -10,7 +10,7 @@ interface ICreateUser {
 }
 
 export class CreateUserCommand {
-  constructor(public data: ICreateUser, public isConfirmed: boolean) {}
+  constructor(public data: ICreateUser, public isConfirmed: boolean) { }
 }
 
 @CommandHandler(CreateUserCommand)
@@ -19,7 +19,7 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
     private readonly cryptoService: CryptoService,
     private usersRepository: UsersRepository,
     private utilsService: UtilsService,
-  ) {}
+  ) { }
 
   async execute(command: CreateUserCommand) {
     const hashedPassword = await this.cryptoService.getHash(
@@ -32,12 +32,12 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
       hashedPassword,
       command.isConfirmed,
     );
-    if (!command.isConfirmed) {
-      await this.utilsService.sendConfirmationViaEmail(
-        command.data.email,
-        newUser.emailConfirmation.confirmationCode,
-      );
-    }
+    // if (!command.isConfirmed) {
+    //   await this.utilsService.sendConfirmationViaEmail(
+    //     command.data.email,
+    //     newUser.emailConfirmation.confirmationCode,
+    //   );
+    // }
     return newUser;
   }
 }
