@@ -60,7 +60,7 @@ if (process.env.DATABASE === 'mongo') {
     // CommentsModule,
     UsersModule,
     UtilsModule,
-    // SecDevModule,
+    SecDevModule,
     ThrottlerModule.forRoot([
       {
         ttl: 10000,

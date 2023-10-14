@@ -95,7 +95,7 @@ export class SessionRepositoryPg {
   }
 
   async findSessionById(deviceId: string) {
-    return (await this.dataSource.query(`SELECT * FROM sessions WHERE "deviceId" = ${deviceId}`))[0]
+    return (await this.dataSource.query(`SELECT * FROM sessions WHERE "deviceId" = '${deviceId}'`))[0]
     // return await this.sessionModel.findOne({ deviceId });
   }
 }

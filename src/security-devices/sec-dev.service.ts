@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { SessionRepository } from 'src/auth/session.repository';
+import { SessionRepositoryPg } from 'src/auth/session.repository-pg';
 
 interface IUsersRefreshToken {
   id: string;
@@ -19,8 +19,8 @@ interface IUsersRefreshToken {
 export class SecDevService {
   constructor(
     private jwtService: JwtService,
-    private readonly sessionRepo: SessionRepository,
-  ) {}
+    private readonly sessionRepo: SessionRepositoryPg,
+  ) { }
 
   async getUserDevices(request: Request) {
     const tokenData: IUsersRefreshToken = await this.jwtService.verifyAsync(
