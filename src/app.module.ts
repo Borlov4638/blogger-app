@@ -39,11 +39,12 @@ if (process.env.DATABASE === 'mongo') {
 } else if (process.env.DATABASE === 'postgres') {
   imports = [TypeOrmModule.forRoot({
     type: 'postgres',
-    host: 'localhost',
+    host: 'ep-bold-wind-11658677.eu-central-1.aws.neon.tech',
     port: 5432,
-    username: 'root',
-    password: '12345',
-    database: 'incubator',
+    username: 'mrwiggle40000',
+    password: 'rpc7qBw1uAjQ',
+    database: 'neondb',
+    ssl: true,
     entities: [],
     synchronize: true
   })]

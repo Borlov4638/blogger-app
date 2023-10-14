@@ -12,14 +12,14 @@ import { Request } from 'express';
 import { BearerRefreshAuthGuard } from '../auth/guards/auth.bearer.guard';
 import { SecDevService } from './sec-dev.service';
 import { CommandBus } from '@nestjs/cqrs';
-import { ValidateSessionCommand } from 'src/auth/use-cases/session-use-cases/validate -session';
+import { ValidateSessionCommand } from '../auth/use-cases/session-use-cases/validate -session';
 
 @Controller('security')
 export class SecDevController {
   constructor(
     private commandBus: CommandBus,
     private readonly secDevService: SecDevService,
-  ) {}
+  ) { }
 
   @UseGuards(BearerRefreshAuthGuard)
   @Get('devices')

@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Session } from 'src/entyties/session.schema';
+import { Session } from '../entyties/session.schema';
 
 @Injectable()
 export class SessionRepository {
   constructor(
     @InjectModel(Session.name) private sessionModel: Model<Session>,
-  ) {}
+  ) { }
 
   async createSession(
     userId: string,

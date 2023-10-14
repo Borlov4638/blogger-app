@@ -1,7 +1,7 @@
 import { UnauthorizedException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Request } from 'express';
-import { SessionRepositoryPg } from 'src/auth/session.repository-pg';
+import { SessionRepositoryPg } from '../../../auth/session.repository-pg';
 
 export class ValidateSessionCommand {
   constructor(public request: Request) { }

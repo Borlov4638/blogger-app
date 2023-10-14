@@ -1,7 +1,7 @@
 import { UnauthorizedException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { JwtService } from '@nestjs/jwt';
-import { UsersRepository } from 'src/users/users.repository-pg';
+import { UsersRepository } from '../../users/users.repository-pg';
 
 interface IPasswordRecovery {
   newPassword: string;

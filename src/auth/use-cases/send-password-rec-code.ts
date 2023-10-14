@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { JwtService } from '@nestjs/jwt';
-import { UsersRepository } from 'src/users/users.repository-pg';
-import { UtilsService } from 'src/utils/utils.service';
+import { UsersRepository } from '../../users/users.repository-pg';
+import { UtilsService } from '../../utils/utils.service';
 
 interface IUsersAcessToken {
   id: string;

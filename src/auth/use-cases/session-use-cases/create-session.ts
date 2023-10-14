@@ -5,7 +5,7 @@ import { Model } from 'mongoose';
 import { Session } from '../../../entyties/session.schema';
 import { UserDocument } from '../../../entyties/users.chema';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { SessionRepositoryPg } from 'src/auth/session.repository-pg';
+import { SessionRepositoryPg } from '../../../auth/session.repository-pg';
 
 export class CreateSessionCommand {
   constructor(

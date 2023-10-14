@@ -2,7 +2,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { User, UserDocument } from '../entyties/users.chema';
 import { BadRequestException, HttpException, HttpStatus } from '@nestjs/common';
-import { CryptoService } from 'src/crypto/crypto.service';
+import { CryptoService } from '../crypto/crypto.service';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';

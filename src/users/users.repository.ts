@@ -2,7 +2,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { User, UserDocument } from '../entyties/users.chema';
 import { BadRequestException } from '@nestjs/common';
-import { CryptoService } from 'src/crypto/crypto.service';
+import { CryptoService } from '../crypto/crypto.service';
 
 interface IUsersPaganationQuery {
   sortBy: string;
@@ -17,7 +17,7 @@ export class UsersRepository {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     private cryptoService: CryptoService,
-  ) {}
+  ) { }
 
   usersSortingQuery(sortBy: string, sortDirection: number): {} {
     switch (sortBy) {
