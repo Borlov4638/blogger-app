@@ -32,12 +32,12 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
       hashedPassword,
       command.isConfirmed,
     );
-    // if (!command.isConfirmed) {
-    //   await this.utilsService.sendConfirmationViaEmail(
-    //     command.data.email,
-    //     newUser.emailConfirmation.confirmationCode,
-    //   );
-    // }
+    if (!command.isConfirmed) {
+      await this.utilsService.sendConfirmationViaEmail(
+        command.data.email,
+        newUser.emailConfirmation.confirmationCode,
+      );
+    }
     return newUser;
   }
 }

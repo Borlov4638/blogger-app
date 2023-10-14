@@ -3,9 +3,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { Request } from 'express';
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreateSessionCommand } from './session-use-cases/create-session';
-import { UsersRepository } from 'src/users/users.repository';
 import { CryptoService } from 'src/crypto/crypto.service';
 import { JwtService } from '@nestjs/jwt';
+import { UsersRepository } from 'src/users/users.repository-pg';
 
 interface ILoginUser {
   loginOrEmail: string;
@@ -24,7 +24,7 @@ interface IUsersAcessToken {
 }
 
 export class LoginUserCommand {
-  constructor(public credentials: ILoginUser, public request: Request) {}
+  constructor(public credentials: ILoginUser, public request: Request) { }
 }
 
 @CommandHandler(LoginUserCommand)
@@ -34,7 +34,7 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
     private jwtService: JwtService,
     private usersRepo: UsersRepository,
     private cryptoService: CryptoService,
-  ) {}
+  ) { }
 
   async execute(command: LoginUserCommand) {
     const user = await this.checkCredentials(command.credentials);
@@ -63,6 +63,7 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
     const user = await this.usersRepo.getUserByLoginOrEmail(
       credentials.loginOrEmail,
     );
+    console.log(user)
 
     if (!user) {
       throw new UnauthorizedException();

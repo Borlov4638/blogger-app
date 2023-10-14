@@ -1,6 +1,6 @@
-import { ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { JwtService } from '@nestjs/jwt';
-import { UsersRepository } from 'src/users/users.repository';
+import { UsersRepository } from 'src/users/users.repository-pg';
 import { UtilsService } from 'src/utils/utils.service';
 
 interface IUsersAcessToken {
@@ -10,9 +10,9 @@ interface IUsersAcessToken {
 }
 
 export class SendPassRecoveryCodeCommand {
-  constructor(public email: string) {}
+  constructor(public email: string) { }
 }
-
+@CommandHandler(SendPassRecoveryCodeCommand)
 export class SendPassRecoveryCodeUseCase
   implements ICommandHandler<SendPassRecoveryCodeCommand>
 {
@@ -20,7 +20,7 @@ export class SendPassRecoveryCodeUseCase
     private utilsService: UtilsService,
     private jwtService: JwtService,
     private usersRepo: UsersRepository,
-  ) {}
+  ) { }
 
   async execute(command: SendPassRecoveryCodeCommand) {
     const user = await this.usersRepo.getUserByLoginOrEmail(command.email);

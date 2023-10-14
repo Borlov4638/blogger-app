@@ -19,6 +19,7 @@ import { ResendEmailUseCase } from './use-cases/resend-confirmation-email';
 import { SendPassRecoveryCodeUseCase } from './use-cases/send-password-rec-code';
 import { RecoverPasswordUseCase } from './use-cases/recover-password';
 import { DeleteCurrenSessionUseCase } from './use-cases/session-use-cases/delete-current-session';
+import { SessionRepositoryPg } from './session.repository-pg';
 
 const UseCases = [
   DeleteCurrenSessionUseCase,
@@ -44,7 +45,8 @@ if (process.env.DATABASE === 'mongo') {
   exporters = [SessionRepository]
   imporst = [MongooseModule.forFeature([{ name: Session.name, schema: sessionSchema }])]
 } else if (process.env.DATABASE === 'postgres') {
-
+  providers = [SessionRepositoryPg]
+  exporters = [SessionRepositoryPg]
 }
 
 @Global()

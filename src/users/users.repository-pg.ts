@@ -5,6 +5,7 @@ import { BadRequestException, HttpException, HttpStatus } from '@nestjs/common';
 import { CryptoService } from 'src/crypto/crypto.service';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { v4 as uuidv4 } from 'uuid';
 
 interface IUsersPaganationQuery {
     sortBy: string;
@@ -88,12 +89,24 @@ export class UsersRepository {
         password: string,
         isConfirmed: boolean,
     ) {
-        try {
-            await this.dataSource.query(`INSERT INTO users ("login", "email", "password", "isConfirmed") VALUES ('${login}', '${email}', '${password}', '${isConfirmed}');`)
+        const date = +(new Date()) + 180000
+        let user
+        await this.dataSource.query(`INSERT INTO users ("login", "email", "password", "isConfirmed", "expirationDate") VALUES ('${login}', '${email}', '${password}', '${isConfirmed}', '${date}');`)
+        if (isConfirmed) {
             return (await this.dataSource.query(`SELECT "login", "email", "password" From users where "login" = '${login}' and "email" = '${email}'`))[0]
-            //TODO разобраться с массивом
-        } catch {
-            throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            user = (await this.dataSource.query(`SELECT * From users where "login" = '${login}' and "email" = '${email}'`))[0]
+            const userToReturn = {
+                login: user.login,
+                email: user.email,
+                password: user.password,
+                emailConfirmation: {
+                    isConfirmed: false,
+                    expirationDate: user.expirationDate,
+                    confirmationCode: user.confirmationCode
+                }
+            }
+            return userToReturn
         }
     }
 
@@ -103,36 +116,58 @@ export class UsersRepository {
     }
 
     async getUserByLoginOrEmail(loginOrEmail: string): Promise<UserDocument> {
-        return await this.dataSource.query(`SELECT * FROM users WHERE "login" = '${loginOrEmail}' or "email" = '${loginOrEmail}'`)
+        const user = (await this.dataSource.query(`SELECT * FROM users WHERE "login" = '${loginOrEmail}' or "email" = '${loginOrEmail}'`))[0]
+        const userToReturn = {
+            id: user.id,
+            login: user.login,
+            email: user.email,
+            password: user.password,
+            emailConfirmation: {
+                isConfirmed: user.isConfirmed,
+                expirationDate: user.expirationDate,
+                confirmationCode: user.confirmationCode
+            }
+        }
+
+
         // return await this.userModel.findOne({
         //     $or: [{ login: loginOrEmail }, { email: loginOrEmail }],
         // });
-        return
+        return userToReturn as UserDocument
     }
 
     async confirmUserByCode(code: string) {
+        const user = (await this.dataSource.query(`SELECT * from users WHERE "confirmationCode" = '${code}'`))[0]
         // const user = await this.userModel.findOne({
         //     'emailConfirmation.confirmationCode': code,
         // });
-        // if (!user) {
-        //     throw new BadRequestException('invalid code');
-        // }
-        // if (user.emailConfirmation.expirationDate < +new Date()) {
-        //     throw new BadRequestException('invalid code');
-        // }
-        // if (user.emailConfirmation.isConfirmed === true) {
-        //     throw new BadRequestException('invalid code');
-        // }
+        if (!user) {
+            throw new BadRequestException('invalid code');
+        }
+
+        if (user.expirationDate < +new Date()) {
+            throw new BadRequestException('invalid code');
+        }
+        if (user.isConfirmed === true) {
+            throw new BadRequestException('invalid code');
+        }
+        await this.dataSource.query(`UPDATE users SET "isConfirmed" = true WHERE "confirmationCode" = '${code}'`)
         // await user.confirm();
         // await user.save();
         // console.log(user);
         // return;
-        return 1
+        return
     }
 
     async changePassword(newPassword: string, user: UserDocument) {
-        // user.password = await this.cryptoService.getHash(newPassword, 10);
-        // user.save();
+        const password = await this.cryptoService.getHash(newPassword, 10);
+        this.dataSource.query(`UPDATE users SET "password" = '${password}' WHERE "id" = '${user.id}'`)
         return;
+    }
+
+    async newConfirmationCode(id: string) {
+        const newCode = uuidv4()
+        await this.dataSource.query(`UPDATE users SET "confirmationCode" = '${newCode}', "expirationDate" = '${+(new Date()) + 180000}' WHERE "id" = '${parseInt(id)}'`)
+        return newCode
     }
 }

@@ -1,7 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreateUserCommand } from 'src/users/use-cases/create-user';
-import { UsersRepository } from 'src/users/users.repository';
+import { UsersRepository } from 'src/users/users.repository-pg';
 
 interface INewUsersData {
   email: string;
@@ -10,7 +10,7 @@ interface INewUsersData {
 }
 
 export class RegistrateUserCommand {
-  constructor(public data: INewUsersData) {}
+  constructor(public data: INewUsersData) { }
 }
 
 @CommandHandler(RegistrateUserCommand)
@@ -20,7 +20,7 @@ export class RegistrateUserUseCase
   constructor(
     private commandBus: CommandBus,
     private usersRepo: UsersRepository,
-  ) {}
+  ) { }
 
   async execute(command: RegistrateUserCommand) {
     const isUserExistsbyEmail = await this.usersRepo.getUserByLoginOrEmail(

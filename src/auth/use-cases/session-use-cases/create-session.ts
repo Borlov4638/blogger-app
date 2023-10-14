@@ -5,7 +5,7 @@ import { Model } from 'mongoose';
 import { Session } from '../../../entyties/session.schema';
 import { UserDocument } from '../../../entyties/users.chema';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { SessionRepository } from 'src/auth/session.repository';
+import { SessionRepositoryPg } from 'src/auth/session.repository-pg';
 
 export class CreateSessionCommand {
   constructor(
@@ -14,14 +14,14 @@ export class CreateSessionCommand {
     public expDate: number,
     public deviceId: string,
     public refreshHash: string,
-  ) {}
+  ) { }
 }
 
 @CommandHandler(CreateSessionCommand)
 export class CreateSessionUseCase
   implements ICommandHandler<CreateSessionCommand>
 {
-  constructor(private sessionRepo: SessionRepository) {}
+  constructor(private sessionRepo: SessionRepositoryPg) { }
 
   async execute(command: CreateSessionCommand) {
     const requestIp =

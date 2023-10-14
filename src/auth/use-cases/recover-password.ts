@@ -1,7 +1,7 @@
 import { UnauthorizedException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { JwtService } from '@nestjs/jwt';
-import { UsersRepository } from 'src/users/users.repository';
+import { UsersRepository } from 'src/users/users.repository-pg';
 
 interface IPasswordRecovery {
   newPassword: string;
@@ -15,7 +15,7 @@ interface IUsersAcessToken {
 }
 
 export class RecoverPasswordCommand {
-  constructor(public data: IPasswordRecovery) {}
+  constructor(public data: IPasswordRecovery) { }
 }
 
 @CommandHandler(RecoverPasswordCommand)
@@ -25,7 +25,7 @@ export class RecoverPasswordUseCase
   constructor(
     private jwtService: JwtService,
     private usersRepo: UsersRepository,
-  ) {}
+  ) { }
 
   async execute(command: RecoverPasswordCommand) {
     const userData: IUsersAcessToken = await this._getTokenDataAndVerify(

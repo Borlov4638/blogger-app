@@ -18,6 +18,8 @@ if (process.env.DATABASE === 'mongo') {
   exporst = [UsersRepository]
   providers = [UsersRepository]
 } else if (process.env.DATABASE === 'postgres') {
+  exporst = [UsersRepository]
+  providers = [UsersRepository]
 
 }
 

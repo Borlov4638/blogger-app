@@ -54,7 +54,7 @@ if (process.env.DATABASE === 'mongo') {
   imports: [
     ...imports,
     configModule,
-    // AuthModule,
+    AuthModule,
     // BlogsModule,
     // PostsModule,
     // CommentsModule,

@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import { add } from 'date-fns';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { SessionRepository } from 'src/auth/session.repository';
+import { SessionRepositoryPg } from 'src/auth/session.repository-pg';
 
 export class RefreshCurrentSessionCommand {
   constructor(
@@ -9,14 +9,14 @@ export class RefreshCurrentSessionCommand {
     public expDate: number,
     public deviceId: string,
     public refreshHash: string,
-  ) {}
+  ) { }
 }
 
 @CommandHandler(RefreshCurrentSessionCommand)
 export class RefreshCurrentSessionUseCase
   implements ICommandHandler<RefreshCurrentSessionCommand>
 {
-  constructor(private sessionRepo: SessionRepository) {}
+  constructor(private sessionRepo: SessionRepositoryPg) { }
 
   async execute(command: RefreshCurrentSessionCommand) {
     const requestIp =

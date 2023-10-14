@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { SessionRepository } from 'src/auth/session.repository';
+import { SessionRepositoryPg } from 'src/auth/session.repository-pg';
 
 interface IUsersRefreshToken {
   id: string;
@@ -11,7 +11,7 @@ interface IUsersRefreshToken {
 }
 
 export class DeleteCurrenSessionCommand {
-  constructor(public request: Request) {}
+  constructor(public request: Request) { }
 }
 
 @CommandHandler(DeleteCurrenSessionCommand)
@@ -20,8 +20,8 @@ export class DeleteCurrenSessionUseCase
 {
   constructor(
     private jwtService: JwtService,
-    private sessionRepo: SessionRepository,
-  ) {}
+    private sessionRepo: SessionRepositoryPg,
+  ) { }
 
   async execute(command: DeleteCurrenSessionCommand) {
     const tokenData: IUsersRefreshToken = await this.jwtService.verifyAsync(
