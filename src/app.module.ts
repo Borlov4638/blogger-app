@@ -65,7 +65,7 @@ if (process.env.DATABASE === 'mongo') {
     ThrottlerModule.forRoot([
       {
         ttl: 10000,
-        limit: 5,
+        limit: 5000,
       },
     ]),
   ],

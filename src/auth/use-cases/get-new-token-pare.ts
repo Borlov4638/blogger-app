@@ -17,21 +17,21 @@ interface IUsersRefreshToken {
 }
 
 export class GetNewTokenPairCommand {
-  constructor(public request: Request) {}
+  constructor(public request: Request) { }
 }
 
 @CommandHandler(GetNewTokenPairCommand)
 export class GetNewTokenPairUseCase
   implements ICommandHandler<GetNewTokenPairCommand>
 {
-  constructor(private jwtService: JwtService, private commandBus: CommandBus) {}
+  constructor(private jwtService: JwtService, private commandBus: CommandBus) { }
 
   async execute(command: GetNewTokenPairCommand) {
     const data: IUsersRefreshToken = await this.getTokenDataAndVerify(
       command.request.cookies.refreshToken,
     );
-    const reftrsTokenExpDate = 20;
-    const accessToken = await this.getUsersAccessToken(data, 10);
+    const reftrsTokenExpDate = 2000;
+    const accessToken = await this.getUsersAccessToken(data, 400);
     const refreshToken = await this.getUsersRefreshToken(
       data,
       reftrsTokenExpDate,
