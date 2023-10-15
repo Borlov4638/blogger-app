@@ -119,15 +119,18 @@ export class UsersRepository {
 
     async getUserByLoginOrEmail(loginOrEmail: string): Promise<UserDocument> {
         const user = (await this.dataSource.query(`SELECT * FROM users WHERE "login" = '${loginOrEmail}' or "email" = '${loginOrEmail}'`))[0]
-        const userToReturn = {
-            id: user.id,
-            login: user.login,
-            email: user.email,
-            password: user.password,
-            emailConfirmation: {
-                isConfirmed: user.isConfirmed,
-                expirationDate: user.expirationDate,
-                confirmationCode: user.confirmationCode
+        let userToReturn = user
+        if (user) {
+            userToReturn = {
+                id: user.id,
+                login: user.login,
+                email: user.email,
+                password: user.password,
+                emailConfirmation: {
+                    isConfirmed: user.isConfirmed,
+                    expirationDate: user.expirationDate,
+                    confirmationCode: user.confirmationCode
+                }
             }
         }
 
