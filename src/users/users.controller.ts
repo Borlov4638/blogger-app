@@ -32,6 +32,7 @@ export class UsersController {
   @Post()
   async createUser(@Body() data: CreateUserDto) {
     return await this.commandBus.execute(new CreateUserCommand(data, true));
+
   }
 
   @UseGuards(BasicAuthGuard)
