@@ -66,6 +66,11 @@ export class UsersRepository {
             limit ${pageSize}
             offset ${itemsToSkip}
         `)
+        usersToSend.map(u => {
+            u.id = u.id.toString()
+            return u
+
+        })
 
         const totalCountOfItems = (await this.dataSource.query(`
             SELECT * FROM users
@@ -122,7 +127,7 @@ export class UsersRepository {
         let userToReturn = user
         if (user) {
             userToReturn = {
-                id: user.id,
+                id: user.id.toString(),
                 login: user.login,
                 email: user.email,
                 password: user.password,
