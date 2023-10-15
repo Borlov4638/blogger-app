@@ -48,11 +48,12 @@ export class SessionRepositoryPg {
     refreshHash: string,
     lastActiveDate: number,
   ) {
-    return (await this.dataSource.query(`
+    await this.dataSource.query(`
     update sessions set
     "ip" = '${ip}', "title" = '${title}', "expiration" = '${expiration}', "refreshHash" = '${refreshHash}', "lastActiveDate" = '${lastActiveDate}' where "deviceId" = '${deviceId}';
-    select * from sessions where "deviceId" = '${deviceId}'
-    `))[0]
+    `)
+    return (await this.dataSource.query(`select * from sessions where "deviceId" = '${deviceId}'`))[0]
+
     // const updatedSession = await this.sessionModel.findOneAndUpdate(
     //   { deviceId },
     //   {
