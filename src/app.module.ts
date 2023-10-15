@@ -70,10 +70,10 @@ if (process.env.DATABASE === 'mongo') {
     ]),
   ],
   controllers: [
-    //  AppController
+    AppController
   ],
   providers: [
-    //  AppService
+    AppService
   ],
 })
 export class AppModule {
