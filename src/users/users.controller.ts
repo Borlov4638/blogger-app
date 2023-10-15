@@ -17,9 +17,9 @@ import { GetAllUsersCommand } from './use-cases/get-all-users';
 import { CreateUserCommand } from './use-cases/create-user';
 import { DeleteUserByIdCommand } from './use-cases/delete-user-by-id';
 
-@Controller('users')
+@Controller('sa/users')
 export class UsersController {
-  constructor(private commandBus: CommandBus) {}
+  constructor(private commandBus: CommandBus) { }
 
   @UseGuards(BasicAuthGuard)
   @Get()
