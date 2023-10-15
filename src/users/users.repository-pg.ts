@@ -61,7 +61,7 @@ export class UsersRepository {
 
         const usersToSend = await this.dataSource.query(`
             SELECT "login", "email", "createdAt", "id" FROM users
-            where "login" LIKE '%${searchLoginTerm}%' and "email" LIKE '%${searchEmailTerm}%'
+            where lower ("login") LIKE lower ('%${searchLoginTerm}%') and lower ("email") LIKE lower ('%${searchEmailTerm}%')
             order by "${sotringQuery}" ${sortDirection}
             limit ${pageSize}
             offset ${itemsToSkip}
@@ -74,7 +74,7 @@ export class UsersRepository {
 
         const totalCountOfItems = (await this.dataSource.query(`
             SELECT * FROM users
-            where "login" LIKE '%${searchLoginTerm}%' and "email" LIKE '%${searchEmailTerm}%'
+            where lower ("login") LIKE lower ('%${searchLoginTerm}%') and lower ("email") LIKE lower ('%${searchEmailTerm}%')
         `)).length
 
         const mappedResponse = {
