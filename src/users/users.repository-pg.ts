@@ -93,7 +93,9 @@ export class UsersRepository {
         let user
         await this.dataSource.query(`INSERT INTO users ("login", "email", "password", "isConfirmed", "expirationDate") VALUES ('${login}', '${email}', '${password}', '${isConfirmed}', '${date}');`)
         if (isConfirmed) {
-            return (await this.dataSource.query(`SELECT "login", "email", "id", "createdAt" From users where "login" = '${login}' and "email" = '${email}'`))[0]
+            const user = (await this.dataSource.query(`SELECT "login", "email", "id", "createdAt" From users where "login" = '${login}' and "email" = '${email}'`))[0]
+            user.id = user.id.toString()
+            return user
         } else {
             user = (await this.dataSource.query(`SELECT * From users where "login" = '${login}' and "email" = '${email}'`))[0]
             const userToReturn = {
