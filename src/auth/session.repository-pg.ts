@@ -71,7 +71,11 @@ export class SessionRepositoryPg {
     // return await this.sessionModel.findOneAndDelete({ deviceId });
   }
   async getUserSessions(userId: string) {
-    return await this.dataSource.query(`SELECT "ip", "title", "lastActiveDate", "deviceId" FROM sessions WHERE "userId" = '${userId}'`)
+    const sessions = await this.dataSource.query(`SELECT "ip", "title", "lastActiveDate", "deviceId" FROM sessions WHERE "userId" = '${userId}'`)
+    sessions.map(s => {
+      s.lastActiveDate = new Date(s.lastActiveDate / 1000 * 1000).toISOString()
+    })
+    return sessions
     // return await this.sessionModel.find(
     //   {
     //     userId: new Types.ObjectId(userId),
