@@ -13,6 +13,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { GetAllPostsInBlogUseCase } from '../posts/use-cases/get-posts-by-blog-id';
 import { Post, postSchema } from '../entyties/posts.schema';
 import { CreatePostUseCase } from '../posts/use-cases/create-post';
+import { BlogsRepositoryPg } from './blogs.repository-pg';
 
 const useCases = [
   GetAllBlogsUseCase,
@@ -20,11 +21,11 @@ const useCases = [
   GetBlogByIdUseCase,
   UpdateBlogByIdUseCase,
   DeleteBlogByIdUseCase,
-  GetAllPostsInBlogUseCase,
-  CreatePostUseCase,
+  // GetAllPostsInBlogUseCase,
+  // CreatePostUseCase,
 ];
 let imports = []
-let exporters = []
+let providers = []
 if (process.env.DATABASE === 'mongo') {
   imports = [
     MongooseModule.forFeature([
@@ -32,20 +33,19 @@ if (process.env.DATABASE === 'mongo') {
       { name: Post.name, schema: postSchema },
     ]),
   ]
-  exporters = []
+  providers = [BlogsRepository]
 } else if (process.env.DATABASE === 'postgres') {
   imports = [];
-  exporters = []
+  providers = [BlogsRepositoryPg]
 }
 
 @Module({
   controllers: [BlogsController],
   imports: [
     ...imports,
-    PostsModule,
+    //PostsModule,
     CqrsModule,
   ],
-  providers: [BlogsRepository, ...useCases],
-  exports: [...exporters]
+  providers: [...providers, ...useCases],
 })
 export class BlogsModule { }

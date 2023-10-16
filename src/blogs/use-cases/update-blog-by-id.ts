@@ -1,6 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BlogsRepository } from '../blogs.repository';
+import { BlogsRepositoryPg } from '../blogs.repository-pg';
 
 interface IUpdateBlog {
   name: string;
@@ -17,11 +17,11 @@ export class UpdateBlogByIdUseCase
   implements ICommandHandler<UpdateBlogByIdCommand>
 {
   constructor(
-    private blogRepo: BlogsRepository
+    private blogRepo: BlogsRepositoryPg
   ) { }
 
   async execute(command: UpdateBlogByIdCommand) {
-    const isBlogUpdated = this.blogRepo.updateBlogById(command.blogId, command.data)
+    const isBlogUpdated = await this.blogRepo.updateBlogById(command.blogId, command.data)
     if (!isBlogUpdated) {
       throw new NotFoundException();
     }

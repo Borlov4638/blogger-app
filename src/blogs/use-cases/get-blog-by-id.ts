@@ -1,6 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BlogsRepository } from '../blogs.repository';
+import { BlogsRepositoryPg } from '../blogs.repository-pg';
 
 export class GetBlogByIdCommand {
   constructor(public blogId: string) { }
@@ -9,11 +9,11 @@ export class GetBlogByIdCommand {
 @CommandHandler(GetBlogByIdCommand)
 export class GetBlogByIdUseCase implements ICommandHandler<GetBlogByIdCommand> {
   constructor(
-    private blogRepo: BlogsRepository
+    private blogRepo: BlogsRepositoryPg
   ) { }
 
   async execute(command: GetBlogByIdCommand) {
-    const findedBlog = this.blogRepo.getBlogById(command.blogId)
+    const findedBlog = await this.blogRepo.getBlogById(command.blogId)
     if (!findedBlog) {
       throw new NotFoundException();
     }

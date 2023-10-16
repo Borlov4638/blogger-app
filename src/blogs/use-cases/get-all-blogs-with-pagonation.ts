@@ -1,5 +1,5 @@
-import { BlogsRepository } from '../blogs.repository';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { BlogsRepositoryPg } from '../blogs.repository-pg';
 
 interface IBlogPaganationQuery {
   searchNameTerm: string;
@@ -16,7 +16,7 @@ export class GetAllBlogsCommand {
 @CommandHandler(GetAllBlogsCommand)
 export class GetAllBlogsUseCase implements ICommandHandler<GetAllBlogsCommand> {
   constructor(
-    private readonly blogsRepo: BlogsRepository,
+    private readonly blogsRepo: BlogsRepositoryPg,
   ) { }
 
   async execute(command: GetAllBlogsCommand) {

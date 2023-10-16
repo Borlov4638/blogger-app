@@ -1,6 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BlogsRepository } from '../blogs.repository';
+import { BlogsRepositoryPg } from '../blogs.repository-pg';
 
 export class DeleteBlogByIdCommand {
   constructor(public blogId: string) { }
@@ -10,10 +10,11 @@ export class DeleteBlogByIdCommand {
 export class DeleteBlogByIdUseCase
   implements ICommandHandler<DeleteBlogByIdCommand>
 {
-  constructor(private blogRepo: BlogsRepository) { }
+  constructor(private blogRepo: BlogsRepositoryPg) { }
 
   async execute(command: DeleteBlogByIdCommand) {
-    const blogToDelete = this.blogRepo.deleteBlogById(command.blogId)
+    const blogToDelete = await this.blogRepo.deleteBlogById(command.blogId)
+
     if (!blogToDelete) {
       throw new NotFoundException('Could not find the Blog to Delete');
     }

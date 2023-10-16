@@ -1,6 +1,6 @@
 import { CreateBlogDto } from '../dto/blogs.dto';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BlogsRepository } from '../blogs.repository';
+import { BlogsRepositoryPg } from '../blogs.repository-pg';
 
 export class CreateBlogCommand {
   constructor(public data: CreateBlogDto) { }
@@ -9,7 +9,7 @@ export class CreateBlogCommand {
 @CommandHandler(CreateBlogCommand)
 export class CreateBlogUseCase implements ICommandHandler<CreateBlogCommand> {
   constructor(
-    private blogRepo: BlogsRepository
+    private blogRepo: BlogsRepositoryPg
   ) { }
 
   async execute(command: CreateBlogCommand) {

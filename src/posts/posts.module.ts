@@ -16,6 +16,8 @@ import { DeletePostByIdUseCase } from './use-cases/delete-post-by-id';
 
 const UseCases = [CreatePostUseCase, GetPostByIdUseCase, GetAllPostsInBlogCommand, GetAllPostsUseCase, UpdatePostUseCase, DeletePostByIdUseCase];
 let imports = []
+let providers = []
+let exporters = []
 if (process.env.DATABASE === 'mongo') {
   imports = [
     MongooseModule.forFeature([
@@ -24,8 +26,14 @@ if (process.env.DATABASE === 'mongo') {
       { name: Comment.name, schema: commentsSchema },
     ]),
   ]
+  providers = [PostRepository]
+  exporters = [PostRepository]
+
 } else if (process.env.DATABASE === 'postgres') {
   imports = []
+  providers = []
+  exporters = []
+
 }
 
 @Module({
@@ -35,10 +43,10 @@ if (process.env.DATABASE === 'mongo') {
   ],
   controllers: [PostController],
   providers: [
-    PostRepository,
+    ...providers,
     CustomBlogIdValidation,
     ...UseCases,
   ],
-  exports: [PostRepository, ...UseCases],
+  exports: [...exporters, ...UseCases],
 })
 export class PostsModule { }
