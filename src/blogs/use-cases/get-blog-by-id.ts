@@ -1,25 +1,19 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
-import { Blog } from '../../entyties/blogs.schema';
+import { BlogsRepository } from '../blogs.repository';
 
 export class GetBlogByIdCommand {
-  constructor(public blogId: string) {}
+  constructor(public blogId: string) { }
 }
 
 @CommandHandler(GetBlogByIdCommand)
 export class GetBlogByIdUseCase implements ICommandHandler<GetBlogByIdCommand> {
-  constructor(@InjectModel(Blog.name) private blogModel: Model<Blog>) {}
+  constructor(
+    private blogRepo: BlogsRepository
+  ) { }
 
   async execute(command: GetBlogByIdCommand) {
-    const findedBlog = await this.blogModel
-      .findById(
-        new Types.ObjectId(command.blogId),
-        { _id: false, __v: false },
-        { lean: true },
-      )
-      .exec();
+    const findedBlog = this.blogRepo.getBlogById(command.blogId)
     if (!findedBlog) {
       throw new NotFoundException();
     }

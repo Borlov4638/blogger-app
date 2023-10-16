@@ -1,26 +1,23 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
-import { Blog } from '../../entyties/blogs.schema';
+import { BlogsRepository } from '../blogs.repository';
 
 export class DeleteBlogByIdCommand {
-  constructor(public blogId: string) {}
+  constructor(public blogId: string) { }
 }
 
 @CommandHandler(DeleteBlogByIdCommand)
 export class DeleteBlogByIdUseCase
   implements ICommandHandler<DeleteBlogByIdCommand>
 {
-  constructor(@InjectModel(Blog.name) private blogModel: Model<Blog>) {}
+  constructor(private blogRepo: BlogsRepository) { }
 
   async execute(command: DeleteBlogByIdCommand) {
-    const blogToDelete = await this.blogModel.findOneAndDelete({
-      _id: new Types.ObjectId(command.blogId),
-    });
+    const blogToDelete = this.blogRepo.deleteBlogById(command.blogId)
     if (!blogToDelete) {
       throw new NotFoundException('Could not find the Blog to Delete');
     }
     return;
   }
+
 }

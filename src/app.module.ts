@@ -55,13 +55,13 @@ if (process.env.DATABASE === 'mongo') {
   imports: [
     ...imports,
     configModule,
-    AuthModule,
-    // BlogsModule,
+    // AuthModule,
+    BlogsModule,
     // PostsModule,
     // CommentsModule,
-    UsersModule,
+    // UsersModule,
     UtilsModule,
-    SecDevModule,
+    // SecDevModule,
     ThrottlerModule.forRoot([
       {
         ttl: 10000,
@@ -70,12 +70,12 @@ if (process.env.DATABASE === 'mongo') {
     ]),
   ],
   controllers: [
-    AppController
+    // AppController
   ],
   providers: [
-    AppService
+    // AppService
   ],
 })
 export class AppModule {
-  constructor(private dataSource: DataSource) { }
+  // constructor(private dataSource: DataSource) { }
 }

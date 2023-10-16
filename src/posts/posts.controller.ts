@@ -12,7 +12,6 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { PostsService } from './posts.service';
 import {
   CreatePostDto,
   PostCreateNewCommentDto,
@@ -27,20 +26,22 @@ import { BearerAccessAuthGuard } from '../auth/guards/auth.bearer.guard';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreatePostCommand } from './use-cases/create-post';
 import { GetPostByIdCommand } from './use-cases/get-post-by-id';
+import { GetAllPostsCommand } from './use-cases/get-all-posts';
+import { UpdatePostCommand } from './use-cases/update-post';
+import { DeletePostByIdCommand } from './use-cases/delete-post-by-id';
 
 @Controller('posts')
 export class PostController {
   constructor(
-    private readonly postService: PostsService,
     private commandBus: CommandBus,
-  ) {}
+  ) { }
 
   @Get()
   async getAllPosts(
     @Query() postPagonationQuery: PostPaganationQuery,
     @Req() request: Request,
   ) {
-    return await this.postService.getAllPosts(postPagonationQuery, request);
+    return await this.commandBus.execute(new GetAllPostsCommand(postPagonationQuery, request));
   }
 
   @Get(':id')
@@ -64,13 +65,14 @@ export class PostController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Put(':id')
   async updatePost(@Param('id') postId: string, @Body() data: PostUpdateDto) {
-    return await this.postService.updatePost(postId, data);
+    return await this.commandBus.execute(new UpdatePostCommand(postId, data));
   }
+
   @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   async deletePostById(@Param('id') postId: string) {
-    return await this.postService.deletePostById(postId);
+    return await this.commandBus.execute(new DeletePostByIdCommand(postId));
   }
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(BearerAccessAuthGuard)
@@ -80,12 +82,12 @@ export class PostController {
     @Req() request: Request,
     @Body() data: PostCreateNewCommentDto,
   ) {
-    // await this.sessionService.validateSession(request)
-    return await this.postService.commentPostById(
-      postId,
-      request,
-      data.content,
-    );
+    // return await this.postService.commentPostById(
+    //   postId,
+    //   request,
+    //   data.content,
+    // );
+    return
   }
   @Get(':id/comments')
   async getAllPostsComments(
@@ -93,11 +95,12 @@ export class PostController {
     @Query() postsCommentsPaganation: PostsCommentsPaganation,
     @Req() request: Request,
   ) {
-    return await this.postService.getAllPostsComments(
-      postId,
-      postsCommentsPaganation,
-      request,
-    );
+    // return await this.postService.getAllPostsComments(
+    //   postId,
+    //   postsCommentsPaganation,
+    //   request,
+    // );
+    return
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -108,11 +111,11 @@ export class PostController {
     @Body() data: PostLikeStatusDto,
     @Req() request: Request,
   ) {
-    // await this.sessionService.validateSession(request)
-    return await this.postService.changeLikeStatus(
-      postId,
-      data.likeStatus,
-      request,
-    );
+    // return await this.postService.changeLikeStatus(
+    //   postId,
+    //   data.likeStatus,
+    //   request,
+    // );
+    return
   }
 }

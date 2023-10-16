@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { BlogsController } from './blogs.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Blog, BlogSchema } from '../entyties/blogs.schema';
-import { BlogsService } from './blogs.service';
 import { BlogsRepository } from './blogs.repository';
 import { PostsModule } from '../posts/posts.module';
 import { GetAllBlogsUseCase } from './use-cases/get-all-blogs-with-pagonation';
@@ -35,6 +34,6 @@ const useCases = [
     PostsModule,
     CqrsModule,
   ],
-  providers: [BlogsService, BlogsRepository, ...useCases],
+  providers: [BlogsRepository, ...useCases],
 })
-export class BlogsModule {}
+export class BlogsModule { }
