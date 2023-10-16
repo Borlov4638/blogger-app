@@ -2,7 +2,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { PostRepository } from '../posts.repository';
+import { PostRepositoryPg } from '../posts.repository-pg';
 
 export class DeletePostByIdCommand {
   constructor(public readonly id: string) { }
@@ -11,7 +11,7 @@ export class DeletePostByIdCommand {
 @CommandHandler(DeletePostByIdCommand)
 export class DeletePostByIdUseCase implements ICommandHandler<DeletePostByIdCommand> {
   constructor(
-    private postRepo: PostRepository
+    private postRepo: PostRepositoryPg
   ) { }
 
   async execute(command: DeletePostByIdCommand) {

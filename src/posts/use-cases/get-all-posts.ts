@@ -1,6 +1,6 @@
 import { Request } from 'express';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { PostRepository } from '../posts.repository';
+import { PostRepositoryPg } from '../posts.repository-pg';
 
 
 interface IPostPaganationQuery {
@@ -18,7 +18,7 @@ export class GetAllPostsCommand {
 @CommandHandler(GetAllPostsCommand)
 export class GetAllPostsUseCase implements ICommandHandler<GetAllPostsCommand> {
   constructor(
-    private readonly postRepo: PostRepository,
+    private readonly postRepo: PostRepositoryPg,
   ) { }
 
   async execute(command: GetAllPostsCommand) {

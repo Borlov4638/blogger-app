@@ -3,18 +3,17 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { Post } from 'src/entyties/posts.schema';
+import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Blog } from 'src/entyties/blogs.schema';
-import { BlogsRepository } from 'src/blogs/blogs.repository';
-import { PostRepository } from '../posts.repository';
+import { PostRepositoryPg } from '../posts.repository-pg';
+import { GetBlogByIdCommand } from 'src/blogs/use-cases/get-blog-by-id';
 
 
 interface IPostUpdate {
   title: string;
   shortDescription: string;
   content: string;
-  blogId: string | Types.ObjectId;
+  blogId: string
 }
 
 export class UpdatePostCommand {
@@ -24,16 +23,16 @@ export class UpdatePostCommand {
 @CommandHandler(UpdatePostCommand)
 export class UpdatePostUseCase implements ICommandHandler<UpdatePostCommand> {
   constructor(
-    @InjectModel(Blog.name) private blogModel: Model<Blog>,
-    private postRepo: PostRepository
+    private commandBus: CommandBus,
+    private postRepo: PostRepositoryPg
   ) { }
 
   async execute(command: UpdatePostCommand) {
-    const blogToAssign = await this.blogModel.findById(command.data.blogId);
+    const blogToAssign = await this.commandBus.execute(new GetBlogByIdCommand(command.data.blogId));
     if (!blogToAssign) {
       throw new NotFoundException('Blog does not exists');
     }
-    this.postRepo.updatePost(command.postId, command.data)
+    await this.postRepo.updatePost(command.postId, command.data)
   }
 
 }

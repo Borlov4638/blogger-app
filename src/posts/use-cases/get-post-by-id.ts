@@ -1,12 +1,9 @@
 import { NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
 import { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
-import { Post } from '../../entyties/posts.schema';
 import { LikeStatus } from '../../enums/like-status.enum';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { PostRepository } from '../posts.repository';
+import { PostRepositoryPg } from '../posts.repository-pg';
 
 interface IUsersAcessToken {
   id: string;
@@ -21,7 +18,7 @@ export class GetPostByIdCommand {
 @CommandHandler(GetPostByIdCommand)
 export class GetPostByIdUseCase implements ICommandHandler<GetPostByIdCommand> {
   constructor(
-    private postRepo: PostRepository,
+    private postRepo: PostRepositoryPg,
     private readonly jwtService: JwtService,
   ) { }
 
@@ -43,7 +40,9 @@ export class GetPostByIdUseCase implements ICommandHandler<GetPostByIdCommand> {
 
     let myStatus = LikeStatus.NONE;
     if (user) {
-      myStatus = findedPost.getStatus(user.id);
+      // myStatus = findedPost.getStatus(user.id);
+      myStatus = this.postRepo.getStatus(user.id);
+
     }
 
     const newestLikes = findedPost.likesInfo.usersWhoLiked

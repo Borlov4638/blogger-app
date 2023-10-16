@@ -69,7 +69,6 @@ export class CreatePostDto {
   content: string;
   @IsNotEmpty()
   @IsString()
-  @Length(24, 24)
   @isBlogIdValid()
   blogId: string;
 }
@@ -99,7 +98,6 @@ export class PostUpdateDto {
   content: string;
   @IsNotEmpty()
   @IsString()
-  @Length(24, 24)
   @isBlogIdValid()
   blogId: string;
 }

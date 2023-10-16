@@ -1,14 +1,11 @@
 import { NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
 import { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
-import { Blog } from '../../entyties/blogs.schema';
-import { PostRepository } from '../posts.repository';
-import { Post, PostDocument } from '../../entyties/posts.schema';
+import { PostDocument } from '../../entyties/posts.schema';
 import { LikeStatus } from '../../enums/like-status.enum';
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { GetBlogByIdCommand } from 'src/blogs/use-cases/get-blog-by-id';
+import { PostRepositoryPg } from '../posts.repository-pg';
 
 interface IPostPaganationQuery {
   sortBy: string;
@@ -37,7 +34,7 @@ export class GetAllPostsInBlogUseCase
 {
   constructor(
     private commandBus: CommandBus,
-    private readonly postRepo: PostRepository,
+    private readonly postRepo: PostRepositoryPg,
     private readonly jwtService: JwtService,
   ) { }
 

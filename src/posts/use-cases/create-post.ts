@@ -1,11 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
-import { Blog } from '../../entyties/blogs.schema';
-import { Post, PostDocument } from '../../entyties/posts.schema';
 import { GetBlogByIdCommand } from 'src/blogs/use-cases/get-blog-by-id';
-import { PostRepository } from '../posts.repository';
+import { PostRepositoryPg } from '../posts.repository-pg';
 
 interface ICreatePost {
   title: string;
@@ -20,7 +16,7 @@ export class CreatePostCommand {
 export class CreatePostUseCase implements ICommandHandler<CreatePostCommand> {
   constructor(
     private commandBus: CommandBus,
-    private readonly postRepository: PostRepository
+    private readonly postRepository: PostRepositoryPg
   ) { }
 
   async execute(command: CreatePostCommand) {

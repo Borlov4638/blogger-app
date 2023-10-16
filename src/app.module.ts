@@ -62,7 +62,7 @@ if (process.env.DATABASE === 'mongo') {
     configModule,
     AuthModule,
     BlogsModule,
-    //PostsModule,
+    PostsModule,
     // CommentsModule,
     UsersModule,
     UtilsModule,
