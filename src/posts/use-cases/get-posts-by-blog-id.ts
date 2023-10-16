@@ -7,7 +7,8 @@ import { Blog } from '../../entyties/blogs.schema';
 import { PostRepository } from '../posts.repository';
 import { Post, PostDocument } from '../../entyties/posts.schema';
 import { LikeStatus } from '../../enums/like-status.enum';
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { GetBlogByIdCommand } from 'src/blogs/use-cases/get-blog-by-id';
 
 interface IPostPaganationQuery {
   sortBy: string;
@@ -27,7 +28,7 @@ export class GetAllPostsInBlogCommand {
     public postPagonationQuery: IPostPaganationQuery,
     public blogId: string,
     public request: Request,
-  ) {}
+  ) { }
 }
 
 @CommandHandler(GetAllPostsInBlogCommand)
@@ -35,26 +36,20 @@ export class GetAllPostsInBlogUseCase
   implements ICommandHandler<GetAllPostsInBlogCommand>
 {
   constructor(
-    @InjectModel(Post.name) private postModel: Model<Post>,
-    @InjectModel(Blog.name) private blogModel: Model<Blog>,
+    private commandBus: CommandBus,
     private readonly postRepo: PostRepository,
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
   async execute(command: GetAllPostsInBlogCommand) {
-    const blogToFindPosts = await this.blogModel.findById(
-      new Types.ObjectId(command.blogId),
-    );
+    const blogToFindPosts = await this.commandBus.execute(new GetBlogByIdCommand(command.blogId))
+
     if (!blogToFindPosts) {
       throw new NotFoundException();
     }
     const pagonation = this.paganation(command.postPagonationQuery);
 
-    const findedPosts = await this.postModel
-      .find({ blogId: command.blogId }, { _id: false, __v: false })
-      .sort(pagonation.sotringQuery)
-      .skip(pagonation.itemsToSkip)
-      .limit(pagonation.pageSize);
+    const findedPosts = await this.postRepo.getPostsByBlogPagonation(pagonation, command.blogId)
 
     let token: string;
     try {
@@ -65,7 +60,7 @@ export class GetAllPostsInBlogUseCase
     const postsToShow = this.transformPostToReturn(findedPosts, token);
 
     const totalCountOfItems = (
-      await this.postModel.find({ blogId: command.blogId })
+      await this.postRepo.getAllPostsByBlogId(command.blogId)
     ).length;
 
     const mappedResponse = {

@@ -56,10 +56,6 @@ if (process.env.DATABASE === 'mongo') {
   imports: [
     CrytoModule,
     UsersModule,
-    JwtModule.register({
-      secret: 'dhcfgvhbjnkmjbhvgjfgfcjhvkbljnknjbhvghjg',
-      global: true,
-    }),
     ...imporst,
     CqrsModule,
   ],

@@ -15,14 +15,22 @@ import { UpdatePostUseCase } from './use-cases/update-post';
 import { DeletePostByIdUseCase } from './use-cases/delete-post-by-id';
 
 const UseCases = [CreatePostUseCase, GetPostByIdUseCase, GetAllPostsInBlogCommand, GetAllPostsUseCase, UpdatePostUseCase, DeletePostByIdUseCase];
-
-@Module({
-  imports: [
+let imports = []
+if (process.env.DATABASE === 'mongo') {
+  imports = [
     MongooseModule.forFeature([
       { name: Post.name, schema: postSchema },
       { name: Blog.name, schema: BlogSchema },
       { name: Comment.name, schema: commentsSchema },
     ]),
+  ]
+} else if (process.env.DATABASE === 'postgres') {
+  imports = []
+}
+
+@Module({
+  imports: [
+    ...imports,
     CqrsModule,
   ],
   controllers: [PostController],

@@ -23,17 +23,29 @@ const useCases = [
   GetAllPostsInBlogUseCase,
   CreatePostUseCase,
 ];
-
-@Module({
-  controllers: [BlogsController],
-  imports: [
+let imports = []
+let exporters = []
+if (process.env.DATABASE === 'mongo') {
+  imports = [
     MongooseModule.forFeature([
       { name: Blog.name, schema: BlogSchema },
       { name: Post.name, schema: postSchema },
     ]),
+  ]
+  exporters = []
+} else if (process.env.DATABASE === 'postgres') {
+  imports = [];
+  exporters = []
+}
+
+@Module({
+  controllers: [BlogsController],
+  imports: [
+    ...imports,
     PostsModule,
     CqrsModule,
   ],
   providers: [BlogsRepository, ...useCases],
+  exports: [...exporters]
 })
 export class BlogsModule { }

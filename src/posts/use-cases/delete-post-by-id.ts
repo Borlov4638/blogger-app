@@ -1,10 +1,8 @@
 import {
   NotFoundException,
 } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { Post } from '../../entyties/posts.schema';
+import { PostRepository } from '../posts.repository';
 
 export class DeletePostByIdCommand {
   constructor(public readonly id: string) { }
@@ -13,13 +11,11 @@ export class DeletePostByIdCommand {
 @CommandHandler(DeletePostByIdCommand)
 export class DeletePostByIdUseCase implements ICommandHandler<DeletePostByIdCommand> {
   constructor(
-    @InjectModel(Post.name) private postModel: Model<Post>,
+    private postRepo: PostRepository
   ) { }
 
   async execute(command: DeletePostByIdCommand) {
-    const postToDelete = await this.postModel.findOneAndDelete({
-      _id: new Types.ObjectId(command.id),
-    });
+    const postToDelete = await this.postRepo.deletePostById(command.id)
     if (!postToDelete) {
       throw new NotFoundException('no such post');
     }

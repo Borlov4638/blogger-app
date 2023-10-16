@@ -3,16 +3,12 @@ import {
   IsNotEmpty,
   IsString,
   Length,
-  Validate,
   ValidationArguments,
-  ValidationError,
   registerDecorator,
 } from 'class-validator';
 import { LikeStatus } from '../../enums/like-status.enum';
 import {
-  BadRequestException,
   Injectable,
-  UnprocessableEntityException,
 } from '@nestjs/common';
 
 import {
@@ -20,10 +16,9 @@ import {
   ValidatorConstraintInterface,
   ValidationOptions,
 } from 'class-validator';
-import { InjectModel } from '@nestjs/mongoose';
-import { Blog } from '../../entyties/blogs.schema';
-import { Model, Types } from 'mongoose';
 import { Transform } from 'class-transformer';
+import { CommandBus } from '@nestjs/cqrs';
+import { GetBlogByIdCommand } from 'src/blogs/use-cases/get-blog-by-id';
 
 export function isBlogIdValid(
   validationOptions?: ValidationOptions,
@@ -41,12 +36,10 @@ export function isBlogIdValid(
 @ValidatorConstraint({ name: 'email', async: true })
 @Injectable()
 export class CustomBlogIdValidation implements ValidatorConstraintInterface {
-  constructor(@InjectModel(Blog.name) private blogModel: Model<Blog>) {}
+  constructor(private commandBus: CommandBus) { }
 
   async validate(blogId: string): Promise<boolean> {
-    const blog = await this.blogModel.findOne({
-      _id: new Types.ObjectId(blogId),
-    });
+    const blog = await this.commandBus.execute(new GetBlogByIdCommand(blogId))
     if (!blog) {
       return false;
     } else {

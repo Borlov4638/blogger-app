@@ -6,6 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Post } from '../../entyties/posts.schema';
 import { LikeStatus } from '../../enums/like-status.enum';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { PostRepository } from '../posts.repository';
 
 interface IUsersAcessToken {
   id: string;
@@ -14,40 +15,37 @@ interface IUsersAcessToken {
 }
 
 export class GetPostByIdCommand {
-  constructor(public postId: string, public request: Request) {}
+  constructor(public postId: string, public request: Request) { }
 }
 
 @CommandHandler(GetPostByIdCommand)
 export class GetPostByIdUseCase implements ICommandHandler<GetPostByIdCommand> {
   constructor(
-    @InjectModel(Post.name) private postModel: Model<Post>,
+    private postRepo: PostRepository,
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
   async execute(command: GetPostByIdCommand) {
-    const findedPost = await this.postModel.findById(
-      new Types.ObjectId(command.postId),
-      { _id: false, __v: false },
-    );
+    const findedPost = await this.postRepo.findPostById(command.postId)
 
     if (!findedPost) {
       throw new NotFoundException('no such post');
     }
-    const token = command.request.headers.authorization;
-    let myStatus = LikeStatus.NONE;
-    let user: IUsersAcessToken;
-    if (token) {
-      try {
-        const decodedToken =
-          command.request.headers.authorization.split(' ')[1];
-        user = await this.jwtService.verifyAsync(decodedToken);
-      } catch {
-        user = null;
-      }
-      if (user) {
-        myStatus = findedPost.getStatus(user.id);
-      }
+
+    let user: IUsersAcessToken
+    try {
+      const decodedToken =
+        command.request.headers.authorization.split(' ')[1];
+      user = await this.jwtService.verifyAsync(decodedToken);
+    } catch {
+      user = null;
     }
+
+    let myStatus = LikeStatus.NONE;
+    if (user) {
+      myStatus = findedPost.getStatus(user.id);
+    }
+
     const newestLikes = findedPost.likesInfo.usersWhoLiked
       //@ts-ignore
       .sort((a, b) => b.addedAt - a.addedAt)
@@ -68,5 +66,6 @@ export class GetPostByIdUseCase implements ICommandHandler<GetPostByIdCommand> {
     const postToReturn = { ...findedPost.toObject() };
     delete postToReturn.likesInfo;
     return { ...postToReturn, extendedLikesInfo };
+
   }
 }

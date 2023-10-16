@@ -21,6 +21,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { UserPg } from './entyties/postgres_entyties/users.model';
+import { JwtModule } from '@nestjs/jwt';
 
 let imports = []
 if (process.env.DATABASE === 'mongo') {
@@ -54,14 +55,18 @@ if (process.env.DATABASE === 'mongo') {
 @Module({
   imports: [
     ...imports,
+    JwtModule.register({
+      secret: 'dhcfgvhbjnkmjbhvgjfgfcjhvkbljnknjbhvghjg',
+      global: true,
+    }),
     configModule,
-    // AuthModule,
+    //AuthModule,
     BlogsModule,
-    // PostsModule,
+    PostsModule,
     // CommentsModule,
-    // UsersModule,
+    //UsersModule,
     UtilsModule,
-    // SecDevModule,
+    //SecDevModule,
     ThrottlerModule.forRoot([
       {
         ttl: 10000,
