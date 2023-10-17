@@ -1,12 +1,13 @@
 import { NotFoundException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { InjectModel } from "@nestjs/mongoose";
+import { InjectDataSource } from "@nestjs/typeorm";
 import { Request } from "express";
 import { Model, Types } from "mongoose";
 import { Post, PostDocument } from "src/entyties/posts.schema";
 import { UserDocument } from "src/entyties/users.chema";
 import { LikeStatus } from "src/enums/like-status.enum";
-import { DataSource } from "typeorm";
+import { DataSource, Like } from "typeorm";
 
 interface IPostPaganationQuery {
   sortBy: string;
@@ -21,10 +22,26 @@ interface IUsersAcessToken {
   login: string;
 }
 
+export interface IPostsLikes {
+  postId: number
+  userId: number
+  addedAt: string
+  login: string
+  status: LikeStatus
+}
+
+export interface IPostPostgres {
+  id: number
+  createdAt: string
+  title: string
+  shortDescription: string
+  content: string
+  blogId: number
+}
 
 export class PostRepositoryPg {
   constructor(
-    private dataSource: DataSource,
+    @InjectDataSource() private dataSource: DataSource,
     private jwtService: JwtService
   ) { }
 
@@ -62,19 +79,41 @@ export class PostRepositoryPg {
   }
 
   async getAllPosts(postPagonationQuery: IPostPaganationQuery, request: Request) {
-    // const sortBy = postPagonationQuery.sortBy
-    //   ? postPagonationQuery.sortBy
-    //   : 'createdAt';
-    // const sortDirection = postPagonationQuery.sortDirection === 'asc' ? 1 : -1;
-    // const sotringQuery = this.postsSortingQuery(sortBy, sortDirection);
-    // const pageNumber = postPagonationQuery.pageNumber
-    //   ? +postPagonationQuery.pageNumber
-    //   : 1;
-    // const pageSize = postPagonationQuery.pageSize
-    //   ? +postPagonationQuery.pageSize
-    //   : 10;
-    // const itemsToSkip = (pageNumber - 1) * pageSize;
+    const sortBy = postPagonationQuery.sortBy
+      ? postPagonationQuery.sortBy
+      : 'createdAt';
+    const sortDirection = postPagonationQuery.sortDirection === 'asc' ? 'asc' : 'desc';
+    // const sotringQuery = this.postsSortingQuery(sortBy);
+    const pageNumber = postPagonationQuery.pageNumber
+      ? +postPagonationQuery.pageNumber
+      : 1;
+    const pageSize = postPagonationQuery.pageSize
+      ? +postPagonationQuery.pageSize
+      : 10;
+    const itemsToSkip = (pageNumber - 1) * pageSize;
+    const findedPosts: IPostPostgres[] = await this.dataSource.query(`
+      SELECT * FROM posts
+      ORDER BY "${sortBy}" ${sortDirection}
+      LIMIT ${pageSize}
+      OFFSET ${itemsToSkip}
+    `)
+    console.log(findedPosts)
+    const postToReturn = findedPosts.map(p => {
+      // const postsLikes: IPostsLikes[] = await this.dataSource.query(`SELECT * FROM posts_likes WHERE "postId" = '${p.id}'`)
 
+      const post =
+      {
+        ...p,
+        id: p.id.toString(),
+        blogId: p.blogId.toString(),
+        extendedLikesInfo: {
+          likesCount: 0,
+          dislikesCount: 0,
+          myStatus: LikeStatus.NONE
+        }
+      }
+      return post
+    })
     // const findedPosts = await this.postModel
     //   .find({}, { _id: false, __v: false })
     //   .sort(sotringQuery)
@@ -83,8 +122,8 @@ export class PostRepositoryPg {
 
     // const token = request.headers.authorization;
 
-    // let myStatus: string = LikeStatus.NONE;
-    // let user: IUsersAcessToken;
+    let myStatus: string = LikeStatus.NONE;
+    let user: IUsersAcessToken;
     // const postsToShow = findedPosts.map((post) => {
     //   if (token) {
     //     try {
@@ -122,45 +161,58 @@ export class PostRepositoryPg {
     //   return { ...postToReturn, extendedLikesInfo };
     // });
 
-    // const totalCountOfItems = (await this.postModel.find({})).length;
+    const totalCountOfItems = (await this.dataSource.query(`SELECT * FROM posts`)).length;
 
-    // const mappedResponse = {
-    //   pagesCount: Math.ceil(totalCountOfItems / pageSize),
-    //   page: pageNumber,
-    //   pageSize: pageSize,
-    //   totalCount: totalCountOfItems,
-    //   items: [...postsToShow],
-    // };
+    const mappedResponse = {
+      pagesCount: Math.ceil(totalCountOfItems / pageSize),
+      page: pageNumber,
+      pageSize: pageSize,
+      totalCount: totalCountOfItems,
+      items: [...postToReturn],
+    };
 
-    return 1;
+    return mappedResponse;
   }
 
   async createPost(blogToPost, data) {
-    return await this.dataSource.query(`INSERT INTO posts ("title", "shortDescription", "content", "blogId") 
-    VALUES ('${data.title}', '${data.shortDescription}', '${data.content}', ${blogToPost.id})
+    const post: IPostPostgres = (await this.dataSource.query(`INSERT INTO posts ("title", "shortDescription", "content", "blogId") 
+    VALUES ('${data.title}', '${data.shortDescription}', '${data.content}', '${blogToPost.id}')
     RETURNING *
-    `)
-    // const newPost = new this.postModel({
-    //   ...data,
-    //   blogId: blogToPost.id,
-    //   blogName: blogToPost.name,
-    // });
-    // return await newPost.save().then((newPost) => {
-    //   const plainPost: PostDocument = newPost.toObject();
-    //   delete plainPost.__v;
-    //   delete plainPost._id;
-    //   delete plainPost.likesInfo;
-    //   return plainPost;
-    // });
+    `))[0]
+    const postToReturn = {
+      ...post,
+      id: post.id.toString(),
+      blogId: post.blogId.toString(),
+      extendedLikesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: LikeStatus.NONE
+      }
+    }
+    return postToReturn
   }
 
   async findPostById(postId: string) {
+    const post: IPostPostgres = (await this.dataSource.query(`SELECT * FROM posts WHERE "id" = '${postId}'`))[0]
+    if (!post) {
+      return false
+    }
+    const postsLikes: IPostsLikes[] = await this.dataSource.query(`SELECT * FROM posts_likes WHERE "postId" = '${postId}'`)
 
-    // return await this.postModel.findById(
-    //   new Types.ObjectId(postId),
-    //   { __v: false, _id: false },
-    // );
-    return {} as PostDocument
+    const postToReturn = {
+      ...post,
+      blogId: post.blogId.toString(),
+      id: post.id.toString(),
+      likesInfo: {
+        usersWhoLiked: postsLikes.filter(l => {
+          return l.status === LikeStatus.LIKE
+        }),
+        usersWhoDisliked: postsLikes.filter(l => {
+          return l.status === LikeStatus.LIKE
+        }),
+      }
+    }
+    return postToReturn
 
   }
 
@@ -178,29 +230,19 @@ export class PostRepositoryPg {
   }
 
   async updatePost(postId, data) {
-    // data.blogId = new Types.ObjectId(data.blogId);
-
-    // const postToUpdate = await this.postModel.findById(
-    //   new Types.ObjectId(postId),
-    // );
-    // if (!postToUpdate) {
-    //   throw new NotFoundException('Post does not exists');
-    // }
-
-    // postToUpdate.title = data.title;
-    // postToUpdate.shortDescription = data.shortDescription;
-    // postToUpdate.content = data.content;
-    // postToUpdate.blogId = data.blogId;
-
-    // await postToUpdate.save();
+    const updatedPost = await this.dataSource.query(`UPDATE posts 
+      SET "title" = '${data.title}', "shortDescription" = '${data.shortDescription}', "content" = '${data.content}', "blogId" = '${data.blogId}'
+      WHERE "id" = '${postId}'
+      RETURNING *
+    `)
+    if (!updatedPost[1]) {
+      throw new NotFoundException('Post does not exists')
+    }
     return;
   }
 
   async deletePostById(id: string) {
-    // return await this.postModel.findOneAndDelete({
-    //   _id: new Types.ObjectId(id),
-    // });
-    return 1
+    return (await this.dataSource.query(`DELETE FROM posts WHERE "id" = '${id}'`))[1]
   }
 
   getStatus(userId: string) {

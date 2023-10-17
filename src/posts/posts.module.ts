@@ -14,6 +14,7 @@ import { GetAllPostsUseCase } from './use-cases/get-all-posts';
 import { UpdatePostUseCase } from './use-cases/update-post';
 import { DeletePostByIdUseCase } from './use-cases/delete-post-by-id';
 import { PostRepositoryPg } from './posts.repository-pg';
+import { BlogsModule } from 'src/blogs/blogs.module';
 
 const UseCases = [CreatePostUseCase, GetPostByIdUseCase, GetAllPostsInBlogCommand, GetAllPostsUseCase, UpdatePostUseCase, DeletePostByIdUseCase];
 let imports = []
@@ -26,12 +27,13 @@ if (process.env.DATABASE === 'mongo') {
       { name: Blog.name, schema: BlogSchema },
       { name: Comment.name, schema: commentsSchema },
     ]),
+    BlogsModule
   ]
   providers = [PostRepository]
   exporters = [PostRepository]
 
 } else if (process.env.DATABASE === 'postgres') {
-  imports = []
+  imports = [BlogsModule]
   providers = [PostRepositoryPg]
   exporters = [PostRepositoryPg]
 

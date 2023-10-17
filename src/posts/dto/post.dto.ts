@@ -17,8 +17,7 @@ import {
   ValidationOptions,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { CommandBus } from '@nestjs/cqrs';
-import { GetBlogByIdCommand } from 'src/blogs/use-cases/get-blog-by-id';
+import { BlogsRepositoryPg } from 'src/blogs/blogs.repository-pg';
 
 export function isBlogIdValid(
   validationOptions?: ValidationOptions,
@@ -36,10 +35,10 @@ export function isBlogIdValid(
 @ValidatorConstraint({ name: 'email', async: true })
 @Injectable()
 export class CustomBlogIdValidation implements ValidatorConstraintInterface {
-  constructor(private commandBus: CommandBus) { }
+  constructor(private blogRepo: BlogsRepositoryPg) { }
 
   async validate(blogId: string): Promise<boolean> {
-    const blog = await this.commandBus.execute(new GetBlogByIdCommand(blogId))
+    const blog = await this.blogRepo.getBlogById(blogId)
     if (!blog) {
       return false;
     } else {

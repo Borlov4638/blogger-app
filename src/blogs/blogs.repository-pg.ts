@@ -108,6 +108,9 @@ export class BlogsRepositoryPg {
 
   async getBlogById(blogId: string) {
     const blog = (await this.dataSource.query(`SELECT * FROM blogs WHERE "id" = '${blogId}'`))[0]
+    if (!blog) {
+      return false
+    }
     blog.id = blog.id.toString()
     return blog
   }

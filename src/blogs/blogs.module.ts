@@ -26,6 +26,7 @@ const useCases = [
 ];
 let imports = []
 let providers = []
+let exporters = []
 if (process.env.DATABASE === 'mongo') {
   imports = [
     MongooseModule.forFeature([
@@ -33,10 +34,12 @@ if (process.env.DATABASE === 'mongo') {
       { name: Post.name, schema: postSchema },
     ]),
   ]
+  exporters = [BlogsRepository]
   providers = [BlogsRepository]
 } else if (process.env.DATABASE === 'postgres') {
   imports = [];
   providers = [BlogsRepositoryPg]
+  exporters = [BlogsRepositoryPg]
 }
 
 @Module({
@@ -47,5 +50,6 @@ if (process.env.DATABASE === 'mongo') {
     CqrsModule,
   ],
   providers: [...providers, ...useCases],
+  exports: [...exporters]
 })
 export class BlogsModule { }

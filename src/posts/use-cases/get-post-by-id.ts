@@ -40,7 +40,7 @@ export class GetPostByIdUseCase implements ICommandHandler<GetPostByIdCommand> {
 
     let myStatus = LikeStatus.NONE;
     if (user) {
-      // myStatus = findedPost.getStatus(user.id);
+      // myStatus = findedPost.getStatus(user.id);                  MONGO
       myStatus = this.postRepo.getStatus(user.id);
 
     }
@@ -62,7 +62,9 @@ export class GetPostByIdUseCase implements ICommandHandler<GetPostByIdCommand> {
         };
       }),
     };
-    const postToReturn = { ...findedPost.toObject() };
+    // const postToReturn = { ...findedPost.toObject() };       MONGO
+    const postToReturn = { ...findedPost };
+
     delete postToReturn.likesInfo;
     return { ...postToReturn, extendedLikesInfo };
 
