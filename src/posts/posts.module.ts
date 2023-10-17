@@ -9,14 +9,14 @@ import { CustomBlogIdValidation } from './dto/post.dto';
 import { CqrsModule } from '@nestjs/cqrs';
 import { CreatePostUseCase } from './use-cases/create-post';
 import { GetPostByIdUseCase } from './use-cases/get-post-by-id';
-import { GetAllPostsInBlogCommand } from './use-cases/get-posts-by-blog-id';
+import { GetAllPostsInBlogUseCase } from './use-cases/get-posts-by-blog-id';
 import { GetAllPostsUseCase } from './use-cases/get-all-posts';
 import { UpdatePostUseCase } from './use-cases/update-post';
 import { DeletePostByIdUseCase } from './use-cases/delete-post-by-id';
 import { PostRepositoryPg } from './posts.repository-pg';
 import { BlogsModule } from 'src/blogs/blogs.module';
 
-const UseCases = [CreatePostUseCase, GetPostByIdUseCase, GetAllPostsInBlogCommand, GetAllPostsUseCase, UpdatePostUseCase, DeletePostByIdUseCase];
+const UseCases = [CreatePostUseCase, GetPostByIdUseCase, GetAllPostsInBlogUseCase, GetAllPostsUseCase, UpdatePostUseCase, DeletePostByIdUseCase];
 let imports = []
 let providers = []
 let exporters = []

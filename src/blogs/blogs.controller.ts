@@ -70,9 +70,9 @@ export class BlogsController {
     @Query() paganation: PostPaganationQuery,
     @Req() request: Request,
   ) {
-    // return this.commandBus.execute(
-    //   new GetAllPostsInBlogCommand(paganation, id, request),
-    // );
+    return this.commandBus.execute(
+      new GetAllPostsInBlogCommand(paganation, id, request),
+    );
   }
 
   @UseGuards(BasicAuthGuard)
@@ -81,6 +81,6 @@ export class BlogsController {
     @Param('blogId') blogId: string,
     @Body() data: CreatePostByBlogIdDto,
   ) {
-    //return await this.commandBus.execute(new CreatePostCommand(data, blogId));
+    return await this.commandBus.execute(new CreatePostCommand(data, blogId));
   }
 }

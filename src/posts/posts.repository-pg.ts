@@ -1,13 +1,9 @@
 import { NotFoundException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { InjectModel } from "@nestjs/mongoose";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { Request } from "express";
-import { Model, Types } from "mongoose";
-import { Post, PostDocument } from "src/entyties/posts.schema";
-import { UserDocument } from "src/entyties/users.chema";
 import { LikeStatus } from "src/enums/like-status.enum";
-import { DataSource, Like } from "typeorm";
+import { DataSource } from "typeorm";
 
 interface IPostPaganationQuery {
   sortBy: string;
@@ -45,24 +41,24 @@ export class PostRepositoryPg {
     private jwtService: JwtService
   ) { }
 
-  postsSortingQuery(sortBy: string, sortDirection: number): {} {
+  postsSortingQuery(sortBy: string): {} {
     switch (sortBy) {
       case 'id':
-        return { id: sortDirection };
+        return 'id';
       case 'title':
-        return { title: sortDirection };
+        return 'title';
       case 'shortDescription':
-        return { shortDescription: sortDirection };
+        return 'shortDescription';
       case 'content':
-        return { content: sortDirection };
+        return 'content';
       case 'blogId':
-        return { blogId: sortDirection };
+        return 'blogId';
       case 'blogName':
-        return { blogName: sortDirection };
+        return 'blogName';
       case 'createdAt':
-        return { createdAt: sortDirection };
+        return 'createdAt';
       default:
-        return { createdAt: 1 };
+        return 'createdAt';
     }
   }
   commentsSortingQuery(sortBy: string, sortDirection: number): {} {
@@ -83,7 +79,7 @@ export class PostRepositoryPg {
       ? postPagonationQuery.sortBy
       : 'createdAt';
     const sortDirection = postPagonationQuery.sortDirection === 'asc' ? 'asc' : 'desc';
-    // const sotringQuery = this.postsSortingQuery(sortBy);
+    const sotringQuery = this.postsSortingQuery(sortBy);
     const pageNumber = postPagonationQuery.pageNumber
       ? +postPagonationQuery.pageNumber
       : 1;
@@ -93,11 +89,11 @@ export class PostRepositoryPg {
     const itemsToSkip = (pageNumber - 1) * pageSize;
     const findedPosts: IPostPostgres[] = await this.dataSource.query(`
       SELECT * FROM posts
-      ORDER BY "${sortBy}" ${sortDirection}
+      ORDER BY "${sotringQuery}" ${sortDirection}
       LIMIT ${pageSize}
       OFFSET ${itemsToSkip}
     `)
-    console.log(findedPosts)
+
     const postToReturn = findedPosts.map(p => {
       // const postsLikes: IPostsLikes[] = await this.dataSource.query(`SELECT * FROM posts_likes WHERE "postId" = '${p.id}'`)
 
@@ -216,19 +212,6 @@ export class PostRepositoryPg {
 
   }
 
-  async getPostsByBlogPagonation(pagonation, blogId) {
-    // return await this.postModel
-    //   .find({ blogId }, { _id: false, __v: false })
-    //   .sort(pagonation.sotringQuery)
-    //   .skip(pagonation.itemsToSkip)
-    //   .limit(pagonation.pageSize);
-    return {} as PostDocument[]
-  }
-  async getAllPostsByBlogId(blogId: string) {
-    // return await this.postModel.find({ blogId })
-    return {} as PostDocument[]
-  }
-
   async updatePost(postId, data) {
     const updatedPost = await this.dataSource.query(`UPDATE posts 
       SET "title" = '${data.title}', "shortDescription" = '${data.shortDescription}', "content" = '${data.content}', "blogId" = '${data.blogId}'
@@ -248,4 +231,111 @@ export class PostRepositoryPg {
   getStatus(userId: string) {
     return LikeStatus.NONE
   }
+  async getAllPostsInBlog(postPagonationQuery: IPostPaganationQuery, blogId: string, request: Request) {
+    const sortBy = postPagonationQuery.sortBy
+      ? postPagonationQuery.sortBy
+      : 'createdAt';
+    const sortDirection = postPagonationQuery.sortDirection === 'asc' ? 'asc' : 'desc';
+    const sotringQuery = this.postsSortingQuery(sortBy);
+    const pageNumber = postPagonationQuery.pageNumber
+      ? +postPagonationQuery.pageNumber
+      : 1;
+    const pageSize = postPagonationQuery.pageSize
+      ? +postPagonationQuery.pageSize
+      : 10;
+    const itemsToSkip = (pageNumber - 1) * pageSize;
+
+    const findedPosts: IPostPostgres[] = await this.dataSource.query(`
+      SELECT * FROM posts
+      WHERE "blogId" = '${blogId}'
+      ORDER BY "${sotringQuery}" ${sortDirection}
+      LIMIT ${pageSize}
+      OFFSET ${itemsToSkip}
+    `)
+
+    const postToReturn = findedPosts.map(p => {
+      // const postsLikes: IPostsLikes[] = await this.dataSource.query(`SELECT * FROM posts_likes WHERE "postId" = '${p.id}'`)
+
+      const post =
+      {
+        ...p,
+        id: p.id.toString(),
+        blogId: p.blogId.toString(),
+        extendedLikesInfo: {
+          likesCount: 0,
+          dislikesCount: 0,
+          myStatus: LikeStatus.NONE
+        }
+      }
+      return post
+    })
+    // const findedPosts =
+    //   await this.postModel
+    //     .find({ blogId: blogId }, { _id: false, __v: false })
+    //     .sort(sotringQuery)
+    //     .skip(itemsToSkip)
+    //     .limit(pageSize);
+
+    // let token: string;
+    // try {
+    //   token = request.headers.authorization.split(' ')[1];
+    // } catch {
+    //   token = null;
+    // }
+    // let myStatus: string = LikeStatus.NONE;
+    // let user: IUsersAcessToken;
+    // const postsToShow = findedPosts.map((post) => {
+    //   if (token) {
+    //     try {
+    //       user = this.jwtService.verify(token);
+    //     } catch {
+    //       user = null;
+    //     }
+    //     if (user) {
+    //       myStatus = post.getStatus(user.id);
+    //     }
+    //   }
+    //   let newestLikes;
+    //   try {
+    //     newestLikes = post.likesInfo.usersWhoLiked
+    //       //@ts-ignore
+    //       .sort((a, b) => b.addedAt - a.addedAt)
+    //       .slice(0, 3);
+    //   } catch {
+    //     newestLikes = [];
+    //   }
+    //   const extendedLikesInfo = {
+    //     likesCount: post.likesInfo.usersWhoLiked.length,
+    //     dislikesCount: post.likesInfo.usersWhoDisliked.length,
+    //     myStatus,
+    //     newestLikes: newestLikes.map((usr) => {
+    //       return {
+    //         userId: usr.userId,
+    //         login: usr.login,
+    //         addedAt: new Date(usr.addedAt).toISOString(),
+    //       };
+    //     }),
+    //   };
+    //   const postToReturn = { ...post.toObject() };
+    //   delete postToReturn.likesInfo;
+    //   return { ...postToReturn, extendedLikesInfo };
+    // });
+
+    const totalCountOfItems = (await this.dataSource.query(`
+      SELECT * FROM posts
+      WHERE "blogId" = '${blogId}'
+    `)).length
+
+    const mappedResponse = {
+      pagesCount: Math.ceil(totalCountOfItems / pageSize),
+      page: pageNumber,
+      pageSize: pageSize,
+      totalCount: totalCountOfItems,
+      items: [...postToReturn],
+    };
+
+    return mappedResponse;
+
+  }
+
 }

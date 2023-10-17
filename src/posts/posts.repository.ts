@@ -157,17 +157,6 @@ export class PostRepository {
 
   }
 
-  async getPostsByBlogPagonation(pagonation, blogId) {
-    return await this.postModel
-      .find({ blogId }, { _id: false, __v: false })
-      .sort(pagonation.sotringQuery)
-      .skip(pagonation.itemsToSkip)
-      .limit(pagonation.pageSize);
-  }
-  async getAllPostsByBlogId(blogId: string) {
-    return await this.postModel.find({ blogId })
-  }
-
   async updatePost(postId, data) {
     data.blogId = new Types.ObjectId(data.blogId);
 
@@ -193,5 +182,88 @@ export class PostRepository {
     });
   }
 
+  async getAllPostsInBlog(postPagonationQuery: IPostPaganationQuery, blogId: string, request: Request) {
+    const sortBy = postPagonationQuery.sortBy
+      ? postPagonationQuery.sortBy
+      : 'createdAt';
+    const sortDirection = postPagonationQuery.sortDirection === 'asc' ? 1 : -1;
+    const sotringQuery = this.postsSortingQuery(sortBy, sortDirection);
+    const pageNumber = postPagonationQuery.pageNumber
+      ? +postPagonationQuery.pageNumber
+      : 1;
+    const pageSize = postPagonationQuery.pageSize
+      ? +postPagonationQuery.pageSize
+      : 10;
+
+    const itemsToSkip = (pageNumber - 1) * pageSize;
+
+    const findedPosts =
+      await this.postModel
+        .find({ blogId: blogId }, { _id: false, __v: false })
+        .sort(sotringQuery)
+        .skip(itemsToSkip)
+        .limit(pageSize);
+
+
+    let token: string;
+    try {
+      token = request.headers.authorization.split(' ')[1];
+    } catch {
+      token = null;
+    }
+    let myStatus: string = LikeStatus.NONE;
+    let user: IUsersAcessToken;
+    const postsToShow = findedPosts.map((post) => {
+      if (token) {
+        try {
+          user = this.jwtService.verify(token);
+        } catch {
+          user = null;
+        }
+        if (user) {
+          myStatus = post.getStatus(user.id);
+        }
+      }
+      let newestLikes;
+      try {
+        newestLikes = post.likesInfo.usersWhoLiked
+          //@ts-ignore
+          .sort((a, b) => b.addedAt - a.addedAt)
+          .slice(0, 3);
+      } catch {
+        newestLikes = [];
+      }
+      const extendedLikesInfo = {
+        likesCount: post.likesInfo.usersWhoLiked.length,
+        dislikesCount: post.likesInfo.usersWhoDisliked.length,
+        myStatus,
+        newestLikes: newestLikes.map((usr) => {
+          return {
+            userId: usr.userId,
+            login: usr.login,
+            addedAt: new Date(usr.addedAt).toISOString(),
+          };
+        }),
+      };
+      const postToReturn = { ...post.toObject() };
+      delete postToReturn.likesInfo;
+      return { ...postToReturn, extendedLikesInfo };
+    });
+
+    const totalCountOfItems = (
+      await this.postModel.find({ blogId: blogId })
+    ).length;
+
+    const mappedResponse = {
+      pagesCount: Math.ceil(totalCountOfItems / pageSize),
+      page: pageNumber,
+      pageSize: pageSize,
+      totalCount: totalCountOfItems,
+      items: [...postsToShow],
+    };
+
+    return mappedResponse;
+
+  }
 
 }
