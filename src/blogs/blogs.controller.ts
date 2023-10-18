@@ -30,42 +30,49 @@ import { CommandBus } from '@nestjs/cqrs';
 import { GetAllPostsInBlogCommand } from '../posts/use-cases/get-posts-by-blog-id';
 import { CreatePostCommand } from '../posts/use-cases/create-post';
 
-@Controller(['blogs', 'sa/blogs'])
+@Controller()
 export class BlogsController {
   constructor(private commandBus: CommandBus) { }
 
-  @Get()
-  async getAllBlog(@Query() query: BlogPaganationQuery) {
+  @UseGuards(BasicAuthGuard)
+  @Get('sa/blogs')
+  async getAllBlogsSa(@Query() query: BlogPaganationQuery) {
+    return await this.commandBus.execute(new GetAllBlogsCommand(query));
+  }
+
+  @Get('blogs')
+  async getAllBlogsPublic(@Query() query: BlogPaganationQuery) {
     return await this.commandBus.execute(new GetAllBlogsCommand(query));
   }
 
   @UseGuards(BasicAuthGuard)
-  @Post()
+  @Post('sa/blogs')
   async createBlog(@Body() data: CreateBlogDto) {
     return await this.commandBus.execute(new CreateBlogCommand(data));
   }
 
-  @Get(':id')
-  async getBlogById(@Param('id') id: string) {
+  @Get('blogs/:id')
+  async getBlogByIdPublic(@Param('id') id: string) {
     return await this.commandBus.execute(new GetBlogByIdCommand(id));
   }
 
   @HttpCode(204)
   @UseGuards(BasicAuthGuard)
-  @Put(':id')
+  @Put('sa/blogs/:id')
   async updateBlog(@Param('id') id: string, @Body() data: UpdateBlogDto) {
     return await this.commandBus.execute(new UpdateBlogByIdCommand(id, data));
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(BasicAuthGuard)
-  @Delete(':id')
+  @Delete('sa/blogs/:id')
   async deleteBlogById(@Param('id') id: string) {
     return await this.commandBus.execute(new DeleteBlogByIdCommand(id));
   }
 
-  @Get(':blogId/posts')
-  getAllPostsInBlog(
+  @UseGuards(BasicAuthGuard)
+  @Get('sa/blogs/:blogId/posts')
+  getAllPostsInBlogSa(
     @Param('blogId') id: string,
     @Query() paganation: PostPaganationQuery,
     @Req() request: Request,
@@ -75,12 +82,34 @@ export class BlogsController {
     );
   }
 
+  @Get('blogs/:blogId/posts')
+  getAllPostsInBlogPublic(
+    @Param('blogId') id: string,
+    @Query() paganation: PostPaganationQuery,
+    @Req() request: Request,
+  ) {
+    return this.commandBus.execute(
+      new GetAllPostsInBlogCommand(paganation, id, request),
+    );
+  }
+
+
   @UseGuards(BasicAuthGuard)
-  @Post(':blogId/posts')
+  @Post('sa/blogs/:blogId/posts')
   async createPostByBlogId(
     @Param('blogId') blogId: string,
     @Body() data: CreatePostByBlogIdDto,
   ) {
     return await this.commandBus.execute(new CreatePostCommand(data, blogId));
+  }
+
+  @Put('sa/blogs/:blogId/posts/:postId')
+  updatePostAssignedToBlog() {
+    return 1
+  }
+
+  @Delete('sa/blogs/:blogId/posts/:postId')
+  deletePostAssignedToBlog() {
+    return 1
   }
 }
