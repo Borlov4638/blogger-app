@@ -4,7 +4,7 @@ import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { GetBlogByIdCommand } from 'src/blogs/use-cases/get-blog-by-id';
 import { PostRepositoryPg } from '../posts.repository-pg';
 
-interface IPostPaganationQuery {
+export interface IPostPaganationQuery {
   sortBy: string;
   sortDirection: string;
   pageNumber: number;
@@ -31,7 +31,6 @@ export class GetAllPostsInBlogUseCase
 
   async execute(command: GetAllPostsInBlogCommand) {
     const blogToFindPosts = await this.commandBus.execute(new GetBlogByIdCommand(command.blogId))
-
     if (!blogToFindPosts) {
       throw new NotFoundException();
     }

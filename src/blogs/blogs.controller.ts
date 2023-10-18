@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -18,7 +19,7 @@ import {
   CreatePostByBlogIdDto,
   UpdateBlogDto,
 } from './dto/blogs.dto';
-import { PostPaganationQuery } from '../posts/dto/post.dto';
+import { PostPaganationQuery, PostUpdateByBlogDto, PostUpdateDto } from '../posts/dto/post.dto';
 import { BasicAuthGuard } from '../auth/guards/auth.basic.guard';
 import { Request } from 'express';
 import { GetAllBlogsCommand } from './use-cases/get-all-blogs-with-pagonation';
@@ -29,6 +30,8 @@ import { DeleteBlogByIdCommand } from './use-cases/delete-blog-by-id';
 import { CommandBus } from '@nestjs/cqrs';
 import { GetAllPostsInBlogCommand } from '../posts/use-cases/get-posts-by-blog-id';
 import { CreatePostCommand } from '../posts/use-cases/create-post';
+import { UpdatePostAssignedToBlogCommand } from 'src/posts/use-cases/update-post-by-blog-id';
+import { DeletePostInBlogCommand } from 'src/posts/use-cases/delete-post-by-blog-id';
 
 @Controller()
 export class BlogsController {
@@ -103,13 +106,26 @@ export class BlogsController {
     return await this.commandBus.execute(new CreatePostCommand(data, blogId));
   }
 
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(BasicAuthGuard)
   @Put('sa/blogs/:blogId/posts/:postId')
-  updatePostAssignedToBlog() {
-    return 1
+  async updatePostAssignedToBlog(
+    @Param('blogId') blogId: string,
+    @Param('postId') postId: string,
+    @Body() data: PostUpdateByBlogDto,
+    @Req() request: Request
+  ) {
+    data.blogId = blogId
+    return await this.commandBus.execute(new UpdatePostAssignedToBlogCommand(postId, blogId, request, data))
   }
 
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(BasicAuthGuard)
   @Delete('sa/blogs/:blogId/posts/:postId')
-  deletePostAssignedToBlog() {
-    return 1
+  async deletePostAssignedToBlog(
+    @Param('blogId') blogId: string,
+    @Param('postId') postId: string
+  ) {
+    return await this.commandBus.execute(new DeletePostInBlogCommand(blogId, postId))
   }
 }

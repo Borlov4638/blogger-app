@@ -143,7 +143,6 @@ export class UsersRepository {
     }
     await user.confirm();
     await user.save();
-    console.log(user);
     return;
   }
 

@@ -19,7 +19,7 @@ export class CommentsService {
   constructor(
     @InjectModel(Comment.name) private commentModel: Model<Comment>,
     private jwtService: JwtService,
-  ) {}
+  ) { }
   async getCommentById(id: string, request: Request) {
     const foundedComment = await this.commentModel.findById(
       new Types.ObjectId(id),
@@ -82,7 +82,6 @@ export class CommentsService {
     const comment = await this.commentModel.findById(
       new Types.ObjectId(commentId),
     );
-    console.log('as');
     if (!comment) {
       throw new NotFoundException();
     }

@@ -15,8 +15,10 @@ import { UpdatePostUseCase } from './use-cases/update-post';
 import { DeletePostByIdUseCase } from './use-cases/delete-post-by-id';
 import { PostRepositoryPg } from './posts.repository-pg';
 import { BlogsModule } from 'src/blogs/blogs.module';
+import { UpdatePostAssignedToBlogUseCase } from './use-cases/update-post-by-blog-id';
+import { DeletePostInBlogsUseCase } from './use-cases/delete-post-by-blog-id';
 
-const UseCases = [CreatePostUseCase, GetPostByIdUseCase, GetAllPostsInBlogUseCase, GetAllPostsUseCase, UpdatePostUseCase, DeletePostByIdUseCase];
+const UseCases = [DeletePostInBlogsUseCase, CreatePostUseCase, GetPostByIdUseCase, GetAllPostsInBlogUseCase, GetAllPostsUseCase, UpdatePostUseCase, DeletePostByIdUseCase, UpdatePostAssignedToBlogUseCase];
 let imports = []
 let providers = []
 let exporters = []

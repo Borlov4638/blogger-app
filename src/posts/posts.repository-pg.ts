@@ -275,7 +275,6 @@ export class PostRepositoryPg {
       LIMIT ${pageSize}
       OFFSET ${itemsToSkip}
     `)
-    console.log(findedPosts)
 
     const postToReturn = findedPosts.map(p => {
       // const postsLikes: IPostsLikes[] = await this.dataSource.query(`SELECT * FROM posts_likes WHERE "postId" = '${p.id}'`)

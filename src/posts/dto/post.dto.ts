@@ -1,6 +1,7 @@
 import {
   IsEnum,
   IsNotEmpty,
+  IsOptional,
   IsString,
   Length,
   ValidationArguments,
@@ -78,6 +79,27 @@ export class PostPaganationQuery {
   pageNumber: number;
   pageSize: number;
 }
+
+export class PostUpdateByBlogDto {
+  @IsString()
+  @Transform(({ value }) => value.trim())
+  @IsNotEmpty()
+  @Length(0, 30)
+  title: string;
+  @IsString()
+  @Transform(({ value }) => value.trim())
+  @IsNotEmpty()
+  @Length(0, 100)
+  shortDescription: string;
+  @IsString()
+  @Transform(({ value }) => value.trim())
+  @IsNotEmpty()
+  @Length(0, 1000)
+  content: string;
+  @IsOptional()
+  blogId: string
+}
+
 
 export class PostUpdateDto {
   @IsString()

@@ -92,7 +92,6 @@ export class PostRepository {
           user = null;
         }
         if (user) {
-          console.log(post);
           myStatus = post.getStatus(user.id);
         }
       }
@@ -115,7 +114,6 @@ export class PostRepository {
       };
       const postToReturn = { ...post.toObject() };
       delete postToReturn.likesInfo;
-      console.log(extendedLikesInfo);
       return { ...postToReturn, extendedLikesInfo };
     });
 

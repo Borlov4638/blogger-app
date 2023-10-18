@@ -63,7 +63,6 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
     const user = await this.usersRepo.getUserByLoginOrEmail(
       credentials.loginOrEmail,
     );
-    console.log(user)
 
     if (!user) {
       throw new UnauthorizedException();

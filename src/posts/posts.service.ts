@@ -47,7 +47,7 @@ export class PostsService {
     @InjectModel(Comment.name) private commentModel: Model<Comment>,
     private readonly postRepo: PostRepository,
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
   async getAllPosts(
     postPagonationQuery: IPostPaganationQuery,
@@ -85,7 +85,6 @@ export class PostsService {
           user = null;
         }
         if (user) {
-          console.log(post);
           myStatus = post.getStatus(user.id);
         }
       }
@@ -108,7 +107,6 @@ export class PostsService {
       };
       const postToReturn = { ...post.toObject() };
       delete postToReturn.likesInfo;
-      console.log(extendedLikesInfo);
       return { ...postToReturn, extendedLikesInfo };
     });
 
@@ -268,12 +266,10 @@ export class PostsService {
           user = null;
         }
         if (user) {
-          console.log(post);
           myStatus = post.getStatus(user.id);
         }
       }
       let newestLikes;
-      console.log(post);
       try {
         newestLikes = post.likesInfo.usersWhoLiked
           //@ts-ignore
@@ -296,7 +292,6 @@ export class PostsService {
       };
       const postToReturn = { ...post.toObject() };
       delete postToReturn.likesInfo;
-      console.log(postToReturn);
       return { ...postToReturn, extendedLikesInfo };
     });
 
@@ -427,7 +422,6 @@ export class PostsService {
     const user: IUsersAcessToken = await this.jwtService.verifyAsync(
       request.headers.authorization.split(' ')[1],
     );
-    console.log({ user: user.login, status: likeStatus });
     const currentLikeStatus = post.getStatus(user.id);
     switch (likeStatus) {
       case LikeStatus.LIKE:
