@@ -24,7 +24,6 @@ export class GetPostByIdUseCase implements ICommandHandler<GetPostByIdCommand> {
 
   async execute(command: GetPostByIdCommand) {
     const findedPost = await this.postRepo.findPostById(command.postId)
-
     if (!findedPost) {
       throw new NotFoundException('no such post');
     }

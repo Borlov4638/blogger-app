@@ -1,8 +1,9 @@
 import { CommandBus, CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { GetAllPostsInBlogCommand, IPostPaganationQuery } from "./get-posts-by-blog-id";
 import { Request } from "express";
-import { ForbiddenException } from "@nestjs/common";
+import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { UpdatePostCommand } from "./update-post";
+import { GetPostByIdCommand } from "./get-post-by-id";
 interface IPostUpdate {
     title: string;
     shortDescription: string;
@@ -20,6 +21,10 @@ export class UpdatePostAssignedToBlogUseCase implements ICommandHandler<UpdatePo
     ) { }
 
     async execute(command: UpdatePostAssignedToBlogCommand): Promise<any> {
+        const post = await this.commandBus.execute(new GetPostByIdCommand(command.postId, command.request))
+        if (!post) {
+            throw new NotFoundException()
+        }
         const blogPostsIds = (await this.commandBus.execute(new GetAllPostsInBlogCommand({ pageSize: 1000 } as any, command.blogId, command.request))).items
             .map(p => p.id)
 
