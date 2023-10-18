@@ -88,7 +88,10 @@ export class PostRepositoryPg {
       : 10;
     const itemsToSkip = (pageNumber - 1) * pageSize;
     const findedPosts: IPostPostgres[] = await this.dataSource.query(`
-      SELECT * FROM posts
+      SELECT posts.*, blogs.name as "blogName"
+      FROM posts
+      LEFT JOIN blogs
+      on posts."blogId" = blogs."id"
       ORDER BY "${sotringQuery}" ${sortDirection}
       LIMIT ${pageSize}
       OFFSET ${itemsToSkip}
@@ -105,8 +108,9 @@ export class PostRepositoryPg {
         extendedLikesInfo: {
           likesCount: 0,
           dislikesCount: 0,
-          myStatus: LikeStatus.NONE
-        }
+          myStatus: LikeStatus.NONE,
+          newestLikes: []
+        },
       }
       return post
     })
@@ -182,14 +186,21 @@ export class PostRepositoryPg {
       extendedLikesInfo: {
         likesCount: 0,
         dislikesCount: 0,
-        myStatus: LikeStatus.NONE
-      }
+        myStatus: LikeStatus.NONE,
+        newestLikes: []
+      },
     }
     return postToReturn
   }
 
   async findPostById(postId: string) {
-    const post: IPostPostgres = (await this.dataSource.query(`SELECT * FROM posts WHERE "id" = '${postId}'`))[0]
+    const post: IPostPostgres = (await this.dataSource.query(`
+      SELECT posts.*, blogs.name as "blogName"
+      FROM posts
+      left join blogs
+      on posts."blogId" = blogs.id
+      WHERE posts."id" = '${postId}'
+    `))[0]
     if (!post) {
       return false
     }
@@ -246,8 +257,11 @@ export class PostRepositoryPg {
     const itemsToSkip = (pageNumber - 1) * pageSize;
 
     const findedPosts: IPostPostgres[] = await this.dataSource.query(`
-      SELECT * FROM posts
-      WHERE "blogId" = '${blogId}'
+      SELECT posts.*, blogs.name as "blogName"
+      FROM posts
+      left join blogs
+      on posts."blogId" = blogs.id
+      WHERE posts."blogId" = '2'
       ORDER BY "${sotringQuery}" ${sortDirection}
       LIMIT ${pageSize}
       OFFSET ${itemsToSkip}
@@ -264,8 +278,9 @@ export class PostRepositoryPg {
         extendedLikesInfo: {
           likesCount: 0,
           dislikesCount: 0,
-          myStatus: LikeStatus.NONE
-        }
+          myStatus: LikeStatus.NONE,
+          newestLikes: []
+        },
       }
       return post
     })
