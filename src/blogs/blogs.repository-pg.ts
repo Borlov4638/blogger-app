@@ -45,7 +45,7 @@ export class BlogsRepositoryPg {
     const blogsArray = await this.dataSource.query(`
       SELECT * FROM blogs
       WHERE lower ("name") LIKE LOWER ('%${pagonation.searchNameTerm}%')
-      ORDER BY "${pagonation.sortBy}"
+      ORDER BY "${pagonation.sortBy}" ${pagonation.sortDirection}
       LIMIT ${pagonation.pageSize}
       OFFSET (${pagonation.itemsToSkip})
     `)

@@ -176,9 +176,17 @@ export class PostRepositoryPg {
   }
 
   async createPost(blogToPost, data) {
-    const post: IPostPostgres = (await this.dataSource.query(`INSERT INTO posts ("title", "shortDescription", "content", "blogId") 
+    const createdPost: IPostPostgres = (await this.dataSource.query(`INSERT INTO posts ("title", "shortDescription", "content", "blogId") 
     VALUES ('${data.title}', '${data.shortDescription}', '${data.content}', '${blogToPost.id}')
     RETURNING *
+    `))[0]
+
+    const post = (await this.dataSource.query(`
+      SELECT posts.*, blogs.name as "blogName"
+      FROM posts
+      left join blogs
+      on posts."blogId" = blogs."id"
+      WHERE posts."id" = '${createdPost.id}'
     `))[0]
     const postToReturn = {
       ...post,
@@ -262,11 +270,12 @@ export class PostRepositoryPg {
       FROM posts
       left join blogs
       on posts."blogId" = blogs.id
-      WHERE posts."blogId" = '2'
+      WHERE posts."blogId" = '${blogId}'
       ORDER BY "${sotringQuery}" ${sortDirection}
       LIMIT ${pageSize}
       OFFSET ${itemsToSkip}
     `)
+    console.log(findedPosts)
 
     const postToReturn = findedPosts.map(p => {
       // const postsLikes: IPostsLikes[] = await this.dataSource.query(`SELECT * FROM posts_likes WHERE "postId" = '${p.id}'`)

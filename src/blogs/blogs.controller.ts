@@ -72,23 +72,23 @@ export class BlogsController {
 
   @UseGuards(BasicAuthGuard)
   @Get('sa/blogs/:blogId/posts')
-  getAllPostsInBlogSa(
+  async getAllPostsInBlogSa(
     @Param('blogId') id: string,
     @Query() paganation: PostPaganationQuery,
     @Req() request: Request,
   ) {
-    return this.commandBus.execute(
+    return await this.commandBus.execute(
       new GetAllPostsInBlogCommand(paganation, id, request),
     );
   }
 
   @Get('blogs/:blogId/posts')
-  getAllPostsInBlogPublic(
+  async getAllPostsInBlogPublic(
     @Param('blogId') id: string,
     @Query() paganation: PostPaganationQuery,
     @Req() request: Request,
   ) {
-    return this.commandBus.execute(
+    return await this.commandBus.execute(
       new GetAllPostsInBlogCommand(paganation, id, request),
     );
   }
