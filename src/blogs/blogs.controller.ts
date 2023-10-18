@@ -30,7 +30,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { GetAllPostsInBlogCommand } from '../posts/use-cases/get-posts-by-blog-id';
 import { CreatePostCommand } from '../posts/use-cases/create-post';
 
-@Controller('blogs')
+@Controller(['blogs', 'sa/blogs'])
 export class BlogsController {
   constructor(private commandBus: CommandBus) { }
 

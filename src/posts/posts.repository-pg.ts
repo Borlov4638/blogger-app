@@ -61,6 +61,7 @@ export class PostRepositoryPg {
         return 'createdAt';
     }
   }
+
   commentsSortingQuery(sortBy: string, sortDirection: number): {} {
     switch (sortBy) {
       case 'id':

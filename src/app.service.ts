@@ -22,6 +22,8 @@ export class AppService {
     await this.dataSource.query(`
     DELETE FROM users;
     DELETE FROM sessions;
+    DELETE FROM blogs;
+    DELETE FROM posts;
     `)
     // await this.blogsModel.deleteMany({});
     // await this.postModel.deleteMany({});
