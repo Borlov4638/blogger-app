@@ -307,6 +307,7 @@ export class PostsService {
 
     return mappedResponse;
   }
+
   async commentPostById(postId: string, request: Request, content: string) {
     const postToComment = await this.postModel
       .findById(new Types.ObjectId(postId), { _id: false, __v: false })
@@ -340,6 +341,7 @@ export class PostsService {
       };
     });
   }
+
   async getAllPostsComments(
     postId: string,
     postsCommentsPaganation: PostsCommentsPaganation,

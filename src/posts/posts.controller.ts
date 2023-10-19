@@ -29,6 +29,7 @@ import { GetPostByIdCommand } from './use-cases/get-post-by-id';
 import { GetAllPostsCommand } from './use-cases/get-all-posts';
 import { UpdatePostCommand } from './use-cases/update-post';
 import { DeletePostByIdCommand } from './use-cases/delete-post-by-id';
+import { CreateCommentToPostCommand } from 'src/comments/use-cases/create-comment-to-post';
 
 @Controller('posts')
 export class PostController {
@@ -82,12 +83,11 @@ export class PostController {
     @Req() request: Request,
     @Body() data: PostCreateNewCommentDto,
   ) {
-    // return await this.postService.commentPostById(
+    // return await this.commandBus.execute(new CreateCommentToPostCommand(
     //   postId,
     //   request,
     //   data.content,
-    // );
-    return
+    // ))
   }
   @Get(':id/comments')
   async getAllPostsComments(
