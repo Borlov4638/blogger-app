@@ -50,7 +50,7 @@ export class CommentsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(BearerAccessAuthGuard)
   @Put(':id/like-status')
-  async changeLikeStatus(
+  async changessLikeStatus(
     @Param('id') id: string,
     @Body() body: CommentChangeLikeStatusDto,
     @Req() request: Request,

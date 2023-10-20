@@ -1,5 +1,4 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { CommentRepository } from "../comments.repository";
 import { NotFoundException } from "@nestjs/common";
 import { Request } from "express";
 import { LikeStatus } from "src/enums/like-status.enum";
@@ -24,6 +23,7 @@ export class GetCommentByIdUseCase implements ICommandHandler<GetCommentByIdComm
     ) { }
 
     async execute(command: GetCommentByIdCommand) {
+        debugger;
         const foundedComment = await this.commentRepo.getCommentById(command.id)
 
         if (!foundedComment) {
@@ -38,7 +38,7 @@ export class GetCommentByIdUseCase implements ICommandHandler<GetCommentByIdComm
         let myStatus = LikeStatus.NONE;
         if (token) {
             try {
-                user = this.jwtService.verify(token);
+                user = await this.jwtService.verifyAsync(token);
             } catch {
                 user = null;
             }
@@ -50,7 +50,8 @@ export class GetCommentByIdUseCase implements ICommandHandler<GetCommentByIdComm
         const likesCount = foundedComment.likesInfo.usersWhoLiked.length;
         const dislikesCount = foundedComment.likesInfo.usersWhoDisliked.length;
         return {
-            ...foundedComment.toObject(),
+            // ...foundedComment.toObject(),                                MONGO
+            ...foundedComment,
             likesInfo: { likesCount, dislikesCount, myStatus },
         };
 

@@ -28,7 +28,7 @@ export class ChengeCommentLikeStatusUseCase implements ICommandHandler<ChengeCom
     ) { }
 
     async execute(command: ChengeCommentLikeStatusCommand) {
-
+        debugger;
         const comment = await this.commentRepo.getCommentById(command.commentId)
         if (!comment) {
             throw new NotFoundException();

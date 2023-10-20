@@ -83,11 +83,11 @@ export class PostController {
     @Req() request: Request,
     @Body() data: PostCreateNewCommentDto,
   ) {
-    // return await this.commandBus.execute(new CreateCommentToPostCommand(
-    //   postId,
-    //   request,
-    //   data.content,
-    // ))
+    return await this.commandBus.execute(new CreateCommentToPostCommand(
+      postId,
+      request,
+      data.content,
+    ))
   }
   @Get(':id/comments')
   async getAllPostsComments(
