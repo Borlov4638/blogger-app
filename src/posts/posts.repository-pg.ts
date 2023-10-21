@@ -88,79 +88,65 @@ export class PostRepositoryPg {
       ? +postPagonationQuery.pageSize
       : 10;
     const itemsToSkip = (pageNumber - 1) * pageSize;
-    const findedPosts: IPostPostgres[] = await this.dataSource.query(`
-      SELECT posts.*, blogs.name as "blogName"
+    let user: IUsersAcessToken;
+    try {
+      user = await this.jwtService.verifyAsync(
+        request.headers.authorization.split(' ')[1],
+      );
+    }
+    catch {
+      user = { id: '0', email: '', login: '' }
+    }
+
+    const findedPosts = await this.dataSource.query(`
+      SELECT posts.*, blogs.name AS "blogName",
+      COALESCE((SELECT status from posts_likes WHERE "userId" = '${user.id}' AND "postId" = posts."id"), 'None') as status,
+      COALESCE((
+        SELECT json_agg(row) 
+        FROM (
+            SELECT "addedAt", "userId", "login"
+            FROM posts_likes
+            WHERE "postId" = posts."id" AND "status" = 'Like'
+            ORDER BY "addedAt" desc
+        ) row
+      ),'[]') as likes_array,
+      COALESCE((
+          SELECT json_agg(row) 
+          FROM (
+              SELECT posts_likes.*
+              FROM posts_likes
+              WHERE "postId" = posts."id" AND "status" = 'Dislike'
+          ) row
+      ),'[]') as dislikes_array      
       FROM posts
       LEFT JOIN blogs
-      on posts."blogId" = blogs."id"
+      ON posts."blogId" = blogs."id"
+      GROUP BY posts."id", blogs."name"
       ORDER BY "${sotringQuery}" ${sortDirection}
       LIMIT ${pageSize}
       OFFSET ${itemsToSkip}
     `)
-
+    console.log(findedPosts)
     const postToReturn = findedPosts.map(p => {
-      // const postsLikes: IPostsLikes[] = await this.dataSource.query(`SELECT * FROM posts_likes WHERE "postId" = '${p.id}'`)
-
       const post =
       {
-        ...p,
+
         id: p.id.toString(),
+        title: p.title,
+        shortDescription: p.shortDescription,
+        content: p.content,
         blogId: p.blogId.toString(),
+        blogName: p.blogName,
+        createdAt: p.createdAt,
         extendedLikesInfo: {
-          likesCount: 0,
-          dislikesCount: 0,
-          myStatus: LikeStatus.NONE,
-          newestLikes: []
+          likesCount: p.likes_array.length,
+          dislikesCount: p.dislikes_array.length,
+          myStatus: p.status,
+          newestLikes: p.likes_array.slice(0, 2).map(u => { return { ...u, userId: u.userId.toString() } })
         },
       }
       return post
     })
-    // const findedPosts = await this.postModel
-    //   .find({}, { _id: false, __v: false })
-    //   .sort(sotringQuery)
-    //   .skip(itemsToSkip)
-    //   .limit(pageSize);
-
-    // const token = request.headers.authorization;
-
-    let myStatus: string = LikeStatus.NONE;
-    let user: IUsersAcessToken;
-    // const postsToShow = findedPosts.map((post) => {
-    //   if (token) {
-    //     try {
-    //       user = this.jwtService.verify(
-    //         request.headers.authorization.split(' ')[1],
-    //       );
-    //     } catch {
-    //       user = null;
-    //     }
-    //     if (user) {
-    //       console.log(post);
-    //       myStatus = post.getStatus(user.id);
-    //     }
-    //   }
-    //   const newestLikes = post.likesInfo.usersWhoLiked
-    //     //@ts-ignore
-    //     .sort((a, b) => b.addedAt - a.addedAt)
-    //     .slice(0, 3);
-
-    //   const extendedLikesInfo = {
-    //     likesCount: post.likesInfo.usersWhoLiked.length,
-    //     dislikesCount: post.likesInfo.usersWhoDisliked.length,
-    //     myStatus,
-    //     newestLikes: newestLikes.map((usr) => {
-    //       return {
-    //         userId: usr.userId,
-    //         login: usr.login,
-    //         addedAt: new Date(usr.addedAt).toISOString(),
-    //       };
-    //     }),
-    //   };
-    //   const postToReturn = { ...post.toObject() };
-    //   delete postToReturn.likesInfo;
-    //   console.log(extendedLikesInfo);
-    //   return { ...postToReturn, extendedLikesInfo };
-    // });
 
     const totalCountOfItems = (await this.dataSource.query(`SELECT * FROM posts`)).length;
 
@@ -272,91 +258,68 @@ export class PostRepositoryPg {
       ? +postPagonationQuery.pageSize
       : 10;
     const itemsToSkip = (pageNumber - 1) * pageSize;
+    let user: IUsersAcessToken;
+    try {
+      user = await this.jwtService.verifyAsync(
+        request.headers.authorization.split(' ')[1],
+      );
+    }
+    catch {
+      user = { id: '0', email: '', login: '' }
+    }
 
-    const findedPosts: IPostPostgres[] = await this.dataSource.query(`
-      SELECT posts.*, blogs.name as "blogName"
+    const findedPosts = await this.dataSource.query(`
+      SELECT posts.*, blogs.name AS "blogName",
+      COALESCE((SELECT status from posts_likes WHERE "userId" = '${user.id}' AND "postId" = posts."id"), 'None') as status,
+      COALESCE((
+        SELECT json_agg(row) 
+        FROM (
+            SELECT "addedAt", "userId", "login"
+            FROM posts_likes
+            WHERE "postId" = posts."id" AND "status" = 'Like'
+            ORDER BY "addedAt" desc
+        ) row
+      ),'[]') as likes_array,
+      COALESCE((
+          SELECT json_agg(row) 
+          FROM (
+              SELECT posts_likes.*
+              FROM posts_likes
+              WHERE "postId" = posts."id" AND "status" = 'Dislike'
+          ) row
+      ),'[]') as dislikes_array      
       FROM posts
-      left join blogs
-      on posts."blogId" = blogs.id
+      LEFT JOIN blogs
+      ON posts."blogId" = blogs."id"
       WHERE posts."blogId" = '${blogId}'
+      GROUP BY posts."id", blogs."name"
       ORDER BY "${sotringQuery}" ${sortDirection}
       LIMIT ${pageSize}
       OFFSET ${itemsToSkip}
     `)
-
+    console.log(findedPosts)
     const postToReturn = findedPosts.map(p => {
-      // const postsLikes: IPostsLikes[] = await this.dataSource.query(`SELECT * FROM posts_likes WHERE "postId" = '${p.id}'`)
-
       const post =
       {
-        ...p,
+
         id: p.id.toString(),
+        title: p.title,
+        shortDescription: p.shortDescription,
+        content: p.content,
         blogId: p.blogId.toString(),
+        blogName: p.blogName,
+        createdAt: p.createdAt,
         extendedLikesInfo: {
-          likesCount: 0,
-          dislikesCount: 0,
-          myStatus: LikeStatus.NONE,
-          newestLikes: []
+          likesCount: p.likes_array.length,
+          dislikesCount: p.dislikes_array.length,
+          myStatus: p.status,
+          newestLikes: p.likes_array.slice(0, 2).map(u => { return { ...u, userId: u.userId.toString() } })
         },
       }
       return post
     })
-    // const findedPosts =
-    //   await this.postModel
-    //     .find({ blogId: blogId }, { _id: false, __v: false })
-    //     .sort(sotringQuery)
-    //     .skip(itemsToSkip)
-    //     .limit(pageSize);
 
-    // let token: string;
-    // try {
-    //   token = request.headers.authorization.split(' ')[1];
-    // } catch {
-    //   token = null;
-    // }
-    // let myStatus: string = LikeStatus.NONE;
-    // let user: IUsersAcessToken;
-    // const postsToShow = findedPosts.map((post) => {
-    //   if (token) {
-    //     try {
-    //       user = this.jwtService.verify(token);
-    //     } catch {
-    //       user = null;
-    //     }
-    //     if (user) {
-    //       myStatus = post.getStatus(user.id);
-    //     }
-    //   }
-    //   let newestLikes;
-    //   try {
-    //     newestLikes = post.likesInfo.usersWhoLiked
-    //       //@ts-ignore
-    //       .sort((a, b) => b.addedAt - a.addedAt)
-    //       .slice(0, 3);
-    //   } catch {
-    //     newestLikes = [];
-    //   }
-    //   const extendedLikesInfo = {
-    //     likesCount: post.likesInfo.usersWhoLiked.length,
-    //     dislikesCount: post.likesInfo.usersWhoDisliked.length,
-    //     myStatus,
-    //     newestLikes: newestLikes.map((usr) => {
-    //       return {
-    //         userId: usr.userId,
-    //         login: usr.login,
-    //         addedAt: new Date(usr.addedAt).toISOString(),
-    //       };
-    //     }),
-    //   };
-    //   const postToReturn = { ...post.toObject() };
-    //   delete postToReturn.likesInfo;
-    //   return { ...postToReturn, extendedLikesInfo };
-    // });
-
-    const totalCountOfItems = (await this.dataSource.query(`
-      SELECT * FROM posts
-      WHERE "blogId" = '${blogId}'
-    `)).length
+    const totalCountOfItems = (await this.dataSource.query(`SELECT * FROM posts WHERE "blogId" = '${blogId}'`)).length;
 
     const mappedResponse = {
       pagesCount: Math.ceil(totalCountOfItems / pageSize),
