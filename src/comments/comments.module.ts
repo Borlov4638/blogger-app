@@ -10,8 +10,9 @@ import { UpdateCommentByIdUseCase } from './use-cases/update-comment';
 import { ChengeCommentLikeStatusUseCase } from './use-cases/change-comment-like-status';
 import { DeleteCommandByIdUseCase } from './use-cases/delete-comment';
 import { CommentRepositoryPg } from './comments.repository-pg';
+import { GetAllPostsCommentsUseCase } from './use-cases/get-all-comments-in-post';
 
-const useCases = [DeleteCommandByIdUseCase, ChengeCommentLikeStatusUseCase, CreateCommentToPostUseCase, GetCommentByIdUseCase, UpdateCommentByIdUseCase]
+const useCases = [GetAllPostsCommentsUseCase, DeleteCommandByIdUseCase, ChengeCommentLikeStatusUseCase, CreateCommentToPostUseCase, GetCommentByIdUseCase, UpdateCommentByIdUseCase]
 
 let imports = []
 let exporters = []

@@ -4,6 +4,8 @@ import { Model, Types } from "mongoose";
 import { Comment, CommentDocument } from '../entyties/comments.schema';
 import { LikeStatus } from "src/enums/like-status.enum";
 import { UserDocument } from "src/entyties/users.chema";
+import { JwtService } from "@nestjs/jwt";
+import { Request } from "express";
 
 interface IUsersAcessToken {
     id: string;
@@ -14,7 +16,23 @@ interface IUsersAcessToken {
 
 @Injectable()
 export class CommentRepository {
-    constructor(@InjectModel(Comment.name) private commentModel: Model<Comment>) { }
+    constructor(@InjectModel(Comment.name) private commentModel: Model<Comment>,
+        private jwtService: JwtService
+    ) { }
+
+    commentsSortingQuery(sortBy: string, sortDirection: number): {} {
+        switch (sortBy) {
+            case 'id':
+                return { id: sortDirection };
+            case 'content':
+                return { content: sortDirection };
+            case 'createdAt':
+                return { createdAt: sortDirection };
+            default:
+                return { createdAt: 1 };
+        }
+    }
+
 
     async createComment(commentatorInfo, content: string, postId: string) {
 
@@ -73,5 +91,66 @@ export class CommentRepository {
 
     async deleteComment(comment: CommentDocument) {
         await comment.deleteOne();
+    }
+
+    async getAllCommentsInPost(postsCommentsPaganation, postId: string, request: Request) {
+        const sortBy = postsCommentsPaganation.sortBy
+            ? postsCommentsPaganation.sortBy
+            : 'createdAt';
+        const sortDirection =
+            postsCommentsPaganation.sortDirection === 'asc' ? 1 : -1;
+        const sotringQuery = this.commentsSortingQuery(
+            sortBy,
+            sortDirection,
+        );
+        const pageNumber = postsCommentsPaganation.pageNumber
+            ? +postsCommentsPaganation.pageNumber
+            : 1;
+        const pageSize = postsCommentsPaganation.pageSize
+            ? +postsCommentsPaganation.pageSize
+            : 10;
+        const itemsToSkip = (pageNumber - 1) * pageSize;
+
+        const selectedComments = await this.commentModel
+            .find({ postId }, { _id: false, postId: false, __v: false })
+            .sort(sotringQuery)
+            .skip(itemsToSkip)
+            .limit(pageSize);
+
+        let token: string;
+        if (request.headers.authorization) {
+            token = request.headers.authorization.split(' ')[1];
+        }
+        const commentsToSend = selectedComments.map((comm) => {
+            let myStatus = LikeStatus.NONE;
+            let user: IUsersAcessToken;
+            if (token) {
+                try {
+                    user = this.jwtService.verify(token);
+                } catch {
+                    user = null;
+                }
+
+                if (user) {
+                    myStatus = comm.getLikeStatus(user.id);
+                }
+            }
+            const likesCount = comm.likesInfo.usersWhoLiked.length;
+            const dislikesCount = comm.likesInfo.usersWhoDisliked.length;
+            return {
+                ...comm.toObject(),
+                likesInfo: { likesCount, dislikesCount, myStatus },
+            };
+        });
+        const totalCountOfItems = (await this.commentModel.find({ postId })).length;
+        const mappedResponse = {
+            pagesCount: Math.ceil(totalCountOfItems / pageSize),
+            page: pageNumber,
+            pageSize: pageSize,
+            totalCount: totalCountOfItems,
+            items: [...commentsToSend],
+        };
+        return mappedResponse;
+
     }
 }
