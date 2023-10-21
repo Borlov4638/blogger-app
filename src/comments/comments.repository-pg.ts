@@ -119,7 +119,7 @@ export class CommentRepositoryPg {
                 userId: newComment.userId.toString(),
                 userLogin: newComment.userLogin
             },
-            cretedAt: newComment.createdAt,
+            createdAt: newComment.createdAt,
             likesInfo: {
                 likesCount: 0,
                 dislikesCount: 0,
@@ -154,7 +154,7 @@ export class CommentRepositoryPg {
                 userId: findedComment.userId.toString(),
                 userLogin: findedComment.userLogin
             },
-            cretedAt: findedComment.createdAt,
+            createdAt: findedComment.createdAt,
             likesInfo: {
                 usersWhoLiked: commentLikes,
                 usersWhoDisliked: commentDislikes
@@ -180,7 +180,7 @@ export class CommentRepositoryPg {
                 userId: updatedComment.userId.toString(),
                 userLogin: updatedComment.userLogin
             },
-            cretedAt: updatedComment.createdAt,
+            createdAt: updatedComment.createdAt,
             likesInfo: {
                 likesCount: 0,
                 dislikesCount: 0,
