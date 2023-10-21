@@ -83,8 +83,8 @@ export class CommentRepositoryPg {
                 },
                 createdAt: c.createdAt,
                 likesInfo: {
-                    likesCount: c.like_count,
-                    dislikesCount: c.dislike_count,
+                    likesCount: parseInt(c.like_count),
+                    dislikesCount: parseInt(c.dislike_count),
                     myStatus: c.status
                 }
 
