@@ -248,9 +248,17 @@ export class PostRepositoryPg {
     return (await this.dataSource.query(`DELETE FROM posts WHERE "id" = '${id}'`))[1]
   }
 
-  getStatus(userId: string) {
-    return LikeStatus.NONE
+  async getStatus(userId: string, postId: string) {
+    const status = (await this.dataSource.query(`
+      SELECT "status"
+      FROM posts_likes
+      WHERE "postId" = '${postId}' AND "userId" = '${userId}'
+    `))[0]
+
+    return !status ? LikeStatus.NONE : status.status
   }
+
+
   async getAllPostsInBlog(postPagonationQuery: IPostPaganationQuery, blogId: string, request: Request) {
     const sortBy = postPagonationQuery.sortBy
       ? postPagonationQuery.sortBy
@@ -361,5 +369,53 @@ export class PostRepositoryPg {
     return mappedResponse;
 
   }
+
+  async changePostLikeStatus(post, user: IUsersAcessToken, likeStatus: LikeStatus) {
+    const currentLikeStatus = await this.getStatus(user.id, post.id);
+    console.log(currentLikeStatus)
+    switch (likeStatus) {
+      case LikeStatus.LIKE:
+        if (currentLikeStatus === LikeStatus.LIKE) {
+          break;
+        }
+        await this.resetLikeStatus(post.id, user.id);
+        await this.likePost(post.id, user);
+        break;
+      case LikeStatus.DISLIKE:
+        if (currentLikeStatus === LikeStatus.DISLIKE) {
+          break;
+        }
+        await this.resetLikeStatus(post.id, user.id);
+        await this.dislikePost(post.id, user);
+        break;
+      case LikeStatus.NONE:
+        await this.resetLikeStatus(post.id, user.id);
+        break;
+    }
+
+  }
+
+  private async resetLikeStatus(postId: string, userId: string) {
+    await this.dataSource.query(`
+      DELETE FROM posts_likes
+      WHERE "postId" = '${postId}' AND "userId" = '${userId}'
+    `)
+  }
+
+  private async likePost(postId: string, user: IUsersAcessToken) {
+    await this.dataSource.query(`
+      INSERT INTO posts_likes ("postId", "userId", "login", "status")
+      VALUES ('${postId}', '${user.id}', '${user.login}', 'Like')
+    `)
+  }
+
+  private async dislikePost(postId: string, user: IUsersAcessToken) {
+    await this.dataSource.query(`
+      INSERT INTO posts_likes ("postId", "userId", "login", "status")
+      VALUES ('${postId}', '${user.id}', '${user.login}', 'Dislike')
+    `)
+  }
+
+
 
 }

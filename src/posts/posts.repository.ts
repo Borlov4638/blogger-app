@@ -264,4 +264,29 @@ export class PostRepository {
 
   }
 
+  async changePostLikeStatus(post: PostDocument, user: IUsersAcessToken, likeStatus: LikeStatus) {
+    const currentLikeStatus = post.getStatus(user.id);
+    switch (likeStatus) {
+      case LikeStatus.LIKE:
+        if (currentLikeStatus === LikeStatus.LIKE) {
+          break;
+        }
+        post.like(user.login, user.id);
+        await post.save();
+        break;
+      case LikeStatus.DISLIKE:
+        if (currentLikeStatus === LikeStatus.DISLIKE) {
+          break;
+        }
+        post.dislike(user.id);
+        await post.save();
+        break;
+      case LikeStatus.NONE:
+        post.resetLikeStatus(user.id);
+        await post.save();
+        break;
+    }
+
+  }
+
 }

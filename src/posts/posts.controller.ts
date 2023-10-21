@@ -31,6 +31,7 @@ import { UpdatePostCommand } from './use-cases/update-post';
 import { DeletePostByIdCommand } from './use-cases/delete-post-by-id';
 import { CreateCommentToPostCommand } from 'src/comments/use-cases/create-comment-to-post';
 import { GetAllPostsCommentsCommand } from 'src/comments/use-cases/get-all-comments-in-post';
+import { ChangePostsLikeStatusCommand } from './use-cases/change-post-like-status';
 
 @Controller('posts')
 export class PostController {
@@ -112,11 +113,11 @@ export class PostController {
     @Body() data: PostLikeStatusDto,
     @Req() request: Request,
   ) {
-    // return await this.postService.changeLikeStatus(
-    //   postId,
-    //   data.likeStatus,
-    //   request,
-    // );
-    return
+    return await this.commandBus.execute(new ChangePostsLikeStatusCommand(
+      postId,
+      data.likeStatus,
+      request,
+    ))
+
   }
 }

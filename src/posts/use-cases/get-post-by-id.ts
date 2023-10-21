@@ -40,7 +40,7 @@ export class GetPostByIdUseCase implements ICommandHandler<GetPostByIdCommand> {
     let myStatus = LikeStatus.NONE;
     if (user) {
       // myStatus = findedPost.getStatus(user.id);                  MONGO
-      myStatus = this.postRepo.getStatus(user.id);
+      myStatus = await this.postRepo.getStatus(user.id, findedPost.id);
 
     }
 
