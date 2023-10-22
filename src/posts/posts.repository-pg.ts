@@ -142,7 +142,7 @@ export class PostRepositoryPg {
           likesCount: p.likes_array.length,
           dislikesCount: p.dislikes_array.length,
           myStatus: p.status,
-          newestLikes: p.likes_array.slice(0, 2).map(u => { return { ...u, userId: u.userId.toString() } })
+          newestLikes: p.likes_array.slice(0, 3).map(u => { return { ...u, userId: u.userId.toString() } })
         },
       }
       return post
@@ -313,7 +313,7 @@ export class PostRepositoryPg {
           likesCount: p.likes_array.length,
           dislikesCount: p.dislikes_array.length,
           myStatus: p.status,
-          newestLikes: p.likes_array.slice(0, 2).map(u => { return { ...u, userId: u.userId.toString() } })
+          newestLikes: p.likes_array.slice(0, 3).map(u => { return { ...u, userId: u.userId.toString() } })
         },
       }
       return post
