@@ -126,7 +126,6 @@ export class PostRepositoryPg {
       LIMIT ${pageSize}
       OFFSET ${itemsToSkip}
     `)
-    console.log(findedPosts)
     const postToReturn = findedPosts.map(p => {
       const post =
       {
@@ -297,7 +296,6 @@ export class PostRepositoryPg {
       LIMIT ${pageSize}
       OFFSET ${itemsToSkip}
     `)
-    console.log(findedPosts)
     const postToReturn = findedPosts.map(p => {
       const post =
       {
@@ -335,7 +333,6 @@ export class PostRepositoryPg {
 
   async changePostLikeStatus(post, user: IUsersAcessToken, likeStatus: LikeStatus) {
     const currentLikeStatus = await this.getStatus(user.id, post.id);
-    console.log(currentLikeStatus)
     switch (likeStatus) {
       case LikeStatus.LIKE:
         if (currentLikeStatus === LikeStatus.LIKE) {

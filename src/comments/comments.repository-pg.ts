@@ -68,6 +68,7 @@ export class CommentRepositoryPg {
             FROM comments
             LEFT JOIN comments_likes
             ON comments."id" = comments_likes."commentId" AND comments_likes."userId" = '${user.id}'
+            WHERE comments."postId" = '${postId}'
             ORDER BY "${sotringQuery}" ${sortDirection}
             LIMIT ${pageSize}
             OFFSET ${itemsToSkip}

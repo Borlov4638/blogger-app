@@ -23,7 +23,6 @@ export class GetAllPostsCommentsUseCase implements ICommandHandler<GetAllPostsCo
   ) { }
 
   async execute(command: GetAllPostsCommentsCommand) {
-    console.log(command.postsCommentsPaganation)
     await this.commandBus.execute(new GetPostByIdCommand(command.postId, command.request))
     return await this.commentRepo.getAllCommentsInPost(command.postsCommentsPaganation, command.postId, command.request)
   }
