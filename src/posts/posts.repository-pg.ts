@@ -210,7 +210,7 @@ export class PostRepositoryPg {
           return l.status === LikeStatus.LIKE
         }),
         usersWhoDisliked: postsLikes.filter(l => {
-          return l.status === LikeStatus.LIKE
+          return l.status === LikeStatus.DISLIKE
         }),
       }
     }

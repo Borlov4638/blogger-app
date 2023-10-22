@@ -112,6 +112,17 @@ export class CommentRepositoryPg {
             VALUES ('${content}', '${commentatorInfo.userId}', '${commentatorInfo.userLogin}', '${postId}')
             RETURNING *
         `))[0]
+
+        /////////////////////////////////////////////////////////////////
+        const info = await this.dataSource.query(`
+            SELECT COUNT(*) FROM comments WHERE "postId" = '${postId}'
+        `)
+        console.log(info)
+        /////////////////////////////////////////////////////////////////
+
+
+
+
         const comment = {
             id: newComment.id.toString(),
             content: newComment.content,

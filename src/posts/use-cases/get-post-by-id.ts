@@ -55,7 +55,7 @@ export class GetPostByIdUseCase implements ICommandHandler<GetPostByIdCommand> {
       myStatus,
       newestLikes: newestLikes.map((usr) => {
         return {
-          userId: usr.userId,
+          userId: usr.userId.toString(),
           login: usr.login,
           addedAt: new Date(usr.addedAt).toISOString(),
         };
