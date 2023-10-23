@@ -20,6 +20,8 @@ import { SendPassRecoveryCodeUseCase } from './use-cases/send-password-rec-code'
 import { RecoverPasswordUseCase } from './use-cases/recover-password';
 import { DeleteCurrenSessionUseCase } from './use-cases/session-use-cases/delete-current-session';
 import { SessionRepositoryPg } from './session.repository-pg';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { SessionPg } from './enities/session.entitie';
 
 const UseCases = [
   DeleteCurrenSessionUseCase,
@@ -45,6 +47,7 @@ if (process.env.DATABASE === 'mongo') {
   exporters = [SessionRepository]
   imporst = [MongooseModule.forFeature([{ name: Session.name, schema: sessionSchema }])]
 } else if (process.env.DATABASE === 'postgres') {
+  imporst = [TypeOrmModule.forFeature([SessionPg])]
   providers = [SessionRepositoryPg]
   exporters = [SessionRepositoryPg]
 }

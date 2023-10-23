@@ -19,8 +19,6 @@ import { SecDevModule } from './security-devices/sec-dev.module';
 import { Comment, commentsSchema } from './entyties/comments.schema';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
-import { UserPg } from './entyties/postgres_entyties/users.model';
 import { JwtModule } from '@nestjs/jwt';
 
 let imports = []
@@ -44,10 +42,11 @@ if (process.env.DATABASE === 'mongo') {
     port: 5432,
     username: 'mrwiggle40000',
     password: 'rpc7qBw1uAjQ',
-    database: 'neondb',
+    database: 'test',
     ssl: true,
     entities: [],
-    synchronize: true
+    synchronize: true,
+    autoLoadEntities: true
   })]
 }
 
@@ -81,6 +80,4 @@ if (process.env.DATABASE === 'mongo') {
     AppService
   ],
 })
-export class AppModule {
-  //constructor(private dataSource: DataSource) { }
-}
+export class AppModule { }
