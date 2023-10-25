@@ -6,7 +6,7 @@ import { Column, CreateDateColumn, Entity, Generated, OneToMany, PrimaryGenerate
 @Entity()
 export class Users {
     @PrimaryGeneratedColumn()
-    id: number
+    id: number | string
     @CreateDateColumn()
     createdAt: Date
     @Column()
@@ -18,8 +18,8 @@ export class Users {
     @Column()
     @Generated("uuid")
     confirmationCode: string
-    @Column()
-    expirationDate: string
+    @Column('bigint')
+    expirationDate: number
     @Column({ default: false })
     isConfirmed: boolean
     @OneToMany(() => SessionPg, s => s.user)

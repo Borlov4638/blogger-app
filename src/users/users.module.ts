@@ -6,10 +6,10 @@ import { User, usersSchema } from '../entyties/users.chema';
 import { GetAllUsersUseCase } from './use-cases/get-all-users';
 import { CqrsModule } from '@nestjs/cqrs';
 import { CreateUserUseCase } from './use-cases/create-user';
-import { UsersRepository } from './users.repository-pg';
 import { DeleteUserByIdUseCase } from './use-cases/delete-user-by-id';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Users } from './entyties/users.entytie';
+import { UsersRepository } from './users.repository-orm';
 
 const useCases = [GetAllUsersUseCase, CreateUserUseCase, DeleteUserByIdUseCase];
 let imporst = []

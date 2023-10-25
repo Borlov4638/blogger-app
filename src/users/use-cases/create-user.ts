@@ -1,7 +1,7 @@
 import { UtilsService } from '../../utils/utils.service';
 import { CryptoService } from '../../crypto/crypto.service';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UsersRepository } from '../users.repository-pg';
+import { UsersRepository } from '../users.repository-orm';
 
 interface ICreateUser {
   email: string;
@@ -35,6 +35,7 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
     if (!command.isConfirmed) {
       await this.utilsService.sendConfirmationViaEmail(
         command.data.email,
+        //@ts-ignore
         newUser.emailConfirmation.confirmationCode,
       );
     }

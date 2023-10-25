@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { JwtService } from '@nestjs/jwt';
-import { UsersRepository } from '../../users/users.repository-pg';
+import { UsersRepository } from '../../users/users.repository-orm';
 import { UtilsService } from '../../utils/utils.service';
 
 interface IUsersAcessToken {

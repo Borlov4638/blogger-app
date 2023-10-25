@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UsersRepository } from '../../users/users.repository-pg';
+import { UsersRepository } from '../../users/users.repository-orm';
 
 export class ConfirmRegistartionCommand {
   constructor(public code: string) { }

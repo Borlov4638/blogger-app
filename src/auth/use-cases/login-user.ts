@@ -5,7 +5,7 @@ import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreateSessionCommand } from './session-use-cases/create-session';
 import { CryptoService } from '../../crypto/crypto.service';
 import { JwtService } from '@nestjs/jwt';
-import { UsersRepository } from '../../users/users.repository-pg';
+import { UsersRepository } from '../../users/users.repository-orm';
 
 interface ILoginUser {
   loginOrEmail: string;

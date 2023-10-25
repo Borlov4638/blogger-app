@@ -1,7 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreateUserCommand } from '../../users/use-cases/create-user';
-import { UsersRepository } from '../../users/users.repository-pg';
+import { UsersRepository } from '../../users/users.repository-orm';
 
 interface INewUsersData {
   email: string;

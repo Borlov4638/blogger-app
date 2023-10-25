@@ -1,6 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UsersRepository } from '../../users/users.repository-pg';
+import { UsersRepository } from '../../users/users.repository-orm';
 import { UtilsService } from '../../utils/utils.service';
 
 export class ResendEmailCommand {

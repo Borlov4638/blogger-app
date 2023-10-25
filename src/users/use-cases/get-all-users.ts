@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UsersRepository } from '../users.repository-pg';
+import { UsersRepository } from '../users.repository-orm';
 
 interface IUsersPaganationQuery {
   sortBy: string;
