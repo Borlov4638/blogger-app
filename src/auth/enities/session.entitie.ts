@@ -9,8 +9,8 @@ export class SessionPg {
     ip: string
     @Column()
     title: string
-    @Column()
-    lastActiveDate: string
+    @Column('bigint')
+    lastActiveDate: number
     @Column()
     expiration: string
     @Column()

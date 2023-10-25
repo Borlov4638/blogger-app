@@ -19,7 +19,7 @@ import { ResendEmailUseCase } from './use-cases/resend-confirmation-email';
 import { SendPassRecoveryCodeUseCase } from './use-cases/send-password-rec-code';
 import { RecoverPasswordUseCase } from './use-cases/recover-password';
 import { DeleteCurrenSessionUseCase } from './use-cases/session-use-cases/delete-current-session';
-import { SessionRepositoryPg } from './session.repository-pg';
+import { SessionRepositoryPg } from './session.repository-orm';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SessionPg } from './enities/session.entitie';
 

@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import { add } from 'date-fns';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { SessionRepositoryPg } from '../../../auth/session.repository-pg';
+import { SessionRepositoryPg } from '../../../auth/session.repository-orm';
 
 export class RefreshCurrentSessionCommand {
   constructor(

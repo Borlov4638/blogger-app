@@ -131,7 +131,7 @@ export class UsersRepository {
         return deletedUser.affected
     }
 
-    async getUserByLoginOrEmail(loginOrEmail: string): Promise<UserDocument> {
+    async getUserByLoginOrEmail(loginOrEmail: string) {
         const user = await this.usersRepo.createQueryBuilder('users')
             .where("users.login = :loginOrEmail", { loginOrEmail })
             .orWhere("users.email = :loginOrEmail", { loginOrEmail })
@@ -151,7 +151,7 @@ export class UsersRepository {
                 }
             }
         }
-        return userToReturn as UserDocument
+        return userToReturn
     }
 
     async confirmUserByCode(code: string) {

@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { SessionRepositoryPg } from '../../../auth/session.repository-pg';
+import { SessionRepositoryPg } from '../../../auth/session.repository-orm';
 
 interface IUsersRefreshToken {
   id: string;

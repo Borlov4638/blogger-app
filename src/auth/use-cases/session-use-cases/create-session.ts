@@ -5,12 +5,12 @@ import { Model } from 'mongoose';
 import { Session } from '../../../entyties/session.schema';
 import { UserDocument } from '../../../entyties/users.chema';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { SessionRepositoryPg } from '../../../auth/session.repository-pg';
+import { SessionRepositoryPg } from '../../../auth/session.repository-orm';
 
 export class CreateSessionCommand {
   constructor(
     public req: Request,
-    public user: UserDocument,
+    public user: any,
     public expDate: number,
     public deviceId: string,
     public refreshHash: string,
@@ -39,7 +39,7 @@ export class CreateSessionUseCase
     const lastActiveDate = Math.floor(+new Date() / 1000) * 1000;
 
     const newSession = await this.sessionRepo.createSession(
-      command.user.id,
+      command.user,
       command.deviceId,
       requestIp,
       userAgent,
