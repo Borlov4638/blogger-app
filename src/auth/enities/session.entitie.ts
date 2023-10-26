@@ -17,6 +17,6 @@ export class SessionPg {
     refreshHash: string
     @Column()
     userId: number
-    @ManyToOne(() => Users, u => u.id)
+    @ManyToOne(() => Users, u => u.id, { onDelete: 'CASCADE' })
     user: Users;
 }

@@ -22,7 +22,7 @@ export class Users {
     expirationDate: number
     @Column({ default: false })
     isConfirmed: boolean
-    @OneToMany(() => SessionPg, s => s.user)
+    @OneToMany(() => SessionPg, s => s.user, { onDelete: 'CASCADE' })
     sessions: SessionPg[]
     @OneToMany(() => CommentPg, c => c.user)
     comments: CommentPg[]

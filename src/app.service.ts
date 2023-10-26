@@ -21,10 +21,11 @@ export class AppService {
   async deleteAllData(): Promise<void> {
     await this.dataSource.query(`
     DELETE FROM users;
-    DELETE FROM sessions;
-    DELETE FROM blogs;
-    DELETE FROM posts;
+    DELETE FROM session_pg;
+    DELETE FROM blog_pg;
+    DELETE FROM post_pg;
     `)
+
     // await this.blogsModel.deleteMany({});
     // await this.postModel.deleteMany({});
     // await this.userModel.deleteMany({});
