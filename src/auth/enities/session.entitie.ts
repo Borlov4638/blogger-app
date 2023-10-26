@@ -15,6 +15,8 @@ export class SessionPg {
     expiration: string
     @Column()
     refreshHash: string
+    @Column()
+    userId: number
     @ManyToOne(() => Users, u => u.id)
     user: Users;
 }
