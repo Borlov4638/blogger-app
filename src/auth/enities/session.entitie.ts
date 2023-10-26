@@ -1,7 +1,7 @@
-import { Users } from "src/users/entyties/users.entytie";
+import { UsersEntity } from "src/users/entyties/users.entytie";
 import { Column, Entity, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity()
+@Entity("session")
 export class SessionPg {
     @PrimaryColumn()
     deviceId: string
@@ -17,6 +17,6 @@ export class SessionPg {
     refreshHash: string
     @Column()
     userId: number
-    @ManyToOne(() => Users, u => u.id, { onDelete: 'CASCADE' })
-    user: Users;
+    @ManyToOne(() => UsersEntity, u => u.id, { onDelete: 'CASCADE' })
+    user: UsersEntity;
 }

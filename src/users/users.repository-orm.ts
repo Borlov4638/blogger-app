@@ -4,7 +4,7 @@ import { CryptoService } from '../crypto/crypto.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
-import { Users } from './entyties/users.entytie';
+import { UsersEntity } from './entyties/users.entytie';
 
 interface IUsersPaganationQuery {
     sortBy: string;
@@ -17,27 +17,28 @@ interface IUsersPaganationQuery {
 
 export class UsersRepository {
     constructor(
-        @InjectRepository(Users) private readonly usersRepo: Repository<Users>,
+        @InjectRepository(UsersEntity) private readonly usersRepo: Repository<UsersEntity>,
         private cryptoService: CryptoService,
     ) { }
 
     private usersSortingQuery(sortBy: string) {
         switch (sortBy) {
             case 'id':
-                return 'id';
-            case 'login':
-                return 'login';
+                return "id";
+            case "login":
+                return "login";
             case 'email':
-                return 'email';
+                return "email";
             case 'createdAt':
-                return 'createdAt';
+                return "createdAt";
             default:
-                return 'createdAt';
+                return "createdAt";
         }
     }
 
 
     async getAllUsers(paganation: IUsersPaganationQuery) {
+        console.log(paganation)
         const searchLoginTerm = paganation.searchLoginTerm
             ? paganation.searchLoginTerm
             : '';
@@ -46,7 +47,7 @@ export class UsersRepository {
             ? paganation.searchEmailTerm
             : '';
 
-        const sortBy = paganation.sortBy ? paganation.sortBy : 'createdAt';
+        const sortBy = paganation.sortBy ? paganation.sortBy : "createdAt";
 
         const sortDirection = paganation.sortDirection === 'asc' ? 'ASC' : 'DESC';
 
@@ -58,10 +59,12 @@ export class UsersRepository {
 
         const itemsToSkip = (pageNumber - 1) * pageSize;
 
+        console.log(searchEmailTerm, searchLoginTerm, sotringQuery, sortDirection, pageSize, itemsToSkip)
+
         const usersToSend = await this.usersRepo.createQueryBuilder('users')
             .where('LOWER(users.login) LIKE LOWER(:searchLoginTerm)', { searchLoginTerm: `%${searchLoginTerm}%` })
             .orWhere('LOWER(users.email) LIKE LOWER(:searchEmailTerm)', { searchEmailTerm: `%${searchEmailTerm}%` })
-            .orderBy(sotringQuery, sortDirection)
+            .orderBy(`"${sortBy}"`, sortDirection)
             .limit(pageSize)
             .offset(itemsToSkip)
             .getMany()
@@ -95,7 +98,7 @@ export class UsersRepository {
         isConfirmed: boolean,
     ) {
         const date = +(new Date()) + 180000
-        let user = new Users()
+        let user = new UsersEntity()
         user.login = login
         user.email = email
         user.password = password

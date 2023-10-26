@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { SessionPg } from './enities/session.entitie';
-import { Users } from 'src/users/entyties/users.entytie';
+import { UsersEntity } from 'src/users/entyties/users.entytie';
 
 @Injectable()
 export class SessionRepositoryPg {
@@ -12,7 +12,7 @@ export class SessionRepositoryPg {
     ) { }
 
     async createSession(
-        userId: Users,
+        userId: UsersEntity,
         deviceId: string,
         ip: string,
         title: string,

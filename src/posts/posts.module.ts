@@ -19,7 +19,7 @@ import { UpdatePostAssignedToBlogUseCase } from './use-cases/update-post-by-blog
 import { DeletePostInBlogsUseCase } from './use-cases/delete-post-by-blog-id';
 import { ChangePostsLikeStatusUseCase } from './use-cases/change-post-like-status';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PostPg } from './entitys/post.entity';
+import { PostEntity } from './entitys/post.entity';
 import { PostLikes } from './entitys/post-likes.entity';
 
 const UseCases = [ChangePostsLikeStatusUseCase, DeletePostInBlogsUseCase, CreatePostUseCase, GetPostByIdUseCase, GetAllPostsInBlogUseCase, GetAllPostsUseCase, UpdatePostUseCase, DeletePostByIdUseCase, UpdatePostAssignedToBlogUseCase];
@@ -39,7 +39,7 @@ if (process.env.DATABASE === 'mongo') {
   exporters = [PostRepository]
 
 } else if (process.env.DATABASE === 'postgres') {
-  imports = [TypeOrmModule.forFeature([PostPg, PostLikes]), BlogsModule]
+  imports = [TypeOrmModule.forFeature([PostEntity, PostLikes]), BlogsModule]
   providers = [PostRepositoryPg]
   exporters = [PostRepositoryPg]
 

@@ -1,10 +1,10 @@
-import { BlogPg } from "src/blogs/entitys/blogs.entity";
-import { CommentPg } from "src/comments/entitys/comment.entity";
+import { BlogEntity } from "src/blogs/entitys/blogs.entity";
+import { CommentEntity } from "src/comments/entitys/comment.entity";
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { PostLikes } from "./post-likes.entity";
 
-@Entity()
-export class PostPg {
+@Entity("posts")
+export class PostEntity {
     @PrimaryGeneratedColumn()
     id: number;
     @CreateDateColumn()
@@ -15,10 +15,10 @@ export class PostPg {
     shortDescription: string
     @Column()
     content: string
-    @ManyToOne(() => BlogPg, b => b.posts)
-    blog: BlogPg
-    @OneToMany(() => CommentPg, c => c.post)
-    comments: CommentPg[]
+    @ManyToOne(() => BlogEntity, b => b.posts)
+    blog: BlogEntity
+    @OneToMany(() => CommentEntity, c => c.post)
+    comments: CommentEntity[]
     @OneToMany(() => PostLikes, pl => pl.postId)
     likes: PostLikes[]
 }

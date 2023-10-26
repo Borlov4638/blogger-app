@@ -1,9 +1,9 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
-import { PostPg } from "./post.entity";
-import { Users } from "src/users/entyties/users.entytie";
+import { PostEntity } from "./post.entity";
+import { UsersEntity } from "src/users/entyties/users.entytie";
 import { LikeStatus } from "src/enums/like-status.enum";
 
-@Entity()
+@Entity("posts_likes")
 export class PostLikes {
     @PrimaryColumn()
     postId: number
@@ -11,13 +11,13 @@ export class PostLikes {
     @PrimaryColumn()
     userId: string
 
-    @ManyToOne(() => PostPg, p => p.likes)
+    @ManyToOne(() => PostEntity, p => p.likes)
     @JoinColumn({ name: 'postId' })
-    post: PostPg;
+    post: PostEntity;
 
-    @ManyToOne(() => Users)
+    @ManyToOne(() => UsersEntity)
     @JoinColumn({ name: 'userId' })
-    user: Users
+    user: UsersEntity
 
     @CreateDateColumn()
     addedAt: Date

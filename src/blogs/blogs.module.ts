@@ -15,7 +15,7 @@ import { Post, postSchema } from '../entyties/posts.schema';
 import { CreatePostUseCase } from '../posts/use-cases/create-post';
 import { BlogsRepositoryPg } from './blogs.repository-pg';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { BlogPg } from './entitys/blogs.entity';
+import { BlogEntity } from './entitys/blogs.entity';
 
 const useCases = [
   GetAllBlogsUseCase,
@@ -39,7 +39,7 @@ if (process.env.DATABASE === 'mongo') {
   exporters = [BlogsRepository]
   providers = [BlogsRepository]
 } else if (process.env.DATABASE === 'postgres') {
-  imports = [TypeOrmModule.forFeature([BlogPg])];
+  imports = [TypeOrmModule.forFeature([BlogEntity])];
   providers = [BlogsRepositoryPg]
   exporters = [BlogsRepositoryPg]
 }

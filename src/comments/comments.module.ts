@@ -11,9 +11,9 @@ import { ChengeCommentLikeStatusUseCase } from './use-cases/change-comment-like-
 import { DeleteCommandByIdUseCase } from './use-cases/delete-comment';
 import { CommentRepositoryPg } from './comments.repository-pg';
 import { GetAllPostsCommentsUseCase } from './use-cases/get-all-comments-in-post';
-import { CommentPg } from './entitys/comment.entity';
+import { CommentEntity } from './entitys/comment.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CommentLikesPg } from './entitys/comments-likes.entity';
+import { CommentLikesEntity } from './entitys/comments-likes.entity';
 
 const useCases = [GetAllPostsCommentsUseCase, DeleteCommandByIdUseCase, ChengeCommentLikeStatusUseCase, CreateCommentToPostUseCase, GetCommentByIdUseCase, UpdateCommentByIdUseCase]
 
@@ -28,7 +28,7 @@ if (process.env.DATABASE === 'mongo') {
     CommentRepository
   ]
 } else if (process.env.DATABASE === 'postgres') {
-  imports = [TypeOrmModule.forFeature([CommentPg, CommentLikesPg])]
+  imports = [TypeOrmModule.forFeature([CommentEntity, CommentLikesEntity])]
   providers = [CommentRepositoryPg]
 }
 

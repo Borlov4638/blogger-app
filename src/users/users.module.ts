@@ -8,7 +8,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { CreateUserUseCase } from './use-cases/create-user';
 import { DeleteUserByIdUseCase } from './use-cases/delete-user-by-id';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Users } from './entyties/users.entytie';
+import { UsersEntity } from './entyties/users.entytie';
 import { UsersRepository } from './users.repository-orm';
 
 const useCases = [GetAllUsersUseCase, CreateUserUseCase, DeleteUserByIdUseCase];
@@ -20,7 +20,7 @@ if (process.env.DATABASE === 'mongo') {
   exporst = [UsersRepository]
   providers = [UsersRepository]
 } else if (process.env.DATABASE === 'postgres') {
-  imporst = [TypeOrmModule.forFeature([Users])]
+  imporst = [TypeOrmModule.forFeature([UsersEntity])]
   exporst = [UsersRepository]
   providers = [UsersRepository]
 

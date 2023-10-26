@@ -1,8 +1,8 @@
-import { PostPg } from "src/posts/entitys/post.entity";
+import { PostEntity } from "src/posts/entitys/post.entity";
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity()
-export class BlogPg {
+@Entity("blogs")
+export class BlogEntity {
     @PrimaryGeneratedColumn()
     id: number
     @CreateDateColumn()
@@ -15,6 +15,6 @@ export class BlogPg {
     websiteUrl: string
     @Column()
     isMembership: boolean
-    @OneToMany(() => PostPg, p => p.blog)
-    posts: Array<PostPg>
+    @OneToMany(() => PostEntity, p => p.blog)
+    posts: Array<PostEntity>
 }

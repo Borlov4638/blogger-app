@@ -1,11 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Blog } from './entyties/blogs.schema';
-import { Model } from 'mongoose';
-import { Post } from './entyties/posts.schema';
-import { User } from './entyties/users.chema';
-import { Comment } from './entyties/comments.schema';
-import { Session } from './entyties/session.schema';
 import { DataSource } from 'typeorm';
 
 @Injectable()

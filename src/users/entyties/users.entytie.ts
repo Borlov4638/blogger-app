@@ -1,10 +1,10 @@
 import { SessionPg } from "src/auth/enities/session.entitie";
-import { CommentPg } from "src/comments/entitys/comment.entity";
-import { CommentLikesPg } from "src/comments/entitys/comments-likes.entity";
+import { CommentEntity } from "src/comments/entitys/comment.entity";
+import { CommentLikesEntity } from "src/comments/entitys/comments-likes.entity";
 import { Column, CreateDateColumn, Entity, Generated, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity()
-export class Users {
+@Entity("users")
+export class UsersEntity {
     @PrimaryGeneratedColumn()
     id: number | string
     @CreateDateColumn()
@@ -24,8 +24,8 @@ export class Users {
     isConfirmed: boolean
     @OneToMany(() => SessionPg, s => s.user, { onDelete: 'CASCADE' })
     sessions: SessionPg[]
-    @OneToMany(() => CommentPg, c => c.user)
-    comments: CommentPg[]
-    @OneToMany(() => CommentLikesPg, cl => cl.userId)
-    commentLikes: CommentLikesPg[]
+    @OneToMany(() => CommentEntity, c => c.user)
+    comments: CommentEntity[]
+    @OneToMany(() => CommentLikesEntity, cl => cl.userId)
+    commentLikes: CommentLikesEntity[]
 }
