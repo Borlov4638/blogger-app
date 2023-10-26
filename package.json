@@ -27,7 +27,7 @@
     "@nestjs/jwt": "^10.1.1",
     "@nestjs/mongoose": "^10.0.1",
     "@nestjs/platform-express": "^10.0.0",
-    "@nestjs/throttler": "^5.0.0",
+    "@nestjs/throttler": "^5.0.1",
     "@nestjs/typeorm": "^10.0.0",
     "@types/nodemailer": "^6.4.11",
     "bcrypt": "^5.1.1",

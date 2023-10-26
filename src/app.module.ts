@@ -19,7 +19,8 @@ import { SecDevModule } from './security-devices/sec-dev.module';
 import { Comment, commentsSchema } from './entyties/comments.schema';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 let imports = []
 if (process.env.DATABASE === 'mongo') {
@@ -53,12 +54,7 @@ if (process.env.DATABASE === 'mongo') {
 
 @Module({
   imports: [
-    ThrottlerModule.forRoot([
-      {
-        ttl: 10,
-        limit: 5,
-      },
-    ]),
+    ThrottlerModule.forRoot([{ ttl: 10000, limit: 5 }]),
     ...imports,
     JwtModule.register({
       secret: 'dhcfgvhbjnkmjbhvgjfgfcjhvkbljnknjbhvghjg',

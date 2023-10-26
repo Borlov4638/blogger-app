@@ -24,7 +24,7 @@ export class ResendEmailUseCase implements ICommandHandler<ResendEmailCommand> {
     }
 
     const newCode = await this.usersRepo.newConfirmationCode(user.id)
-    await this.utilsService.sendConfirmationViaEmail(user.email, newCode);
+    this.utilsService.sendConfirmationViaEmail(user.email, newCode);
     return;
   }
 }

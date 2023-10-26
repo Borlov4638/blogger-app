@@ -33,6 +33,7 @@ import { ResendEmailCommand } from './use-cases/resend-confirmation-email';
 import { SendPassRecoveryCodeCommand } from './use-cases/send-password-rec-code';
 import { RecoverPasswordCommand } from './use-cases/recover-password';
 import { DeleteCurrenSessionCommand } from './use-cases/session-use-cases/delete-current-session';
+import { ThrottlerBehindProxyGuard } from './guards/throttler.behind.proxy';
 
 interface ITokens {
   accessToken: string;
@@ -74,34 +75,34 @@ export class AuthController {
     return response.status(200).json({ accessToken: tokens.accessToken });
   }
 
-  @UseGuards(ThrottlerGuard)
+  @UseGuards(ThrottlerBehindProxyGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration')
   async registrateUser(@Body() data: CreateUserDto) {
     return await this.commandBus.execute(new RegistrateUserCommand(data));
   }
 
-  @UseGuards(ThrottlerGuard)
+  @UseGuards(ThrottlerBehindProxyGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration-confirmation')
   async confirmRegistration(@Body() data: registrationCodeDto) {
     await this.commandBus.execute(new ConfirmRegistartionCommand(data.code));
   }
 
-  @UseGuards(ThrottlerGuard)
+  @UseGuards(ThrottlerBehindProxyGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration-email-resending')
   async resendConfirmationEmail(@Body() data: RegistrationEmailResendingDto) {
     await this.commandBus.execute(new ResendEmailCommand(data.email));
   }
 
-  @UseGuards(ThrottlerGuard)
+  @UseGuards(ThrottlerBehindProxyGuard)
   @Post('password-recovery')
   async sendPasswordRecoveryCode(@Body('email') email: string) {
     await this.commandBus.execute(new SendPassRecoveryCodeCommand(email));
   }
 
-  @UseGuards(ThrottlerGuard)
+  @UseGuards(ThrottlerBehindProxyGuard)
   @Post('new-password')
   async newPassword(@Body() data: PasswordRecoveryDto) {
     await this.commandBus.execute(new RecoverPasswordCommand(data));

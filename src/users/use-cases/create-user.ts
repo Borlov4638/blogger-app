@@ -33,7 +33,7 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
       command.isConfirmed,
     );
     if (!command.isConfirmed) {
-      await this.utilsService.sendConfirmationViaEmail(
+      this.utilsService.sendConfirmationViaEmail(
         command.data.email,
         //@ts-ignore
         newUser.emailConfirmation.confirmationCode,

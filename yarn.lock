@@ -820,7 +820,7 @@
   dependencies:
     tslib "2.6.2"
 
-"@nestjs/throttler@^5.0.0":
+"@nestjs/throttler@^5.0.1":
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/@nestjs/throttler/-/throttler-5.0.1.tgz#54e49009f8d8d355cac7fda7e0da3178b55d8c56"
   integrity sha512-6gHmKmus7LDgzK/wRh7W9cT3gtZw1rY4mLVymvx6pYyRA46A9fMvjmZNQKJbo02jGg2R7gNo+3pyfvNnjDqg4A==
