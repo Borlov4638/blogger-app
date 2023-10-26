@@ -13,6 +13,7 @@ import {
   LoginUserDto,
   PasswordRecoveryDto,
   RegistrationEmailResendingDto,
+  registrationCodeDto,
 } from './dto/auth.dto';
 import { Request, Response } from 'express';
 import {
@@ -83,8 +84,8 @@ export class AuthController {
   @UseGuards(ThrottlerGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration-confirmation')
-  async confirmRegistration(@Body('code') token: string) {
-    await this.commandBus.execute(new ConfirmRegistartionCommand(token));
+  async confirmRegistration(@Body() data: registrationCodeDto) {
+    await this.commandBus.execute(new ConfirmRegistartionCommand(data.code));
   }
 
   @UseGuards(ThrottlerGuard)

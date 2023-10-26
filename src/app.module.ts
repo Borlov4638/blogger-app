@@ -17,9 +17,9 @@ import { UtilsModule } from './utils/utils.moduls';
 import { Session, sessionSchema } from './entyties/session.schema';
 import { SecDevModule } from './security-devices/sec-dev.module';
 import { Comment, commentsSchema } from './entyties/comments.schema';
-import { ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 let imports = []
 if (process.env.DATABASE === 'mongo') {
@@ -53,6 +53,12 @@ if (process.env.DATABASE === 'mongo') {
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot([
+      {
+        ttl: 10,
+        limit: 5,
+      },
+    ]),
     ...imports,
     JwtModule.register({
       secret: 'dhcfgvhbjnkmjbhvgjfgfcjhvkbljnknjbhvghjg',
@@ -66,12 +72,6 @@ if (process.env.DATABASE === 'mongo') {
     UsersModule,
     UtilsModule,
     SecDevModule,
-    ThrottlerModule.forRoot([
-      {
-        ttl: 10000,
-        limit: 5000,
-      },
-    ]),
   ],
   controllers: [
     AppController

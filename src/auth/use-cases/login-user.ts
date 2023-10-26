@@ -38,9 +38,9 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
 
   async execute(command: LoginUserCommand) {
     const user = await this.checkCredentials(command.credentials);
-    const reftrsTokenExpDate = 2000;
+    const reftrsTokenExpDate = 20;
     const deviceId = uuidv4();
-    const accessToken = await this.getUsersAccessToken(user, 400);
+    const accessToken = await this.getUsersAccessToken(user, 10);
     const refreshToken = await this.getUsersRefreshToken(
       user,
       reftrsTokenExpDate,

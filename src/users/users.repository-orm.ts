@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { UsersEntity } from './entyties/users.entytie';
+import { registrationCodeDto } from 'src/auth/dto/auth.dto';
 
 interface IUsersPaganationQuery {
     sortBy: string;
@@ -38,7 +39,6 @@ export class UsersRepository {
 
 
     async getAllUsers(paganation: IUsersPaganationQuery) {
-        console.log(paganation)
         const searchLoginTerm = paganation.searchLoginTerm
             ? paganation.searchLoginTerm
             : '';
@@ -59,9 +59,8 @@ export class UsersRepository {
 
         const itemsToSkip = (pageNumber - 1) * pageSize;
 
-        console.log(searchEmailTerm, searchLoginTerm, sotringQuery, sortDirection, pageSize, itemsToSkip)
-
         const usersToSend = await this.usersRepo.createQueryBuilder('users')
+            .select(["users.id", "users.login", "users.email", "users.createdAt"])
             .where('LOWER(users.login) LIKE LOWER(:searchLoginTerm)', { searchLoginTerm: `%${searchLoginTerm}%` })
             .orWhere('LOWER(users.email) LIKE LOWER(:searchEmailTerm)', { searchEmailTerm: `%${searchEmailTerm}%` })
             .orderBy(`"${sortBy}"`, sortDirection)
@@ -72,7 +71,6 @@ export class UsersRepository {
         usersToSend.map(u => {
             u.id = u.id.toString()
             return u
-
         })
 
         const totalCountOfItems = await this.usersRepo.createQueryBuilder('users')
@@ -186,7 +184,6 @@ export class UsersRepository {
 
     async newConfirmationCode(id: string) {
         const newCode = uuidv4()
-        console.log(newCode)
         await this.usersRepo.update({ id: parseInt(id) }, { confirmationCode: newCode, expirationDate: +(new Date()) + 180000 })
         return newCode
     }

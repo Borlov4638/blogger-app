@@ -1,7 +1,7 @@
 import { UsersEntity } from "src/users/entyties/users.entytie";
 import { Column, Entity, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity("session")
+@Entity("sessions")
 export class SessionPg {
     @PrimaryColumn()
     deviceId: string

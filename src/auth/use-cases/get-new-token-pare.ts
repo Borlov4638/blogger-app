@@ -30,8 +30,8 @@ export class GetNewTokenPairUseCase
     const data: IUsersRefreshToken = await this.getTokenDataAndVerify(
       command.request.cookies.refreshToken,
     );
-    const reftrsTokenExpDate = 2000;
-    const accessToken = await this.getUsersAccessToken(data, 400);
+    const reftrsTokenExpDate = 20;
+    const accessToken = await this.getUsersAccessToken(data, 10);
     const refreshToken = await this.getUsersRefreshToken(
       data,
       reftrsTokenExpDate,

@@ -50,7 +50,11 @@ export class SessionRepositoryPg {
         return (await this.sessionRepo.delete({ deviceId }))[1]
     }
     async getUserSessions(userId: string) {
-        const sessions = await this.sessionRepo.findBy({ userId: parseInt(userId) }) as Array<any>
+        const sessions = (await this.sessionRepo.createQueryBuilder('sessions')
+            .select(["sessions.deviceId", "sessions.ip", "sessions.lastActiveDate", "sessions.title"])
+            .where("sessions.userId = :userId", { userId })
+            .getMany()) as Array<any>
+
         sessions.map(s => {
             s.lastActiveDate = new Date(s.lastActiveDate / 1000 * 1000).toISOString()
         })
