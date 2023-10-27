@@ -1,6 +1,6 @@
 import { CreateBlogDto } from '../dto/blogs.dto';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BlogsRepositoryPg } from '../blogs.repository-pg';
+import { BlogsRepositoryPg } from '../blogs.repository-orm';
 
 export class CreateBlogCommand {
   constructor(public data: CreateBlogDto) { }

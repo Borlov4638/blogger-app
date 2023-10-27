@@ -18,7 +18,7 @@ import {
   ValidationOptions,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { BlogsRepositoryPg } from 'src/blogs/blogs.repository-pg';
+import { BlogsRepositoryPg } from 'src/blogs/blogs.repository-orm';
 
 export function isBlogIdValid(
   validationOptions?: ValidationOptions,

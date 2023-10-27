@@ -4,7 +4,7 @@ import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGenerate
 @Entity("blogs")
 export class BlogEntity {
     @PrimaryGeneratedColumn()
-    id: number
+    id: number | string
     @CreateDateColumn()
     createdAt: Date
     @Column()
@@ -13,7 +13,7 @@ export class BlogEntity {
     description: string
     @Column()
     websiteUrl: string
-    @Column()
+    @Column({ default: false })
     isMembership: boolean
     @OneToMany(() => PostEntity, p => p.blog)
     posts: Array<PostEntity>

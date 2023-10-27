@@ -1,6 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BlogsRepositoryPg } from '../blogs.repository-pg';
+import { BlogsRepositoryPg } from '../blogs.repository-orm';
 
 export class GetBlogByIdCommand {
   constructor(public blogId: string) { }

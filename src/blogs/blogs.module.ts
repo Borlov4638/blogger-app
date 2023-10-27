@@ -13,7 +13,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { GetAllPostsInBlogUseCase } from '../posts/use-cases/get-posts-by-blog-id';
 import { Post, postSchema } from '../entyties/posts.schema';
 import { CreatePostUseCase } from '../posts/use-cases/create-post';
-import { BlogsRepositoryPg } from './blogs.repository-pg';
+import { BlogsRepositoryPg } from './blogs.repository-orm';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BlogEntity } from './entitys/blogs.entity';
 

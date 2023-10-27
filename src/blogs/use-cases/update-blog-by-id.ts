@@ -1,6 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BlogsRepositoryPg } from '../blogs.repository-pg';
+import { BlogsRepositoryPg } from '../blogs.repository-orm';
 
 interface IUpdateBlog {
   name: string;
@@ -16,6 +16,7 @@ export class UpdateBlogByIdCommand {
 export class UpdateBlogByIdUseCase
   implements ICommandHandler<UpdateBlogByIdCommand>
 {
+
   constructor(
     private blogRepo: BlogsRepositoryPg
   ) { }
