@@ -1,16 +1,13 @@
 import { NotFoundException } from '@nestjs/common';
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { GetBlogByIdCommand } from 'src/blogs/use-cases/get-blog-by-id';
-import { PostRepositoryPg } from '../posts.repository-pg';
+import { PostRepositoryPg } from '../posts.repository-orm';
+import { CreatePostDto } from '../dto/post.dto';
+import { CreatePostByBlogIdDto } from 'src/blogs/dto/blogs.dto';
 
-interface ICreatePost {
-  title: string;
-  shortDescription: string;
-  content: string;
-}
 
 export class CreatePostCommand {
-  constructor(public data: ICreatePost, public blogId: string) { }
+  constructor(public data: CreatePostDto | CreatePostByBlogIdDto, public blogId: string) { }
 }
 @CommandHandler(CreatePostCommand)
 export class CreatePostUseCase implements ICommandHandler<CreatePostCommand> {

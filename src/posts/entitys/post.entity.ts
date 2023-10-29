@@ -1,12 +1,12 @@
 import { BlogEntity } from "src/blogs/entitys/blogs.entity";
 import { CommentEntity } from "src/comments/entitys/comment.entity";
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { PostLikes } from "./post-likes.entity";
+import { PostLikesEntity } from "./post-likes.entity";
 
 @Entity("posts")
 export class PostEntity {
     @PrimaryGeneratedColumn()
-    id: number;
+    id: number | string;
     @CreateDateColumn()
     createdAt: Date
     @Column()
@@ -19,6 +19,6 @@ export class PostEntity {
     blog: BlogEntity
     @OneToMany(() => CommentEntity, c => c.post)
     comments: CommentEntity[]
-    @OneToMany(() => PostLikes, pl => pl.postId)
-    likes: PostLikes[]
+    @OneToMany(() => PostLikesEntity, pl => pl.postId)
+    likes: PostLikesEntity[]
 }

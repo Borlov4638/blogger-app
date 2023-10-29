@@ -4,7 +4,7 @@ import { UsersEntity } from "src/users/entyties/users.entytie";
 import { LikeStatus } from "src/enums/like-status.enum";
 
 @Entity("posts_likes")
-export class PostLikes {
+export class PostLikesEntity {
     @PrimaryColumn()
     postId: number
 

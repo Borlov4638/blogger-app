@@ -3,7 +3,7 @@ import { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { LikeStatus } from '../../enums/like-status.enum';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { PostRepositoryPg } from '../posts.repository-pg';
+import { PostRepositoryPg } from '../posts.repository-orm';
 
 interface IUsersAcessToken {
   id: string;

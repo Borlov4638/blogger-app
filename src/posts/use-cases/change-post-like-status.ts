@@ -1,15 +1,9 @@
 import { NotFoundException } from "@nestjs/common";
-import { CommandBus, CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { JwtService } from "@nestjs/jwt";
-import { InjectModel } from "@nestjs/mongoose";
-import { InjectDataSource } from "@nestjs/typeorm";
 import { Request } from "express";
-import { Model, Types } from "mongoose";
-import { Post } from "src/entyties/posts.schema";
 import { LikeStatus } from "src/enums/like-status.enum";
-import { GetPostByIdCommand } from "./get-post-by-id";
-import { PostRepository } from "../posts.repository";
-import { PostRepositoryPg } from "../posts.repository-pg";
+import { PostRepositoryPg } from "../posts.repository-orm";
 
 interface IUsersAcessToken {
     id: string;

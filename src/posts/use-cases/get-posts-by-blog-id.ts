@@ -2,7 +2,7 @@ import { NotFoundException } from '@nestjs/common';
 import { Request } from 'express';
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { GetBlogByIdCommand } from 'src/blogs/use-cases/get-blog-by-id';
-import { PostRepositoryPg } from '../posts.repository-pg';
+import { PostRepositoryPg } from '../posts.repository-orm';
 
 export interface IPostPaganationQuery {
   sortBy: string;

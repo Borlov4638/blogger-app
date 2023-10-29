@@ -102,7 +102,6 @@ export class PostController {
       postsCommentsPaganation,
       request,
     ))
-    return
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)

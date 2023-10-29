@@ -13,14 +13,14 @@ import { GetAllPostsInBlogUseCase } from './use-cases/get-posts-by-blog-id';
 import { GetAllPostsUseCase } from './use-cases/get-all-posts';
 import { UpdatePostUseCase } from './use-cases/update-post';
 import { DeletePostByIdUseCase } from './use-cases/delete-post-by-id';
-import { PostRepositoryPg } from './posts.repository-pg';
+import { PostRepositoryPg } from './posts.repository-orm';
 import { BlogsModule } from 'src/blogs/blogs.module';
 import { UpdatePostAssignedToBlogUseCase } from './use-cases/update-post-by-blog-id';
 import { DeletePostInBlogsUseCase } from './use-cases/delete-post-by-blog-id';
 import { ChangePostsLikeStatusUseCase } from './use-cases/change-post-like-status';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostEntity } from './entitys/post.entity';
-import { PostLikes } from './entitys/post-likes.entity';
+import { PostLikesEntity } from './entitys/post-likes.entity';
 
 const UseCases = [ChangePostsLikeStatusUseCase, DeletePostInBlogsUseCase, CreatePostUseCase, GetPostByIdUseCase, GetAllPostsInBlogUseCase, GetAllPostsUseCase, UpdatePostUseCase, DeletePostByIdUseCase, UpdatePostAssignedToBlogUseCase];
 let imports = []
@@ -39,7 +39,7 @@ if (process.env.DATABASE === 'mongo') {
   exporters = [PostRepository]
 
 } else if (process.env.DATABASE === 'postgres') {
-  imports = [TypeOrmModule.forFeature([PostEntity, PostLikes]), BlogsModule]
+  imports = [TypeOrmModule.forFeature([PostEntity, PostLikesEntity]), BlogsModule]
   providers = [PostRepositoryPg]
   exporters = [PostRepositoryPg]
 

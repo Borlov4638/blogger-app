@@ -1,6 +1,6 @@
 import { Request } from 'express';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { PostRepositoryPg } from '../posts.repository-pg';
+import { PostRepositoryPg } from '../posts.repository-orm';
 
 
 interface IPostPaganationQuery {
