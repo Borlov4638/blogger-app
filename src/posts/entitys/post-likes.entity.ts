@@ -11,11 +11,11 @@ export class PostLikesEntity {
     @PrimaryColumn()
     userId: string
 
-    @ManyToOne(() => PostEntity, p => p.likes)
+    @ManyToOne(() => PostEntity, p => p.likes, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'postId' })
     post: PostEntity;
 
-    @ManyToOne(() => UsersEntity)
+    @ManyToOne(() => UsersEntity, u => u.postsLikes, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'userId' })
     user: UsersEntity
 

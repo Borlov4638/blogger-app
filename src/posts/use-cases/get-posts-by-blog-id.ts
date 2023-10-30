@@ -34,7 +34,7 @@ export class GetAllPostsInBlogUseCase
     if (!blogToFindPosts) {
       throw new NotFoundException();
     }
-    return await this.postRepo.getAllPostsInBlog(command.postPagonationQuery, command.blogId, command.request)
+    return await this.postRepo.getAllPostsInBlog(command.postPagonationQuery, blogToFindPosts, command.request)
   }
 
 }

@@ -43,11 +43,12 @@ export interface IPostPostgres {
 export class PostRepositoryPg {
     constructor(
         @InjectRepository(PostEntity) private postRepo: Repository<PostEntity>,
+        @InjectRepository(PostLikesEntity) private postLikesRepo: Repository<PostLikesEntity>,
         @InjectDataSource() private dataSource: DataSource,
         private jwtService: JwtService
     ) { }
 
-    postsSortingQuery(sortBy: string): {} {
+    postsSortingQuery(sortBy: string) {
         switch (sortBy) {
             case 'id':
                 return 'id';
@@ -68,7 +69,7 @@ export class PostRepositoryPg {
         }
     }
 
-    commentsSortingQuery(sortBy: string, sortDirection: number): {} {
+    commentsSortingQuery(sortBy: string, sortDirection: number) {
         switch (sortBy) {
             case 'id':
                 return { id: sortDirection };
@@ -85,7 +86,7 @@ export class PostRepositoryPg {
         const sortBy = postPagonationQuery.sortBy
             ? postPagonationQuery.sortBy
             : 'createdAt';
-        const sortDirection = postPagonationQuery.sortDirection === 'asc' ? 'asc' : 'desc';
+        const sortDirection = postPagonationQuery.sortDirection === 'asc' ? 'ASC' : 'DESC';
         const sotringQuery = this.postsSortingQuery(sortBy);
         const pageNumber = postPagonationQuery.pageNumber
             ? +postPagonationQuery.pageNumber
@@ -104,35 +105,36 @@ export class PostRepositoryPg {
             user = { id: '0', email: '', login: '' }
         }
 
-        const findedPosts = await this.dataSource.query(`
-      SELECT posts.*, blogs.name AS "blogName",
-      COALESCE((SELECT status from posts_likes WHERE "userId" = '${user.id}' AND "postId" = posts."id"), 'None') as status,
-      COALESCE((
-        SELECT json_agg(row) 
-        FROM (
-            SELECT "addedAt", "userId", "login"
-            FROM posts_likes
-            WHERE "postId" = posts."id" AND "status" = 'Like'
-            ORDER BY "addedAt" desc
-        ) row
-      ),'[]') as likes_array,
-      COALESCE((
-          SELECT json_agg(row) 
-          FROM (
-              SELECT posts_likes.*
-              FROM posts_likes
-              WHERE "postId" = posts."id" AND "status" = 'Dislike'
-          ) row
-      ),'[]') as dislikes_array      
-      FROM posts
-      LEFT JOIN blogs
-      ON posts."blogId" = blogs."id"
-      GROUP BY posts."id", blogs."name"
-      ORDER BY "${sotringQuery}" ${sortDirection}
-      LIMIT ${pageSize}
-      OFFSET ${itemsToSkip}
-    `)
-        const postToReturn = findedPosts.map(p => {
+        const posts = await this.postRepo
+            .createQueryBuilder('p')
+            .select('p.*')
+            .addSelect('blogs.name', 'blogName')
+            .addSelect(`COALESCE((SELECT status from posts_likes WHERE "userId" = '${user.id}' AND "postId" = p."id"), 'None')`, 'status')
+            .addSelect(`COALESCE((
+                SELECT json_agg(row) 
+                FROM (
+                    SELECT "addedAt", "userId", "login"
+                    FROM posts_likes
+                    WHERE "postId" = p."id" AND "status" = 'Like'
+                    ORDER BY "addedAt" desc
+                ) row
+            ),'[]')`, 'likes_array')
+            .addSelect(`COALESCE((
+                SELECT json_agg(row) 
+                FROM (
+                    SELECT posts_likes.*
+                    FROM posts_likes
+                    WHERE "postId" = p."id" AND "status" = 'Dislike'
+                ) row
+            ),'[]')`, 'dislikes_array')
+            .leftJoin(BlogEntity, 'blogs', 'p."blogId" = blogs."id"')
+            .groupBy('p."id", blogs."name", blogs."id"')
+            .orderBy(`"${sotringQuery}"`, sortDirection)
+            .limit(pageSize)
+            .offset(itemsToSkip)
+            .getRawMany()
+
+        const postToReturn = posts.map(p => {
             const post =
             {
 
@@ -194,37 +196,32 @@ export class PostRepositoryPg {
 
     async findPostById(postId: string) {
 
-        const post = await this.postRepo.createQueryBuilder("p")
-            .select()
+
+        const post = await this.postRepo
+            .createQueryBuilder("p")
+            .select("p.*")
+            .addSelect(`COALESCE((SELECT json_agg(row) FROM (SELECT "addedAt", "userId", "login" FROM posts_likes WHERE "postId" = :postId AND "status" = 'Like') row), '[]')`, 'likes_array')
+            .addSelect(`COALESCE((SELECT json_agg(row) FROM (SELECT "addedAt", "userId", "login" FROM posts_likes WHERE "postId" = :postId AND "status" = 'Dislike') row), '[]')`, 'dislikes_array')
             .leftJoinAndSelect("p.blog", "b")
-            .where("p.id = :postId", { postId })
-            .groupBy('p.id, b.id')
-            .getOne()
+            .where('p.id = :postId', { postId })
+            .groupBy("p.id, b.id")
+            .getRawOne()
 
         if (!post) {
             throw new NotFoundException('post not found')
         }
-
-        const postsLikes = await this.dataSource.getRepository(PostLikesEntity)
-            .createQueryBuilder("p")
-            .where('p.postId = :postId', { postId })
-            .getMany()
 
         return {
             id: post.id.toString(),
             title: post.title,
             shortDescription: post.shortDescription,
             content: post.content,
-            blogId: post.blog.id.toString(),
-            blogName: post.blog.name,
+            blogId: post.b_id.toString(),
+            blogName: post.b_name,
             createdAt: post.createdAt,
             likesInfo: {
-                usersWhoLiked: postsLikes.filter(l => {
-                    return l.status === LikeStatus.LIKE
-                }),
-                usersWhoDisliked: postsLikes.filter(l => {
-                    return l.status === LikeStatus.DISLIKE
-                }),
+                usersWhoLiked: post.likes_array,
+                usersWhoDisliked: post.dislikes_array
             }
         }
 
@@ -254,11 +251,11 @@ export class PostRepositoryPg {
     }
 
 
-    async getAllPostsInBlog(postPagonationQuery: IPostPaganationQuery, blogId: string, request: Request) {
+    async getAllPostsInBlog(postPagonationQuery: IPostPaganationQuery, blog: BlogEntity, request: Request) {
         const sortBy = postPagonationQuery.sortBy
             ? postPagonationQuery.sortBy
             : 'createdAt';
-        const sortDirection = postPagonationQuery.sortDirection === 'asc' ? 'asc' : 'desc';
+        const sortDirection = postPagonationQuery.sortDirection === 'asc' ? 'ASC' : 'DESC';
         const sotringQuery = this.postsSortingQuery(sortBy);
         const pageNumber = postPagonationQuery.pageNumber
             ? +postPagonationQuery.pageNumber
@@ -277,39 +274,39 @@ export class PostRepositoryPg {
             user = { id: '0', email: '', login: '' }
         }
 
-        const findedPosts = await this.dataSource.query(`
-      SELECT posts.*, blogs.name AS "blogName",
-      COALESCE((SELECT status from posts_likes WHERE "userId" = '${user.id}' AND "postId" = posts."id"), 'None') as status,
-      COALESCE((
-        SELECT json_agg(row) 
-        FROM (
-            SELECT "addedAt", "userId", "login"
-            FROM posts_likes
-            WHERE "postId" = posts."id" AND "status" = 'Like'
-            ORDER BY "addedAt" desc
-        ) row
-      ),'[]') as likes_array,
-      COALESCE((
-          SELECT json_agg(row) 
-          FROM (
-              SELECT posts_likes.*
-              FROM posts_likes
-              WHERE "postId" = posts."id" AND "status" = 'Dislike'
-          ) row
-      ),'[]') as dislikes_array      
-      FROM posts
-      LEFT JOIN blogs
-      ON posts."blogId" = blogs."id"
-      WHERE posts."blogId" = '${blogId}'
-      GROUP BY posts."id", blogs."name"
-      ORDER BY "${sotringQuery}" ${sortDirection}
-      LIMIT ${pageSize}
-      OFFSET ${itemsToSkip}
-    `)
-        const postToReturn = findedPosts.map(p => {
+        const posts = await this.postRepo
+            .createQueryBuilder('p')
+            .select('p.*')
+            .addSelect('blogs.name', 'blogName')
+            .addSelect(`COALESCE((SELECT status from posts_likes WHERE "userId" = '${user.id}' AND "postId" = p."id"), 'None')`, 'status')
+            .addSelect(`COALESCE((
+                    SELECT json_agg(row) 
+                    FROM (
+                        SELECT "addedAt", "userId", "login"
+                        FROM posts_likes
+                        WHERE "postId" = p."id" AND "status" = 'Like'
+                        ORDER BY "addedAt" desc
+                    ) row
+                ),'[]')`, 'likes_array')
+            .addSelect(`COALESCE((
+                    SELECT json_agg(row) 
+                    FROM (
+                        SELECT posts_likes.*
+                        FROM posts_likes
+                        WHERE "postId" = p."id" AND "status" = 'Dislike'
+                    ) row
+                ),'[]')`, 'dislikes_array')
+            .leftJoin(BlogEntity, 'blogs', 'p."blogId" = blogs."id"')
+            .groupBy('p."id", blogs."name", blogs."id"')
+            .where("p.blogId = :blogId", { blogId: blog.id })
+            .orderBy(`"${sotringQuery}"`, sortDirection)
+            .limit(pageSize)
+            .offset(itemsToSkip)
+            .getRawMany()
+
+        const postToReturn = posts.map(p => {
             const post =
             {
-
                 id: p.id.toString(),
                 title: p.title,
                 shortDescription: p.shortDescription,
@@ -327,7 +324,10 @@ export class PostRepositoryPg {
             return post
         })
 
-        const totalCountOfItems = (await this.dataSource.query(`SELECT * FROM posts WHERE "blogId" = '${blogId}'`)).length;
+        const totalCountOfItems = await this.postRepo
+            .createQueryBuilder('p')
+            .select(`p.* WHERE p."blogId" = ${blog.id} `)
+            .getCount()
 
         const mappedResponse = {
             pagesCount: Math.ceil(totalCountOfItems / pageSize),

@@ -15,10 +15,10 @@ export class PostEntity {
     shortDescription: string
     @Column()
     content: string
-    @ManyToOne(() => BlogEntity, b => b.posts)
+    @ManyToOne(() => BlogEntity, b => b.posts, { onDelete: 'CASCADE' })
     blog: BlogEntity
     @OneToMany(() => CommentEntity, c => c.post)
     comments: CommentEntity[]
-    @OneToMany(() => PostLikesEntity, pl => pl.postId)
+    @OneToMany(() => PostLikesEntity, pl => pl.post)
     likes: PostLikesEntity[]
 }

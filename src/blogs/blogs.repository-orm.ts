@@ -47,21 +47,35 @@ export class BlogsRepositoryPg {
     const pagonation = this.getPagonation(paganationQuery);
 
 
-    const blogsArray = await this.blogsRepo.createQueryBuilder("blogs")
+    let blogsArray = await this.blogsRepo.createQueryBuilder("blogs")
       .select()
-      .where("LOWER(blogs.name) LIKE LOWER(:nameTerm)", { nameTerm: `%${pagonation.searchNameTerm}%` })
+      .where("blogs.name ILIKE :nameTerm", { nameTerm: `%${pagonation.searchNameTerm}%` })
       .orderBy(`"${pagonation.sotringQuery}"`, pagonation.sortDirection as ("ASC" | "DESC"))
       .limit(pagonation.pageSize)
       .offset(pagonation.itemsToSkip)
       .groupBy("blogs.id")
       .getMany()
 
+    // /////////////// Условие для теста, для сортировки по имени/////////////////
+    // if (pagonation.sotringQuery === "name") {
+    //   blogsArray = blogsArray.sort((a, b) => {
+    //     if (a.name > b.name) {
+    //       return 1
+    //     }
+    //     if (a.name < b.name) {
+    //       return -1;
+    //     }
+    //     return 0;
+    //   })
+
+    // }
+    // ///////////////////////////////////////////////////////////////////////////////
     blogsArray.map(b => {
       b.id = b.id.toString()
       return b
     })
 
-    const totalCountOfItems = (await this.dataSource.query(`SELECT * FROM blogs WHERE lower ("name") LIKE LOWER ('%${pagonation.searchNameTerm}%')`)).length
+    const totalCountOfItems = (await this.dataSource.query(`SELECT * FROM blogs WHERE "name" ILIKE '%${pagonation.searchNameTerm}%'`)).length
 
     const mappedResponse = {
       pagesCount: Math.ceil(totalCountOfItems / pagonation.pageSize),
@@ -108,11 +122,12 @@ export class BlogsRepositoryPg {
     newBlog.websiteUrl = data.websiteUrl
     newBlog.name = data.name
     await this.blogsRepo.save(newBlog);
+    newBlog.id = newBlog.id.toString()
     return newBlog
   }
 
   async deleteBlogById(blogId: string) {
-    return await this.blogsRepo.delete({ id: blogId })[1]
+    return (await this.blogsRepo.delete({ id: blogId })).affected
   }
 
   async getBlogById(blogId: string) {
