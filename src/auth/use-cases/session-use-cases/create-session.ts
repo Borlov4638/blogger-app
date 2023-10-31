@@ -1,9 +1,5 @@
 import { Request } from 'express';
 import { add } from 'date-fns';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Session } from '../../../entyties/session.schema';
-import { UserDocument } from '../../../entyties/users.chema';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { SessionRepositoryPg } from '../../../auth/session.repository-orm';
 
@@ -14,14 +10,14 @@ export class CreateSessionCommand {
     public expDate: number,
     public deviceId: string,
     public refreshHash: string,
-  ) { }
+  ) {}
 }
 
 @CommandHandler(CreateSessionCommand)
 export class CreateSessionUseCase
   implements ICommandHandler<CreateSessionCommand>
 {
-  constructor(private sessionRepo: SessionRepositoryPg) { }
+  constructor(private sessionRepo: SessionRepositoryPg) {}
 
   async execute(command: CreateSessionCommand) {
     const requestIp =

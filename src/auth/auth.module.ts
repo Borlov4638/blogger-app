@@ -2,7 +2,6 @@ import { Global, Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { CrytoModule } from '../crypto/crypto.module';
 import { UsersModule } from '../users/users.module';
-import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Session, sessionSchema } from '../entyties/session.schema';
 import { GetMyUsersDataUseCase } from './use-cases/get-my-users-data';
@@ -38,30 +37,26 @@ const UseCases = [
   GetNewTokenPairUseCase,
 ];
 
-
-let providers = []
-let exporters = []
-let imporst = []
+let providers = [];
+let exporters = [];
+let imporst = [];
 if (process.env.DATABASE === 'mongo') {
-  providers = [SessionRepository]
-  exporters = [SessionRepository]
-  imporst = [MongooseModule.forFeature([{ name: Session.name, schema: sessionSchema }])]
+  providers = [SessionRepository];
+  exporters = [SessionRepository];
+  imporst = [
+    MongooseModule.forFeature([{ name: Session.name, schema: sessionSchema }]),
+  ];
 } else if (process.env.DATABASE === 'postgres') {
-  imporst = [TypeOrmModule.forFeature([SessionPg])]
-  providers = [SessionRepositoryPg]
-  exporters = [SessionRepositoryPg]
+  imporst = [TypeOrmModule.forFeature([SessionPg])];
+  providers = [SessionRepositoryPg];
+  exporters = [SessionRepositoryPg];
 }
 
 @Global()
 @Module({
   controllers: [AuthController],
   providers: [...UseCases, ...providers],
-  imports: [
-    CrytoModule,
-    UsersModule,
-    ...imporst,
-    CqrsModule,
-  ],
+  imports: [CrytoModule, UsersModule, ...imporst, CqrsModule],
   exports: [...exporters],
 })
-export class AuthModule { }
+export class AuthModule {}

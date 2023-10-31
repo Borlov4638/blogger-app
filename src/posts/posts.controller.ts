@@ -35,16 +35,16 @@ import { ChangePostsLikeStatusCommand } from './use-cases/change-post-like-statu
 
 @Controller('posts')
 export class PostController {
-  constructor(
-    private commandBus: CommandBus,
-  ) { }
+  constructor(private commandBus: CommandBus) {}
 
   @Get()
   async getAllPosts(
     @Query() postPagonationQuery: PostPaganationQuery,
     @Req() request: Request,
   ) {
-    return await this.commandBus.execute(new GetAllPostsCommand(postPagonationQuery, request));
+    return await this.commandBus.execute(
+      new GetAllPostsCommand(postPagonationQuery, request),
+    );
   }
 
   @Get(':id')
@@ -85,11 +85,9 @@ export class PostController {
     @Req() request: Request,
     @Body() data: PostCreateNewCommentDto,
   ) {
-    return await this.commandBus.execute(new CreateCommentToPostCommand(
-      postId,
-      request,
-      data.content,
-    ))
+    return await this.commandBus.execute(
+      new CreateCommentToPostCommand(postId, request, data.content),
+    );
   }
   @Get(':id/comments')
   async getAllPostsComments(
@@ -97,11 +95,9 @@ export class PostController {
     @Query() postsCommentsPaganation: PostsCommentsPaganation,
     @Req() request: Request,
   ) {
-    return await this.commandBus.execute(new GetAllPostsCommentsCommand(
-      postId,
-      postsCommentsPaganation,
-      request,
-    ))
+    return await this.commandBus.execute(
+      new GetAllPostsCommentsCommand(postId, postsCommentsPaganation, request),
+    );
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -112,11 +108,8 @@ export class PostController {
     @Body() data: PostLikeStatusDto,
     @Req() request: Request,
   ) {
-    return await this.commandBus.execute(new ChangePostsLikeStatusCommand(
-      postId,
-      data.likeStatus,
-      request,
-    ))
-
+    return await this.commandBus.execute(
+      new ChangePostsLikeStatusCommand(postId, data.likeStatus, request),
+    );
   }
 }

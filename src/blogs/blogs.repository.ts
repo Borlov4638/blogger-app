@@ -1,6 +1,6 @@
-import { InjectModel } from "@nestjs/mongoose";
-import { Model, Types } from "mongoose";
-import { Blog, BlogDocument } from "src/entyties/blogs.schema";
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, Types } from 'mongoose';
+import { Blog, BlogDocument } from 'src/entyties/blogs.schema';
 
 interface IBlogPaganationQuery {
   searchNameTerm: string;
@@ -16,9 +16,8 @@ interface IUpdateBlog {
   websiteUrl: string;
 }
 
-
 export class BlogsRepository {
-  constructor(@InjectModel(Blog.name) private blogModel: Model<Blog>) { }
+  constructor(@InjectModel(Blog.name) private blogModel: Model<Blog>) {}
 
   blogsSortingQuery(sortBy: string, sortDirection: number): {} {
     switch (sortBy) {
@@ -76,10 +75,7 @@ export class BlogsRepository {
       ? paganationQuery.sortBy
       : 'createdAt';
     const sortDirection = paganationQuery.sortDirection === 'asc' ? 1 : -1;
-    const sotringQuery = this.blogsSortingQuery(
-      sortBy,
-      sortDirection,
-    );
+    const sotringQuery = this.blogsSortingQuery(sortBy, sortDirection);
     const pageNumber = paganationQuery.pageNumber
       ? +paganationQuery.pageNumber
       : 1;
@@ -127,14 +123,12 @@ export class BlogsRepository {
       new Types.ObjectId(blogId),
     );
     if (blogToUpdate) {
-      return 0
+      return 0;
     }
     blogToUpdate.name = data.name;
     blogToUpdate.description = data.description;
     blogToUpdate.websiteUrl = data.websiteUrl;
     await blogToUpdate.save();
-    return 1
+    return 1;
   }
-
-
 }

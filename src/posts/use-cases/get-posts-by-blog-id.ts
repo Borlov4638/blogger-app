@@ -16,7 +16,7 @@ export class GetAllPostsInBlogCommand {
     public postPagonationQuery: IPostPaganationQuery,
     public blogId: string,
     public request: Request,
-  ) { }
+  ) {}
 }
 
 @CommandHandler(GetAllPostsInBlogCommand)
@@ -24,17 +24,21 @@ export class GetAllPostsInBlogUseCase
   implements ICommandHandler<GetAllPostsInBlogCommand>
 {
   constructor(
-
     private commandBus: CommandBus,
     private readonly postRepo: PostRepositoryPg,
-  ) { }
+  ) {}
 
   async execute(command: GetAllPostsInBlogCommand) {
-    const blogToFindPosts = await this.commandBus.execute(new GetBlogByIdCommand(command.blogId))
+    const blogToFindPosts = await this.commandBus.execute(
+      new GetBlogByIdCommand(command.blogId),
+    );
     if (!blogToFindPosts) {
       throw new NotFoundException();
     }
-    return await this.postRepo.getAllPostsInBlog(command.postPagonationQuery, blogToFindPosts, command.request)
+    return await this.postRepo.getAllPostsInBlog(
+      command.postPagonationQuery,
+      blogToFindPosts,
+      command.request,
+    );
   }
-
 }

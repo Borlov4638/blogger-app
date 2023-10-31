@@ -1,10 +1,10 @@
-import { NotFoundException } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
-import { InjectModel } from "@nestjs/mongoose";
-import { Request } from "express";
-import { Model, Types } from "mongoose";
-import { Post, PostDocument } from "src/entyties/posts.schema";
-import { LikeStatus } from "src/enums/like-status.enum";
+import { NotFoundException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { InjectModel } from '@nestjs/mongoose';
+import { Request } from 'express';
+import { Model, Types } from 'mongoose';
+import { Post, PostDocument } from 'src/entyties/posts.schema';
+import { LikeStatus } from 'src/enums/like-status.enum';
 
 interface IPostPaganationQuery {
   sortBy: string;
@@ -19,11 +19,11 @@ interface IUsersAcessToken {
   login: string;
 }
 
-
 export class PostRepository {
-  constructor(@InjectModel(Post.name) private postModel: Model<Post>,
-    private jwtService: JwtService
-  ) { }
+  constructor(
+    @InjectModel(Post.name) private postModel: Model<Post>,
+    private jwtService: JwtService,
+  ) {}
 
   postsSortingQuery(sortBy: string, sortDirection: number): {} {
     switch (sortBy) {
@@ -58,7 +58,10 @@ export class PostRepository {
     }
   }
 
-  async getAllPosts(postPagonationQuery: IPostPaganationQuery, request: Request) {
+  async getAllPosts(
+    postPagonationQuery: IPostPaganationQuery,
+    request: Request,
+  ) {
     const sortBy = postPagonationQuery.sortBy
       ? postPagonationQuery.sortBy
       : 'createdAt';
@@ -146,13 +149,10 @@ export class PostRepository {
   }
 
   async findPostById(postId: string) {
-
-    return await this.postModel.findById(
-      new Types.ObjectId(postId),
-      { __v: false, _id: false },
-    );
-
-
+    return await this.postModel.findById(new Types.ObjectId(postId), {
+      __v: false,
+      _id: false,
+    });
   }
 
   async updatePost(postId, data) {
@@ -180,7 +180,11 @@ export class PostRepository {
     });
   }
 
-  async getAllPostsInBlog(postPagonationQuery: IPostPaganationQuery, blogId: string, request: Request) {
+  async getAllPostsInBlog(
+    postPagonationQuery: IPostPaganationQuery,
+    blogId: string,
+    request: Request,
+  ) {
     const sortBy = postPagonationQuery.sortBy
       ? postPagonationQuery.sortBy
       : 'createdAt';
@@ -195,13 +199,11 @@ export class PostRepository {
 
     const itemsToSkip = (pageNumber - 1) * pageSize;
 
-    const findedPosts =
-      await this.postModel
-        .find({ blogId: blogId }, { _id: false, __v: false })
-        .sort(sotringQuery)
-        .skip(itemsToSkip)
-        .limit(pageSize);
-
+    const findedPosts = await this.postModel
+      .find({ blogId: blogId }, { _id: false, __v: false })
+      .sort(sotringQuery)
+      .skip(itemsToSkip)
+      .limit(pageSize);
 
     let token: string;
     try {
@@ -248,9 +250,8 @@ export class PostRepository {
       return { ...postToReturn, extendedLikesInfo };
     });
 
-    const totalCountOfItems = (
-      await this.postModel.find({ blogId: blogId })
-    ).length;
+    const totalCountOfItems = (await this.postModel.find({ blogId: blogId }))
+      .length;
 
     const mappedResponse = {
       pagesCount: Math.ceil(totalCountOfItems / pageSize),
@@ -261,10 +262,13 @@ export class PostRepository {
     };
 
     return mappedResponse;
-
   }
 
-  async changePostLikeStatus(post: PostDocument, user: IUsersAcessToken, likeStatus: LikeStatus) {
+  async changePostLikeStatus(
+    post: PostDocument,
+    user: IUsersAcessToken,
+    likeStatus: LikeStatus,
+  ) {
     const currentLikeStatus = post.getStatus(user.id);
     switch (likeStatus) {
       case LikeStatus.LIKE:
@@ -286,7 +290,5 @@ export class PostRepository {
         await post.save();
         break;
     }
-
   }
-
 }

@@ -10,7 +10,7 @@ interface INewUsersData {
 }
 
 export class RegistrateUserCommand {
-  constructor(public data: INewUsersData) { }
+  constructor(public data: INewUsersData) {}
 }
 
 @CommandHandler(RegistrateUserCommand)
@@ -20,7 +20,7 @@ export class RegistrateUserUseCase
   constructor(
     private commandBus: CommandBus,
     private usersRepo: UsersRepository,
-  ) { }
+  ) {}
 
   async execute(command: RegistrateUserCommand) {
     const isUserExistsbyEmail = await this.usersRepo.getUserByLoginOrEmail(

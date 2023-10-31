@@ -9,14 +9,14 @@ export class RefreshCurrentSessionCommand {
     public expDate: number,
     public deviceId: string,
     public refreshHash: string,
-  ) { }
+  ) {}
 }
 
 @CommandHandler(RefreshCurrentSessionCommand)
 export class RefreshCurrentSessionUseCase
   implements ICommandHandler<RefreshCurrentSessionCommand>
 {
-  constructor(private sessionRepo: SessionRepositoryPg) { }
+  constructor(private sessionRepo: SessionRepositoryPg) {}
 
   async execute(command: RefreshCurrentSessionCommand) {
     const requestIp =

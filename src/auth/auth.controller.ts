@@ -42,7 +42,7 @@ interface ITokens {
 
 @Controller('auth')
 export class AuthController {
-  constructor(private commandBus: CommandBus) { }
+  constructor(private commandBus: CommandBus) {}
 
   @UseGuards(ThrottlerGuard)
   @Post('login')

@@ -1,6 +1,6 @@
-import { NotFoundException } from "@nestjs/common";
-import { InjectDataSource } from "@nestjs/typeorm";
-import { DataSource } from "typeorm";
+import { NotFoundException } from '@nestjs/common';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 interface IBlogPaganationQuery {
   searchNameTerm: string;
@@ -16,26 +16,25 @@ interface IUpdateBlog {
   websiteUrl: string;
 }
 
-
 export class BlogsRepositoryPg {
-  constructor(@InjectDataSource() private dataSource: DataSource) { }
+  constructor(@InjectDataSource() private dataSource: DataSource) {}
 
   blogsSortingQuery(sortBy: string): {} {
     switch (sortBy) {
       case 'id':
-        return "id";
+        return 'id';
       case 'name':
-        return "name";
+        return 'name';
       case 'description':
-        return "description";
+        return 'description';
       case 'websiteUrl':
-        return "websiteUrl";
+        return 'websiteUrl';
       case 'isMembership':
-        return "isMembership";
+        return 'isMembership';
       case 'createdAt':
-        return "createdAt";
+        return 'createdAt';
       default:
-        return "createdAt";
+        return 'createdAt';
     }
   }
 
@@ -48,12 +47,16 @@ export class BlogsRepositoryPg {
       ORDER BY "${pagonation.sortBy}" ${pagonation.sortDirection}
       LIMIT ${pagonation.pageSize}
       OFFSET (${pagonation.itemsToSkip})
-    `)
-    blogsArray.map(b => {
-      b.id = b.id.toString()
-      return b
-    })
-    const totalCountOfItems = (await this.dataSource.query(`SELECT * FROM blogs WHERE lower ("name") LIKE LOWER ('%${pagonation.searchNameTerm}%')`)).length
+    `);
+    blogsArray.map((b) => {
+      b.id = b.id.toString();
+      return b;
+    });
+    const totalCountOfItems = (
+      await this.dataSource.query(
+        `SELECT * FROM blogs WHERE lower ("name") LIKE LOWER ('%${pagonation.searchNameTerm}%')`,
+      )
+    ).length;
 
     const mappedResponse = {
       pagesCount: Math.ceil(totalCountOfItems / pagonation.pageSize),
@@ -64,7 +67,6 @@ export class BlogsRepositoryPg {
     };
 
     return mappedResponse;
-
   }
 
   private getPagonation(paganationQuery: IBlogPaganationQuery) {
@@ -74,10 +76,9 @@ export class BlogsRepositoryPg {
     const sortBy = paganationQuery.sortBy
       ? paganationQuery.sortBy
       : 'createdAt';
-    const sortDirection = paganationQuery.sortDirection === 'asc' ? 'asc' : 'desc';
-    const sotringQuery = this.blogsSortingQuery(
-      sortBy
-    );
+    const sortDirection =
+      paganationQuery.sortDirection === 'asc' ? 'asc' : 'desc';
+    const sotringQuery = this.blogsSortingQuery(sortBy);
     const pageNumber = paganationQuery.pageNumber
       ? +paganationQuery.pageNumber
       : 1;
@@ -95,36 +96,48 @@ export class BlogsRepositoryPg {
   }
 
   async createBlog(data) {
-    const newBlog = (await this.dataSource.query(`INSERT INTO blogs ("name", "description", "websiteUrl") VALUES ('${data.name}', '${data.description}', '${data.websiteUrl}')
+    const newBlog = (
+      await this.dataSource
+        .query(`INSERT INTO blogs ("name", "description", "websiteUrl") VALUES ('${data.name}', '${data.description}', '${data.websiteUrl}')
     RETURNING *;
-    `))[0]
-    newBlog.id = newBlog.id.toString()
-    return newBlog
+    `)
+    )[0];
+    newBlog.id = newBlog.id.toString();
+    return newBlog;
   }
 
   async deleteBlogById(blogId: string) {
-    return (await this.dataSource.query(`DELETE FROM blogs WHERE "id" = '${blogId}'`))[1]
+    return (
+      await this.dataSource.query(`DELETE FROM blogs WHERE "id" = '${blogId}'`)
+    )[1];
   }
 
   async getBlogById(blogId: string) {
-    const blog = (await this.dataSource.query(`SELECT * FROM blogs WHERE "id" = '${blogId}'`))[0]
+    const blog = (
+      await this.dataSource.query(
+        `SELECT * FROM blogs WHERE "id" = '${blogId}'`,
+      )
+    )[0];
     if (!blog) {
-      return false
+      return false;
     }
-    blog.id = blog.id.toString()
-    return blog
+    blog.id = blog.id.toString();
+    return blog;
   }
 
   async updateBlogById(blogId: string, data: IUpdateBlog) {
-    const isBlogExists = (await this.dataSource.query(`SELECT * FROM blogs WHERE "id" = '${blogId}'`))[0]
+    const isBlogExists = (
+      await this.dataSource.query(
+        `SELECT * FROM blogs WHERE "id" = '${blogId}'`,
+      )
+    )[0];
     if (!isBlogExists) {
-      throw new NotFoundException('Blog not found')
+      throw new NotFoundException('Blog not found');
     }
 
-    return await this.dataSource.query(`UPDATE blogs SET "name" = '${data.name}', "description" = '${data.description}', "websiteUrl" = '${data.websiteUrl}'
+    return await this.dataSource
+      .query(`UPDATE blogs SET "name" = '${data.name}', "description" = '${data.description}', "websiteUrl" = '${data.websiteUrl}'
       WHERE "id" = '${blogId}'
-    `)
+    `);
   }
-
-
 }

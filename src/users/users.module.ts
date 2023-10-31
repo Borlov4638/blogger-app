@@ -12,31 +12,25 @@ import { UsersEntity } from './entyties/users.entytie';
 import { UsersRepository } from './users.repository-orm';
 
 const useCases = [GetAllUsersUseCase, CreateUserUseCase, DeleteUserByIdUseCase];
-let imporst = []
-let exporst = []
-let providers = []
+let imporst = [];
+let exporst = [];
+let providers = [];
 if (process.env.DATABASE === 'mongo') {
-  imporst = [MongooseModule.forFeature([{ name: User.name, schema: usersSchema }])]
-  exporst = [UsersRepository]
-  providers = [UsersRepository]
+  imporst = [
+    MongooseModule.forFeature([{ name: User.name, schema: usersSchema }]),
+  ];
+  exporst = [UsersRepository];
+  providers = [UsersRepository];
 } else if (process.env.DATABASE === 'postgres') {
-  imporst = [TypeOrmModule.forFeature([UsersEntity])]
-  exporst = [UsersRepository]
-  providers = [UsersRepository]
-
+  imporst = [TypeOrmModule.forFeature([UsersEntity])];
+  exporst = [UsersRepository];
+  providers = [UsersRepository];
 }
-
 
 @Module({
   controllers: [UsersController],
-  providers: [...providers,
-  ...useCases, UsersRepository
-  ],
-  imports: [
-    CrytoModule,
-    CqrsModule,
-    ...imporst,
-  ],
+  providers: [...providers, ...useCases, UsersRepository],
+  imports: [CrytoModule, CqrsModule, ...imporst],
   exports: [...exporst],
 })
-export class UsersModule { }
+export class UsersModule {}

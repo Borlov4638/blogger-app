@@ -15,7 +15,7 @@ interface IUsersAcessToken {
 }
 
 export class RecoverPasswordCommand {
-  constructor(public data: IPasswordRecovery) { }
+  constructor(public data: IPasswordRecovery) {}
 }
 
 @CommandHandler(RecoverPasswordCommand)
@@ -25,7 +25,7 @@ export class RecoverPasswordUseCase
   constructor(
     private jwtService: JwtService,
     private usersRepo: UsersRepository,
-  ) { }
+  ) {}
 
   async execute(command: RecoverPasswordCommand) {
     const userData: IUsersAcessToken = await this._getTokenDataAndVerify(

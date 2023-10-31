@@ -10,16 +10,14 @@ interface IBlogPaganationQuery {
 }
 
 export class GetAllBlogsCommand {
-  constructor(public paganationQuery: IBlogPaganationQuery) { }
+  constructor(public paganationQuery: IBlogPaganationQuery) {}
 }
 
 @CommandHandler(GetAllBlogsCommand)
 export class GetAllBlogsUseCase implements ICommandHandler<GetAllBlogsCommand> {
-  constructor(
-    private readonly blogsRepo: BlogsRepositoryPg,
-  ) { }
+  constructor(private readonly blogsRepo: BlogsRepositoryPg) {}
 
   async execute(command: GetAllBlogsCommand) {
-    return await this.blogsRepo.GetAllBlogs(command.paganationQuery)
+    return await this.blogsRepo.GetAllBlogs(command.paganationQuery);
   }
 }

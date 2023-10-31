@@ -17,7 +17,7 @@ export class UsersRepository {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     private cryptoService: CryptoService,
-  ) { }
+  ) {}
 
   usersSortingQuery(sortBy: string, sortDirection: number): {} {
     switch (sortBy) {

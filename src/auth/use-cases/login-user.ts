@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { UnauthorizedException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { Request } from 'express';
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
@@ -24,7 +24,7 @@ interface IUsersAcessToken {
 }
 
 export class LoginUserCommand {
-  constructor(public credentials: ILoginUser, public request: Request) { }
+  constructor(public credentials: ILoginUser, public request: Request) {}
 }
 
 @CommandHandler(LoginUserCommand)
@@ -34,13 +34,13 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
     private jwtService: JwtService,
     private usersRepo: UsersRepository,
     private cryptoService: CryptoService,
-  ) { }
+  ) {}
 
   async execute(command: LoginUserCommand) {
     const user = await this.checkCredentials(command.credentials);
-    const reftrsTokenExpDate = 20;
+    const reftrsTokenExpDate = 2000;
     const deviceId = uuidv4();
-    const accessToken = await this.getUsersAccessToken(user, 10);
+    const accessToken = await this.getUsersAccessToken(user, 1000);
     const refreshToken = await this.getUsersRefreshToken(
       user,
       reftrsTokenExpDate,

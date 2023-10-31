@@ -1,5 +1,5 @@
 import { ConfigModule } from '@nestjs/config';
-const configModule = ConfigModule.forRoot()
+const configModule = ConfigModule.forRoot();
 
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
@@ -19,10 +19,9 @@ import { SecDevModule } from './security-devices/sec-dev.module';
 import { Comment, commentsSchema } from './entyties/comments.schema';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule } from '@nestjs/throttler';
 
-let imports = []
+let imports = [];
 if (process.env.DATABASE === 'mongo') {
   imports = [
     MongooseModule.forRoot(
@@ -35,21 +34,22 @@ if (process.env.DATABASE === 'mongo') {
       { name: User.name, schema: usersSchema },
       { name: Session.name, schema: sessionSchema },
     ]),
-  ]
+  ];
 } else if (process.env.DATABASE === 'postgres') {
-  imports = [TypeOrmModule.forRoot({
-    type: 'postgres',
-    host: 'localhost'/*'ep-bold-wind-11658677.eu-central-1.aws.neon.tech'*/,
-    port: 5432,
-    username: 'root'/*'mrwiggle40000'*/,
-    password: '12345'/*'rpc7qBw1uAjQ'*/,
-    database: 'test',
-    // ssl: true,
-    synchronize: true,
-    autoLoadEntities: true
-  })]
+  imports = [
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: 'localhost' /*'ep-bold-wind-11658677.eu-central-1.aws.neon.tech'*/,
+      port: 5432,
+      username: 'root' /*'mrwiggle40000'*/,
+      password: '12345' /*'rpc7qBw1uAjQ'*/,
+      database: 'test',
+      // ssl: true,
+      synchronize: false,
+      autoLoadEntities: true,
+    }),
+  ];
 }
-
 
 @Module({
   imports: [
@@ -68,11 +68,7 @@ if (process.env.DATABASE === 'mongo') {
     UtilsModule,
     SecDevModule,
   ],
-  controllers: [
-    AppController
-  ],
-  providers: [
-    AppService
-  ],
+  controllers: [AppController],
+  providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

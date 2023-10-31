@@ -8,9 +8,7 @@ import {
   registerDecorator,
 } from 'class-validator';
 import { LikeStatus } from '../../enums/like-status.enum';
-import {
-  Injectable,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import {
   ValidatorConstraint,
@@ -36,10 +34,10 @@ export function isBlogIdValid(
 @ValidatorConstraint({ name: 'email', async: true })
 @Injectable()
 export class CustomBlogIdValidation implements ValidatorConstraintInterface {
-  constructor(private blogRepo: BlogsRepositoryPg) { }
+  constructor(private blogRepo: BlogsRepositoryPg) {}
 
   async validate(blogId: string): Promise<boolean> {
-    const blog = await this.blogRepo.getBlogById(blogId)
+    const blog = await this.blogRepo.getBlogById(blogId);
     if (!blog) {
       return false;
     } else {
@@ -97,9 +95,8 @@ export class PostUpdateByBlogDto {
   @Length(0, 1000)
   content: string;
   @IsOptional()
-  blogId: string
+  blogId: string;
 }
-
 
 export class PostUpdateDto {
   @IsString()

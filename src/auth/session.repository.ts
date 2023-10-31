@@ -7,7 +7,7 @@ import { Session } from '../entyties/session.schema';
 export class SessionRepository {
   constructor(
     @InjectModel(Session.name) private sessionModel: Model<Session>,
-  ) { }
+  ) {}
 
   async createSession(
     userId: string,

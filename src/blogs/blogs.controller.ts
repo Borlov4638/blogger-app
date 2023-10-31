@@ -6,7 +6,6 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -19,7 +18,10 @@ import {
   CreatePostByBlogIdDto,
   UpdateBlogDto,
 } from './dto/blogs.dto';
-import { PostPaganationQuery, PostUpdateByBlogDto, PostUpdateDto } from '../posts/dto/post.dto';
+import {
+  PostPaganationQuery,
+  PostUpdateByBlogDto,
+} from '../posts/dto/post.dto';
 import { BasicAuthGuard } from '../auth/guards/auth.basic.guard';
 import { Request } from 'express';
 import { GetAllBlogsCommand } from './use-cases/get-all-blogs-with-pagonation';
@@ -35,7 +37,7 @@ import { DeletePostInBlogCommand } from 'src/posts/use-cases/delete-post-by-blog
 
 @Controller()
 export class BlogsController {
-  constructor(private commandBus: CommandBus) { }
+  constructor(private commandBus: CommandBus) {}
 
   @UseGuards(BasicAuthGuard)
   @Get('sa/blogs')
@@ -96,7 +98,6 @@ export class BlogsController {
     );
   }
 
-
   @UseGuards(BasicAuthGuard)
   @Post('sa/blogs/:blogId/posts')
   async createPostByBlogId(
@@ -113,10 +114,12 @@ export class BlogsController {
     @Param('blogId') blogId: string,
     @Param('postId') postId: string,
     @Body() data: PostUpdateByBlogDto,
-    @Req() request: Request
+    @Req() request: Request,
   ) {
-    data.blogId = blogId
-    return await this.commandBus.execute(new UpdatePostAssignedToBlogCommand(postId, blogId, request, data))
+    data.blogId = blogId;
+    return await this.commandBus.execute(
+      new UpdatePostAssignedToBlogCommand(postId, blogId, request, data),
+    );
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -124,8 +127,10 @@ export class BlogsController {
   @Delete('sa/blogs/:blogId/posts/:postId')
   async deletePostAssignedToBlog(
     @Param('blogId') blogId: string,
-    @Param('postId') postId: string
+    @Param('postId') postId: string,
   ) {
-    return await this.commandBus.execute(new DeletePostInBlogCommand(blogId, postId))
+    return await this.commandBus.execute(
+      new DeletePostInBlogCommand(blogId, postId),
+    );
   }
 }

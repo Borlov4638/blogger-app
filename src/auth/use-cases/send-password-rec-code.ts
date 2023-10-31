@@ -10,7 +10,7 @@ interface IUsersAcessToken {
 }
 
 export class SendPassRecoveryCodeCommand {
-  constructor(public email: string) { }
+  constructor(public email: string) {}
 }
 @CommandHandler(SendPassRecoveryCodeCommand)
 export class SendPassRecoveryCodeUseCase
@@ -20,7 +20,7 @@ export class SendPassRecoveryCodeUseCase
     private utilsService: UtilsService,
     private jwtService: JwtService,
     private usersRepo: UsersRepository,
-  ) { }
+  ) {}
 
   async execute(command: SendPassRecoveryCodeCommand) {
     const user = await this.usersRepo.getUserByLoginOrEmail(command.email);

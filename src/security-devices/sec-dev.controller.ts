@@ -19,7 +19,7 @@ export class SecDevController {
   constructor(
     private commandBus: CommandBus,
     private readonly secDevService: SecDevService,
-  ) { }
+  ) {}
 
   @UseGuards(BearerRefreshAuthGuard)
   @Get('devices')

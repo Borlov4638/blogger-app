@@ -12,7 +12,7 @@ interface IUsersAcessToken {
 }
 
 export class GetPostByIdCommand {
-  constructor(public postId: string, public request: Request) { }
+  constructor(public postId: string, public request: Request) {}
 }
 
 @CommandHandler(GetPostByIdCommand)
@@ -20,18 +20,17 @@ export class GetPostByIdUseCase implements ICommandHandler<GetPostByIdCommand> {
   constructor(
     private postRepo: PostRepositoryPg,
     private readonly jwtService: JwtService,
-  ) { }
+  ) {}
 
   async execute(command: GetPostByIdCommand) {
-    const findedPost = await this.postRepo.findPostById(command.postId)
+    const findedPost = await this.postRepo.findPostById(command.postId);
     if (!findedPost) {
       throw new NotFoundException('no such post');
     }
 
-    let user: IUsersAcessToken
+    let user: IUsersAcessToken;
     try {
-      const decodedToken =
-        command.request.headers.authorization.split(' ')[1];
+      const decodedToken = command.request.headers.authorization.split(' ')[1];
       user = await this.jwtService.verifyAsync(decodedToken);
     } catch {
       user = null;
@@ -41,7 +40,6 @@ export class GetPostByIdUseCase implements ICommandHandler<GetPostByIdCommand> {
     if (user) {
       // myStatus = findedPost.getStatus(user.id);                  MONGO
       myStatus = await this.postRepo.getStatus(user.id, findedPost.id);
-
     }
 
     const newestLikes = findedPost.likesInfo.usersWhoLiked
@@ -66,6 +64,5 @@ export class GetPostByIdUseCase implements ICommandHandler<GetPostByIdCommand> {
 
     delete postToReturn.likesInfo;
     return { ...postToReturn, extendedLikesInfo };
-
   }
 }

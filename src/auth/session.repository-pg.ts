@@ -1,15 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { Model, Types } from 'mongoose';
-import { Session } from '../entyties/session.schema';
 import { DataSource } from 'typeorm';
 
 @Injectable()
 export class SessionRepositoryPg {
-  constructor(
-    @InjectDataSource() private dataSource: DataSource,
-  ) { }
+  constructor(@InjectDataSource() private dataSource: DataSource) {}
 
   async createSession(
     userId: string,
@@ -20,10 +15,13 @@ export class SessionRepositoryPg {
     expiration: string,
     refreshHash: string,
   ) {
-    await this.dataSource.query(`insert into sessions ("deviceId", "userId", "ip", "title", "expiration", "refreshHash", "lastActiveDate")
+    await this.dataSource
+      .query(`insert into sessions ("deviceId", "userId", "ip", "title", "expiration", "refreshHash", "lastActiveDate")
     values ('${deviceId}', '${userId}', '${ip}', '${title}', '${expiration}', '${refreshHash}', '${lastActiveDate}')
-    `)
-    return await this.dataSource.query(`select * from sessions where "deviceId" = '${deviceId}'`)
+    `);
+    return await this.dataSource.query(
+      `select * from sessions where "deviceId" = '${deviceId}'`,
+    );
     // const newSession = new this.sessionModel({
     //   userId,
     //   deviceId,
@@ -37,7 +35,11 @@ export class SessionRepositoryPg {
   }
 
   async findSessionByRefreshHash(refreshHash: string) {
-    return (await this.dataSource.query(`select * from sessions where "refreshHash" = '${refreshHash}'`))[0]
+    return (
+      await this.dataSource.query(
+        `select * from sessions where "refreshHash" = '${refreshHash}'`,
+      )
+    )[0];
   }
 
   async refreshCurrentSession(
@@ -51,8 +53,12 @@ export class SessionRepositoryPg {
     await this.dataSource.query(`
     update sessions set
     "ip" = '${ip}', "title" = '${title}', "expiration" = '${expiration}', "refreshHash" = '${refreshHash}', "lastActiveDate" = '${lastActiveDate}' where "deviceId" = '${deviceId}';
-    `)
-    return (await this.dataSource.query(`select * from sessions where "deviceId" = '${deviceId}'`))[0]
+    `);
+    return (
+      await this.dataSource.query(
+        `select * from sessions where "deviceId" = '${deviceId}'`,
+      )
+    )[0];
 
     // const updatedSession = await this.sessionModel.findOneAndUpdate(
     //   { deviceId },
@@ -67,15 +73,23 @@ export class SessionRepositoryPg {
     // return updatedSession;
   }
   async deleteSessionById(deviceId: string) {
-    return (await this.dataSource.query(`DELETE FROM sessions WHERE "deviceId" = '${deviceId}'`))[1]
+    return (
+      await this.dataSource.query(
+        `DELETE FROM sessions WHERE "deviceId" = '${deviceId}'`,
+      )
+    )[1];
     // return await this.sessionModel.findOneAndDelete({ deviceId });
   }
   async getUserSessions(userId: string) {
-    const sessions = await this.dataSource.query(`SELECT "ip", "title", "lastActiveDate", "deviceId" FROM sessions WHERE "userId" = '${userId}'`)
-    sessions.map(s => {
-      s.lastActiveDate = new Date(s.lastActiveDate / 1000 * 1000).toISOString()
-    })
-    return sessions
+    const sessions = await this.dataSource.query(
+      `SELECT "ip", "title", "lastActiveDate", "deviceId" FROM sessions WHERE "userId" = '${userId}'`,
+    );
+    sessions.map((s) => {
+      s.lastActiveDate = new Date(
+        (s.lastActiveDate / 1000) * 1000,
+      ).toISOString();
+    });
+    return sessions;
     // return await this.sessionModel.find(
     //   {
     //     userId: new Types.ObjectId(userId),
@@ -91,7 +105,9 @@ export class SessionRepositoryPg {
   }
 
   async deleteOtherSessions(userId: string, deviceId: string) {
-    await this.dataSource.query(`delete from sessions where "userId" = '${userId}' and "deviceId" != '${deviceId}'`)
+    await this.dataSource.query(
+      `delete from sessions where "userId" = '${userId}' and "deviceId" != '${deviceId}'`,
+    );
     // await this.sessionModel.deleteMany({
     //   userId: new Types.ObjectId(userId),
     //   deviceId: { $not: { $regex: deviceId } },
@@ -100,7 +116,11 @@ export class SessionRepositoryPg {
   }
 
   async findSessionById(deviceId: string) {
-    return (await this.dataSource.query(`SELECT * FROM sessions WHERE "deviceId" = '${deviceId}'`))[0]
+    return (
+      await this.dataSource.query(
+        `SELECT * FROM sessions WHERE "deviceId" = '${deviceId}'`,
+      )
+    )[0];
     // return await this.sessionModel.findOne({ deviceId });
   }
 }

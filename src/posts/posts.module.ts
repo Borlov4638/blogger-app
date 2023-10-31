@@ -21,12 +21,21 @@ import { ChangePostsLikeStatusUseCase } from './use-cases/change-post-like-statu
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostEntity } from './entitys/post.entity';
 import { PostLikesEntity } from './entitys/post-likes.entity';
-import { BlogEntity } from 'src/blogs/entitys/blogs.entity';
 
-const UseCases = [ChangePostsLikeStatusUseCase, DeletePostInBlogsUseCase, CreatePostUseCase, GetPostByIdUseCase, GetAllPostsInBlogUseCase, GetAllPostsUseCase, UpdatePostUseCase, DeletePostByIdUseCase, UpdatePostAssignedToBlogUseCase];
-let imports = []
-let providers = []
-let exporters = []
+const UseCases = [
+  ChangePostsLikeStatusUseCase,
+  DeletePostInBlogsUseCase,
+  CreatePostUseCase,
+  GetPostByIdUseCase,
+  GetAllPostsInBlogUseCase,
+  GetAllPostsUseCase,
+  UpdatePostUseCase,
+  DeletePostByIdUseCase,
+  UpdatePostAssignedToBlogUseCase,
+];
+let imports = [];
+let providers = [];
+let exporters = [];
 if (process.env.DATABASE === 'mongo') {
   imports = [
     MongooseModule.forFeature([
@@ -34,29 +43,23 @@ if (process.env.DATABASE === 'mongo') {
       { name: Blog.name, schema: BlogSchema },
       { name: Comment.name, schema: commentsSchema },
     ]),
-    BlogsModule
-  ]
-  providers = [PostRepository]
-  exporters = [PostRepository]
-
+    BlogsModule,
+  ];
+  providers = [PostRepository];
+  exporters = [PostRepository];
 } else if (process.env.DATABASE === 'postgres') {
-  imports = [TypeOrmModule.forFeature([PostEntity, PostLikesEntity, PostLikesEntity]), BlogsModule]
-  providers = [PostRepositoryPg]
-  exporters = [PostRepositoryPg]
-
+  imports = [
+    TypeOrmModule.forFeature([PostEntity, PostLikesEntity, PostLikesEntity]),
+    BlogsModule,
+  ];
+  providers = [PostRepositoryPg];
+  exporters = [PostRepositoryPg];
 }
 
 @Module({
-  imports: [
-    ...imports,
-    CqrsModule,
-  ],
+  imports: [...imports, CqrsModule],
   controllers: [PostController],
-  providers: [
-    ...providers,
-    CustomBlogIdValidation,
-    ...UseCases,
-  ],
+  providers: [...providers, CustomBlogIdValidation, ...UseCases],
   exports: [...exporters, ...UseCases],
 })
-export class PostsModule { }
+export class PostsModule {}

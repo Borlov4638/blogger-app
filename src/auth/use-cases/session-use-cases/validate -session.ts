@@ -4,14 +4,14 @@ import { Request } from 'express';
 import { SessionRepositoryPg } from '../../../auth/session.repository-orm';
 
 export class ValidateSessionCommand {
-  constructor(public request: Request) { }
+  constructor(public request: Request) {}
 }
 
 @CommandHandler(ValidateSessionCommand)
 export class ValidateSessionUseCase
   implements ICommandHandler<ValidateSessionCommand>
 {
-  constructor(private sessionRepo: SessionRepositoryPg) { }
+  constructor(private sessionRepo: SessionRepositoryPg) {}
 
   async execute(command: ValidateSessionCommand) {
     const refreshHash = command.request.cookies.refreshToken.split('.')[2];

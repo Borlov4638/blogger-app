@@ -15,29 +15,32 @@ import { CommentEntity } from './entitys/comment.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CommentLikesEntity } from './entitys/comments-likes.entity';
 
-const useCases = [GetAllPostsCommentsUseCase, DeleteCommandByIdUseCase, ChengeCommentLikeStatusUseCase, CreateCommentToPostUseCase, GetCommentByIdUseCase, UpdateCommentByIdUseCase]
+const useCases = [
+  GetAllPostsCommentsUseCase,
+  DeleteCommandByIdUseCase,
+  ChengeCommentLikeStatusUseCase,
+  CreateCommentToPostUseCase,
+  GetCommentByIdUseCase,
+  UpdateCommentByIdUseCase,
+];
 
-let imports = []
-let exporters = []
-let providers = []
+let imports = [];
+const exporters = [];
+let providers = [];
 if (process.env.DATABASE === 'mongo') {
   imports = [
     MongooseModule.forFeature([{ name: Comment.name, schema: commentsSchema }]),
-  ]
-  providers = [
-    CommentRepository
-  ]
+  ];
+  providers = [CommentRepository];
 } else if (process.env.DATABASE === 'postgres') {
-  imports = [TypeOrmModule.forFeature([CommentEntity, CommentLikesEntity])]
-  providers = [CommentRepositoryPg]
+  imports = [TypeOrmModule.forFeature([CommentEntity, CommentLikesEntity])];
+  providers = [CommentRepositoryPg];
 }
 
 @Module({
-  imports: [
-    CqrsModule
-  ],
+  imports: [CqrsModule, ...imports],
   controllers: [CommentsController],
   providers: [...useCases, ...providers],
-  exports: [...useCases]
+  exports: [...useCases],
 })
-export class CommentsModule { }
+export class CommentsModule {}

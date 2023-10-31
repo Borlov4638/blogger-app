@@ -19,7 +19,7 @@ import { DeleteUserByIdCommand } from './use-cases/delete-user-by-id';
 
 @Controller('sa/users')
 export class UsersController {
-  constructor(private commandBus: CommandBus) { }
+  constructor(private commandBus: CommandBus) {}
 
   @UseGuards(BasicAuthGuard)
   @Get()
@@ -32,7 +32,6 @@ export class UsersController {
   @Post()
   async createUser(@Body() data: CreateUserDto) {
     return await this.commandBus.execute(new CreateUserCommand(data, true));
-
   }
 
   @UseGuards(BasicAuthGuard)

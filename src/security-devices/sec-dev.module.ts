@@ -9,4 +9,4 @@ import { AuthModule } from '../auth/auth.module';
   providers: [SecDevService],
   imports: [CqrsModule, AuthModule],
 })
-export class SecDevModule { }
+export class SecDevModule {}
