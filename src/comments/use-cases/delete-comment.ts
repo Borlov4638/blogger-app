@@ -6,7 +6,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { CommentRepositoryPg } from '../comments.repository-pg';
+import { CommentRepositoryPg } from '../comments.repository-orm';
 
 interface IUsersAcessToken {
   id: string;
@@ -15,7 +15,7 @@ interface IUsersAcessToken {
 }
 
 export class DeleteCommentByIdCommand {
-  constructor(public id: string, public request: Request) {}
+  constructor(public id: string, public request: Request) { }
 }
 
 @CommandHandler(DeleteCommentByIdCommand)
@@ -25,7 +25,7 @@ export class DeleteCommandByIdUseCase
   constructor(
     private commentRepo: CommentRepositoryPg,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   async execute(command: DeleteCommentByIdCommand) {
     let user: IUsersAcessToken;

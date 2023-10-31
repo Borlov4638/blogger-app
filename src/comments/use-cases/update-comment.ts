@@ -6,7 +6,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { CommentRepositoryPg } from '../comments.repository-pg';
+import { CommentRepositoryPg } from '../comments.repository-orm';
 
 interface IUsersAcessToken {
   id: string;
@@ -19,7 +19,7 @@ export class UpdateCommentByIdCommand {
     public newContent: string,
     public commentId: string,
     public request: Request,
-  ) {}
+  ) { }
 }
 
 @CommandHandler(UpdateCommentByIdCommand)
@@ -29,7 +29,7 @@ export class UpdateCommentByIdUseCase
   constructor(
     private commentRepo: CommentRepositoryPg,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   async execute(command: UpdateCommentByIdCommand) {
     let user: IUsersAcessToken;

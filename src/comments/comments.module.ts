@@ -9,7 +9,7 @@ import { GetCommentByIdUseCase } from './use-cases/get-comment-by-id';
 import { UpdateCommentByIdUseCase } from './use-cases/update-comment';
 import { ChengeCommentLikeStatusUseCase } from './use-cases/change-comment-like-status';
 import { DeleteCommandByIdUseCase } from './use-cases/delete-comment';
-import { CommentRepositoryPg } from './comments.repository-pg';
+import { CommentRepositoryPg } from './comments.repository-orm';
 import { GetAllPostsCommentsUseCase } from './use-cases/get-all-comments-in-post';
 import { CommentEntity } from './entitys/comment.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -43,4 +43,4 @@ if (process.env.DATABASE === 'mongo') {
   providers: [...useCases, ...providers],
   exports: [...useCases],
 })
-export class CommentsModule {}
+export class CommentsModule { }

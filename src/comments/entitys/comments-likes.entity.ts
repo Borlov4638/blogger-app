@@ -13,14 +13,14 @@ import { CommentEntity } from './comment.entity';
 @Entity('comments_likes')
 export class CommentLikesEntity {
   @PrimaryColumn()
-  commentId: number;
+  commentId: number | string;
 
   @ManyToOne(() => CommentEntity, (c) => c.coommentLikes)
   @JoinColumn({ name: 'commentId' })
   comment: CommentEntity;
 
   @PrimaryColumn({})
-  userId: number;
+  userId: number | string;
 
   @ManyToOne(() => UsersEntity, (u) => u.commentLikes)
   @JoinColumn({ name: 'userId' })

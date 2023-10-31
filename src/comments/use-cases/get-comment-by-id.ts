@@ -3,7 +3,7 @@ import { NotFoundException } from '@nestjs/common';
 import { Request } from 'express';
 import { LikeStatus } from 'src/enums/like-status.enum';
 import { JwtService } from '@nestjs/jwt';
-import { CommentRepositoryPg } from '../comments.repository-pg';
+import { CommentRepositoryPg } from '../comments.repository-orm';
 
 interface IUsersAcessToken {
   id: string;
@@ -12,7 +12,7 @@ interface IUsersAcessToken {
 }
 
 export class GetCommentByIdCommand {
-  constructor(public id: string, public request: Request) {}
+  constructor(public id: string, public request: Request) { }
 }
 
 @CommandHandler(GetCommentByIdCommand)
@@ -22,7 +22,7 @@ export class GetCommentByIdUseCase
   constructor(
     private commentRepo: CommentRepositoryPg,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   async execute(command: GetCommentByIdCommand) {
     debugger;

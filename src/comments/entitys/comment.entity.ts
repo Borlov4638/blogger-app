@@ -13,7 +13,7 @@ import { CommentLikesEntity } from './comments-likes.entity';
 @Entity('comments')
 export class CommentEntity {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: number | string;
   @CreateDateColumn()
   createdAt: Date;
   @Column()

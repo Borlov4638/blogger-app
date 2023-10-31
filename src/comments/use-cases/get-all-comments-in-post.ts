@@ -1,5 +1,5 @@
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { CommentRepositoryPg } from 'src/comments/comments.repository-pg';
+import { CommentRepositoryPg } from 'src/comments/comments.repository-orm';
 import { PostsCommentsPaganation } from '../../posts/dto/post.dto';
 import { Request } from 'express';
 import { GetPostByIdCommand } from 'src/posts/use-cases/get-post-by-id';
@@ -9,7 +9,7 @@ export class GetAllPostsCommentsCommand {
     public postId: string,
     public postsCommentsPaganation: PostsCommentsPaganation,
     public request: Request,
-  ) {}
+  ) { }
 }
 
 @CommandHandler(GetAllPostsCommentsCommand)
@@ -19,7 +19,7 @@ export class GetAllPostsCommentsUseCase
   constructor(
     private commandBus: CommandBus,
     private commentRepo: CommentRepositoryPg,
-  ) {}
+  ) { }
 
   async execute(command: GetAllPostsCommentsCommand) {
     await this.commandBus.execute(
