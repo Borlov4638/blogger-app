@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { LikeStatus } from 'src/enums/like-status.enum';
-import { DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CommentEntity } from './entitys/comment.entity';
+import { CommentLikesEntity } from './entitys/comments-likes.entity';
 
 interface IUsersAcessToken {
   id: string;
@@ -12,7 +15,10 @@ interface IUsersAcessToken {
 
 @Injectable()
 export class CommentRepositoryPg {
-  constructor(private dataSource: DataSource, private jwtService: JwtService) {}
+  constructor(
+    private dataSource: DataSource, private jwtService: JwtService,
+    @InjectRepository(CommentEntity) private commentRepo: Repository<CommentEntity>
+  ) { }
 
   commentsSortingQuery(sortBy: string): {} {
     switch (sortBy) {
@@ -36,7 +42,7 @@ export class CommentRepositoryPg {
       ? postsCommentsPaganation.sortBy
       : 'createdAt';
     const sortDirection =
-      postsCommentsPaganation.sortDirection === 'asc' ? 'asc' : 'desc';
+      postsCommentsPaganation.sortDirection === 'asc' ? 'ASC' : 'DESC';
     const sotringQuery = this.commentsSortingQuery(sortBy);
     const pageNumber = postsCommentsPaganation.pageNumber
       ? +postsCommentsPaganation.pageNumber
@@ -55,18 +61,29 @@ export class CommentRepositoryPg {
       user = { id: '0', email: '', login: '' };
     }
 
-    const selectedComments = await this.dataSource.query(`
-            SELECT comments.*, COALESCE(comments_likes.status, 'None') as status,
-            (SELECT COUNT(*) FROM comments_likes WHERE "commentId" = comments."id" AND status = 'Like') as like_count,
-            (SELECT COUNT(*) FROM comments_likes WHERE "commentId" = comments."id" AND status = 'Dislike') as dislike_count
-            FROM comments
-            LEFT JOIN comments_likes
-            ON comments."id" = comments_likes."commentId" AND comments_likes."userId" = '${user.id}'
-            WHERE comments."postId" = '${postId}'
-            ORDER BY "${sotringQuery}" ${sortDirection}
-            LIMIT ${pageSize}
-            OFFSET ${itemsToSkip}
-        `);
+    const selectedComments = await this.commentRepo
+      .createQueryBuilder("c")
+      .select("c.*")
+      .addSelect(query => {
+        return query
+          .select("COUNT(*)")
+          .from("comments_likes", "cl")
+          .where("cl.commentId = c.id")
+          .andWhere("cl.status = 'Like'")
+      }, "like_count")
+      .addSelect(query => {
+        return query
+          .select("COUNT(*)")
+          .from("comments_likes", "cl")
+          .where("cl.commentId = c.id")
+          .andWhere("cl.status = 'Dislike'")
+      }, "dislike_count")
+      .leftJoin(CommentLikesEntity, "cl", `c.id = cl.commentId AND cl.userId = '${user.id}'`)
+      .where("c.postId = :postId", { postId })
+      .orderBy(`c.${sotringQuery}`, `${sortDirection}`)
+      .limit(pageSize)
+      .offset(itemsToSkip)
+      .getRawMany()
 
     const commentsToSend = selectedComments.map((c) => {
       return {
@@ -85,11 +102,11 @@ export class CommentRepositoryPg {
       };
     });
 
-    const totalCountOfItems = (
-      await this.dataSource.query(`
-            SELECT * FROM comments WHERE "postId" = '${postId}'
-        `)
-    ).length;
+    const totalCountOfItems = await this.commentRepo
+      .createQueryBuilder("c")
+      .select("c.*")
+      .getCount()
+
     const mappedResponse = {
       pagesCount: Math.ceil(totalCountOfItems / pageSize),
       page: pageNumber,
@@ -101,20 +118,19 @@ export class CommentRepositoryPg {
   }
 
   async createComment(commentatorInfo, content: string, postId: string) {
-    const newComment = (
-      await this.dataSource.query(`
-            INSERT INTO comments ("content", "userId", "userLogin", "postId")
-            VALUES ('${content}', '${commentatorInfo.userId}', '${commentatorInfo.userLogin}', '${postId}')
-            RETURNING *
-        `)
-    )[0];
+    const newComment = new CommentEntity()
+    newComment.postId = postId
+    newComment.userId = commentatorInfo.userId
+    newComment.userLogin = commentatorInfo.userLogin
+    newComment.content = content
+    await this.commentRepo.save(newComment)
 
     const comment = {
       id: newComment.id.toString(),
       content: newComment.content,
       commentatorInfo: {
-        userId: newComment.userId.toString(),
-        userLogin: newComment.userLogin,
+        userId: commentatorInfo.userId.toString(),
+        userLogin: commentatorInfo.userLogin,
       },
       createdAt: newComment.createdAt,
       likesInfo: {
@@ -127,34 +143,39 @@ export class CommentRepositoryPg {
   }
 
   async getCommentById(id: string) {
-    const findedComment = (
-      await this.dataSource.query(`
-            SELECT * FROM comments
-            WHERE "id" = '${id}'
-        `)
-    )[0];
+    const findedComment = await this.commentRepo.findOne({
+      where: {
+        id
+      },
+      relations: {
+        user: true
+      }
+    })
 
     if (!findedComment) {
       return false;
     }
-    const commentLikes = (
-      await this.dataSource.query(`
-            SELECT from comments_likes
-            WHERE "commentId" = '${id}' AND "status" = '${LikeStatus.LIKE}'
-        `)
-    ).map((c) => c.userId);
-    const commentDislikes = (
-      await this.dataSource.query(`
-            SELECT from comments_likes
-            WHERE "commentId" = '${id}' AND "status" = '${LikeStatus.DISLIKE}'
-        `)
-    ).map((c) => c.userId);
+    const commentLikes = await this.dataSource
+      .createQueryBuilder()
+      .select("cl.userId")
+      .from(CommentLikesEntity, "cl")
+      .where({ commentId: id })
+      .andWhere({ status: LikeStatus.LIKE })
+      .getMany()
+
+    const commentDislikes = await this.dataSource
+      .createQueryBuilder()
+      .select("cl.userId")
+      .from(CommentLikesEntity, "cl")
+      .where({ commentId: id })
+      .andWhere({ status: LikeStatus.DISLIKE })
+      .getMany()
 
     const comment = {
       id: findedComment.id.toString(),
       content: findedComment.content,
       commentatorInfo: {
-        userId: findedComment.userId.toString(),
+        userId: findedComment.user.id.toString(),
         userLogin: findedComment.userLogin,
       },
       createdAt: findedComment.createdAt,
@@ -167,22 +188,27 @@ export class CommentRepositoryPg {
   }
 
   async updateComment(commentId: string, newContent) {
-    const updatedComment = (
-      await this.dataSource.query(`
-            UPDATE comments
-            SET "content" = '${newContent}'
-            WHERE "id" = '${commentId}'
-            RETURNING *
-        `)
-    )[0][0];
+
+    const updatedComment = await this.commentRepo.findOne({
+      relations: {
+        user: true
+      },
+      where: {
+        id: commentId
+      }
+    })
     if (!updatedComment) {
       return false;
     }
+
+    updatedComment.content = newContent
+    await this.commentRepo.save(updatedComment);
+
     const comment = {
       id: updatedComment.id.toString(),
       content: updatedComment.content,
       commentatorInfo: {
-        userId: updatedComment.userId.toString(),
+        userId: updatedComment.user.id.toString(),
         userLogin: updatedComment.userLogin,
       },
       createdAt: updatedComment.createdAt,
@@ -197,18 +223,18 @@ export class CommentRepositoryPg {
   }
 
   async deleteComment(comment) {
-    await this.dataSource.query(
-      `DELETE FROM comments WHERE "id" = '${comment.id}'`,
-    );
+    await this.commentRepo.delete({ id: comment.id })
   }
 
   async getLikeStatus(commentId: string, userId: string) {
-    const status = (
-      await this.dataSource.query(`
-            SELECT "status" FROM comments_likes
-            WHERE "commentId" = '${commentId}'AND "userId" = '${userId}'
-        `)
-    )[0];
+    const status = await this.dataSource
+      .createQueryBuilder()
+      .select("cl.status")
+      .from(CommentLikesEntity, "cl")
+      .where("cl.commentId = :commentId", { commentId })
+      .andWhere("cl.userId = :userId", { userId })
+      .getOne()
+
     if (!status) {
       return LikeStatus.NONE;
     }
@@ -248,24 +274,31 @@ export class CommentRepositoryPg {
   }
 
   private async likeComment(userId: string, commentId: string) {
-    await this.dataSource.query(`
-            INSERT INTO comments_likes ("userId", "commentId", "status") 
-            VALUES ('${userId}', '${commentId}', '${LikeStatus.LIKE}')
-            RETURNING *
-        `);
+    await this.dataSource
+      .createQueryBuilder()
+      .insert()
+      .into(CommentLikesEntity)
+      .values({ userId, commentId, status: LikeStatus.LIKE })
+      .execute()
+
   }
 
   private async dislikeComment(userId: string, commentId: string) {
-    await this.dataSource.query(`
-            INSERT INTO comments_likes ("userId", "commentId", "status") 
-            VALUES ('${userId}', '${commentId}', '${LikeStatus.DISLIKE}')
-            RETURNING *
-        `);
+    await this.dataSource
+      .createQueryBuilder()
+      .insert()
+      .into(CommentLikesEntity)
+      .values({ commentId, userId, status: LikeStatus.DISLIKE })
+      .execute()
   }
   private async removeStatus(userId: string, commentId: string) {
-    await this.dataSource.query(`
-            DELETE FROM comments_likes
-            WHERE "userId" = '${userId}' AND "commentId" = '${commentId}'
-        `);
+    await this.dataSource
+      .createQueryBuilder()
+      .delete()
+      .from(CommentLikesEntity)
+      .where("userId = :userId", { userId })
+      .andWhere("commentId = :commentId", { commentId })
+      .execute()
+
   }
 }

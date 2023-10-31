@@ -8,7 +8,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { CreateUserUseCase } from './use-cases/create-user';
 import { DeleteUserByIdUseCase } from './use-cases/delete-user-by-id';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersEntity } from './entyties/users.entytie';
+import { UsersEntity } from './entyties/users.entity';
 import { UsersRepository } from './users.repository-orm';
 
 const useCases = [GetAllUsersUseCase, CreateUserUseCase, DeleteUserByIdUseCase];
@@ -33,4 +33,4 @@ if (process.env.DATABASE === 'mongo') {
   imports: [CrytoModule, CqrsModule, ...imporst],
   exports: [...exporst],
 })
-export class UsersModule {}
+export class UsersModule { }

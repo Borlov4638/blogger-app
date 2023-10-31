@@ -1,7 +1,7 @@
-import { SessionPg } from 'src/auth/enities/session.entitie';
-import { CommentEntity } from 'src/comments/entitys/comment.entity';
-import { CommentLikesEntity } from 'src/comments/entitys/comments-likes.entity';
-import { PostLikesEntity } from 'src/posts/entitys/post-likes.entity';
+import { SessionPg } from '../../auth/enities/session.entity';
+import { CommentEntity } from '../../comments/entitys/comment.entity';
+import { CommentLikesEntity } from '../../comments/entitys/comments-likes.entity';
+import { PostLikesEntity } from '../../posts/entitys/post-likes.entity';
 import {
   Column,
   CreateDateColumn,

@@ -3,7 +3,7 @@ import { LikeStatus } from 'src/enums/like-status.enum';
 import { NotFoundException } from '@nestjs/common';
 import { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
-import { CommentRepositoryPg } from '../comments.repository-pg';
+import { CommentRepositoryPg } from '../comments.repository-orm';
 
 interface IUsersAcessToken {
   id: string;
@@ -16,7 +16,7 @@ export class ChengeCommentLikeStatusCommand {
     public request: Request,
     public commentId: string,
     public likeStatus: LikeStatus,
-  ) {}
+  ) { }
 }
 
 @CommandHandler(ChengeCommentLikeStatusCommand)
@@ -26,7 +26,7 @@ export class ChengeCommentLikeStatusUseCase
   constructor(
     private commentRepo: CommentRepositoryPg,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   async execute(command: ChengeCommentLikeStatusCommand) {
     debugger;

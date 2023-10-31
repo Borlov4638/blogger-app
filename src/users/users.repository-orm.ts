@@ -4,7 +4,7 @@ import { CryptoService } from '../crypto/crypto.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
-import { UsersEntity } from './entyties/users.entytie';
+import { UsersEntity } from './entyties/users.entity';
 import { registrationCodeDto } from 'src/auth/dto/auth.dto';
 
 interface IUsersPaganationQuery {
@@ -21,7 +21,7 @@ export class UsersRepository {
     @InjectRepository(UsersEntity)
     private readonly usersRepo: Repository<UsersEntity>,
     private cryptoService: CryptoService,
-  ) {}
+  ) { }
 
   private usersSortingQuery(sortBy: string) {
     switch (sortBy) {

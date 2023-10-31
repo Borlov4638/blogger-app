@@ -12,7 +12,7 @@ interface IUsersAcessToken {
 
 @Injectable()
 export class CommentRepositoryPg {
-  constructor(private dataSource: DataSource, private jwtService: JwtService) {}
+  constructor(private dataSource: DataSource, private jwtService: JwtService) { }
 
   commentsSortingQuery(sortBy: string): {} {
     switch (sortBy) {
@@ -101,6 +101,7 @@ export class CommentRepositoryPg {
   }
 
   async createComment(commentatorInfo, content: string, postId: string) {
+
     const newComment = (
       await this.dataSource.query(`
             INSERT INTO comments ("content", "userId", "userLogin", "postId")

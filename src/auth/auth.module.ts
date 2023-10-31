@@ -20,7 +20,7 @@ import { RecoverPasswordUseCase } from './use-cases/recover-password';
 import { DeleteCurrenSessionUseCase } from './use-cases/session-use-cases/delete-current-session';
 import { SessionRepositoryPg } from './session.repository-orm';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { SessionPg } from './enities/session.entitie';
+import { SessionPg } from './enities/session.entity';
 
 const UseCases = [
   DeleteCurrenSessionUseCase,
@@ -59,4 +59,4 @@ if (process.env.DATABASE === 'mongo') {
   imports: [CrytoModule, UsersModule, ...imporst, CqrsModule],
   exports: [...exporters],
 })
-export class AuthModule {}
+export class AuthModule { }

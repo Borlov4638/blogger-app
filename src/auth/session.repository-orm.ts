@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
-import { SessionPg } from './enities/session.entitie';
-import { UsersEntity } from 'src/users/entyties/users.entytie';
+import { SessionPg } from './enities/session.entity';
+import { UsersEntity } from 'src/users/entyties/users.entity';
 
 @Injectable()
 export class SessionRepositoryPg {
   constructor(
     @InjectRepository(SessionPg) private sessionRepo: Repository<SessionPg>,
     @InjectDataSource() private dataSource: DataSource,
-  ) {}
+  ) { }
 
   async createSession(
     userId: UsersEntity,

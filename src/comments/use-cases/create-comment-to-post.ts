@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { GetPostByIdCommand } from 'src/posts/use-cases/get-post-by-id';
 import { CommentRepository } from '../comments.repository';
-import { CommentRepositoryPg } from '../comments.repository-pg';
+import { CommentRepositoryPg } from '../comments.repository-orm';
 
 interface IUsersAcessToken {
   id: string;
@@ -17,7 +17,7 @@ export class CreateCommentToPostCommand {
     public postId: string,
     public request: Request,
     public content: string,
-  ) {}
+  ) { }
 }
 
 @CommandHandler(CreateCommentToPostCommand)
@@ -28,7 +28,7 @@ export class CreateCommentToPostUseCase
     private commandBus: CommandBus,
     private jwtService: JwtService,
     private commentRepo: CommentRepositoryPg,
-  ) {}
+  ) { }
 
   async execute(command: CreateCommentToPostCommand) {
     const postToComment = await this.commandBus.execute(

@@ -7,8 +7,8 @@ import {
   PrimaryColumn,
 } from 'typeorm';
 import { PostEntity } from './post.entity';
-import { UsersEntity } from 'src/users/entyties/users.entytie';
-import { LikeStatus } from 'src/enums/like-status.enum';
+import { UsersEntity } from '../../users/entyties/users.entity';
+import { LikeStatus } from '../../enums/like-status.enum';
 
 @Entity('posts_likes')
 export class PostLikesEntity {
