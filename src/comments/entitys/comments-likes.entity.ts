@@ -15,14 +15,14 @@ export class CommentLikesEntity {
   @PrimaryColumn()
   commentId: number | string;
 
-  @ManyToOne(() => CommentEntity, (c) => c.coommentLikes)
+  @ManyToOne(() => CommentEntity, (c) => c.coommentLikes, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'commentId' })
   comment: CommentEntity;
 
   @PrimaryColumn({})
   userId: number | string;
 
-  @ManyToOne(() => UsersEntity, (u) => u.commentLikes)
+  @ManyToOne(() => UsersEntity, (u) => u.commentLikes, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user: UsersEntity;
 

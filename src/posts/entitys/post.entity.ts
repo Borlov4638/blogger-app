@@ -24,8 +24,8 @@ export class PostEntity {
   content: string;
   @ManyToOne(() => BlogEntity, (b) => b.posts, { onDelete: 'CASCADE' })
   blog: BlogEntity;
-  @OneToMany(() => CommentEntity, (c) => c.post)
+  @OneToMany(() => CommentEntity, (c) => c.post, { onDelete: 'CASCADE' })
   comments: CommentEntity[];
-  @OneToMany(() => PostLikesEntity, (pl) => pl.post)
+  @OneToMany(() => PostLikesEntity, (pl) => pl.post, { onDelete: 'CASCADE' })
   likes: PostLikesEntity[];
 }

@@ -35,11 +35,11 @@ export class CommentEntity {
   @OneToMany(() => CommentLikesEntity, (cl) => cl.commentId)
   coommentLikes: CommentLikesEntity[];
 
-  @ManyToOne(() => PostEntity)
+  @ManyToOne(() => PostEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: "postId" })
   post: PostEntity;
 
-  @ManyToOne(() => UsersEntity)
+  @ManyToOne(() => UsersEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: "userId" })
   user: UsersEntity;
 }
