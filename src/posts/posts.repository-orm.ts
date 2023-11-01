@@ -47,7 +47,7 @@ export class PostRepositoryPg {
     private postLikesRepo: Repository<PostLikesEntity>,
     @InjectDataSource() private dataSource: DataSource,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   postsSortingQuery(sortBy: string) {
     switch (sortBy) {
@@ -263,19 +263,16 @@ export class PostRepositoryPg {
   }
 
   async deletePostById(id: string) {
-    return (
-      await this.dataSource.query(`DELETE FROM posts WHERE "id" = '${id}'`)
-    )[1];
+    return (await this.postRepo.delete({ id })).affected
   }
 
   async getStatus(userId: string, postId: string) {
-    const status = (
-      await this.dataSource.query(`
-      SELECT "status"
-      FROM posts_likes
-      WHERE "postId" = '${postId}' AND "userId" = '${userId}'
-    `)
-    )[0];
+    const status = await this.postLikesRepo
+      .createQueryBuilder("pl")
+      .select("pl.status")
+      .where("pl.postId = :postId", { postId })
+      .andWhere("pl.userId = :userId", { userId })
+      .getOne()
 
     return !status ? LikeStatus.NONE : status.status;
   }
@@ -410,23 +407,24 @@ export class PostRepositoryPg {
   }
 
   private async resetLikeStatus(postId: string, userId: string) {
-    await this.dataSource.query(`
-      DELETE FROM posts_likes
-      WHERE "postId" = '${postId}' AND "userId" = '${userId}'
-    `);
+    await this.postLikesRepo.delete({ postId, userId })
   }
 
   private async likePost(postId: string, user: IUsersAcessToken) {
-    await this.dataSource.query(`
-      INSERT INTO posts_likes ("postId", "userId", "login", "status")
-      VALUES ('${postId}', '${user.id}', '${user.login}', 'Like')
-    `);
+    const likeStatus = new PostLikesEntity()
+    likeStatus.postId = postId
+    likeStatus.userId = user.id
+    likeStatus.login = user.login
+    likeStatus.status = LikeStatus.LIKE
+    await this.postLikesRepo.save(likeStatus)
   }
 
   private async dislikePost(postId: string, user: IUsersAcessToken) {
-    await this.dataSource.query(`
-      INSERT INTO posts_likes ("postId", "userId", "login", "status")
-      VALUES ('${postId}', '${user.id}', '${user.login}', 'Dislike')
-    `);
+    const dislikeStatus = new PostLikesEntity()
+    dislikeStatus.postId = postId
+    dislikeStatus.userId = user.id
+    dislikeStatus.login = user.login
+    dislikeStatus.status = LikeStatus.DISLIKE
+    await this.postLikesRepo.save(dislikeStatus)
   }
 }

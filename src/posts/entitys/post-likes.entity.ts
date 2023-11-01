@@ -13,10 +13,10 @@ import { LikeStatus } from '../../enums/like-status.enum';
 @Entity('posts_likes')
 export class PostLikesEntity {
   @PrimaryColumn()
-  postId: number;
+  postId: number | string;
 
   @PrimaryColumn()
-  userId: string;
+  userId: string | number;
 
   @ManyToOne(() => PostEntity, (p) => p.likes, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'postId' })
