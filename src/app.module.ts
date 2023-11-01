@@ -53,7 +53,7 @@ if (process.env.DATABASE === 'mongo') {
 
 @Module({
   imports: [
-    ThrottlerModule.forRoot([{ ttl: 10000, limit: 5 }]),
+    ThrottlerModule.forRoot([{ ttl: 10000, limit: 500 }]),
     ...imports,
     JwtModule.register({
       secret: 'dhcfgvhbjnkmjbhvgjfgfcjhvkbljnknjbhvghjg',
@@ -71,4 +71,4 @@ if (process.env.DATABASE === 'mongo') {
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

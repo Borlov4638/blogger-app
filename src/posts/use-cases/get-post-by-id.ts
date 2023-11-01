@@ -12,7 +12,7 @@ interface IUsersAcessToken {
 }
 
 export class GetPostByIdCommand {
-  constructor(public postId: string, public request: Request) {}
+  constructor(public postId: string, public request: Request) { }
 }
 
 @CommandHandler(GetPostByIdCommand)
@@ -20,7 +20,7 @@ export class GetPostByIdUseCase implements ICommandHandler<GetPostByIdCommand> {
   constructor(
     private postRepo: PostRepositoryPg,
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
   async execute(command: GetPostByIdCommand) {
     const findedPost = await this.postRepo.findPostById(command.postId);

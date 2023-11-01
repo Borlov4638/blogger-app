@@ -217,11 +217,11 @@ export class PostRepositoryPg {
       .createQueryBuilder('p')
       .select('p.*')
       .addSelect(
-        `COALESCE((SELECT json_agg(row) FROM (SELECT "addedAt", "userId", "login" FROM posts_likes WHERE "postId" = :postId AND "status" = 'Like') row), '[]')`,
+        `COALESCE((SELECT json_agg(row) FROM (SELECT * FROM posts_likes WHERE "postId" = :postId AND "status" = 'Like') row), '[]')`,
         'likes_array',
       )
       .addSelect(
-        `COALESCE((SELECT json_agg(row) FROM (SELECT "addedAt", "userId", "login" FROM posts_likes WHERE "postId" = :postId AND "status" = 'Dislike') row), '[]')`,
+        `COALESCE((SELECT json_agg(row) FROM (SELECT * FROM posts_likes WHERE "postId" = :postId AND "status" = 'Dislike') row), '[]')`,
         'dislikes_array',
       )
       .leftJoinAndSelect('p.blog', 'b')
@@ -232,6 +232,9 @@ export class PostRepositoryPg {
     if (!post) {
       throw new NotFoundException('post not found');
     }
+    post.likes_array.forEach(p => {
+      p.addedAt = new Date(p.addedAt)
+    })
 
     return {
       id: post.id.toString(),
@@ -366,7 +369,8 @@ export class PostRepositoryPg {
 
     const totalCountOfItems = await this.postRepo
       .createQueryBuilder('p')
-      .select(`p.* WHERE p."blogId" = ${blog.id} `)
+      .select(`p.*`)
+      .where("p.blogId = :blogId", { blogId: blog.id })
       .getCount();
 
     const mappedResponse = {

@@ -63,7 +63,7 @@ export class CommentRepositoryPg {
 
     const selectedComments = await this.commentRepo
       .createQueryBuilder("c")
-      .select("c.*")
+      .select("c.*, COALESCE(cl.status, 'None') as status")
       .addSelect(query => {
         return query
           .select("COUNT(*)")
@@ -105,6 +105,7 @@ export class CommentRepositoryPg {
     const totalCountOfItems = await this.commentRepo
       .createQueryBuilder("c")
       .select("c.*")
+      .where("c.postId = :postId", { postId })
       .getCount()
 
     const mappedResponse = {
