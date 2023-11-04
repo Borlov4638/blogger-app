@@ -21,7 +21,7 @@ export class BlogsRepositoryPg {
   constructor(
     @InjectDataSource() private dataSource: DataSource,
     @InjectRepository(BlogEntity) private blogsRepo: Repository<BlogEntity>,
-  ) {}
+  ) { }
 
   blogsSortingQuery(sortBy: string) {
     switch (sortBy) {
@@ -45,7 +45,7 @@ export class BlogsRepositoryPg {
   async GetAllBlogs(paganationQuery: IBlogPaganationQuery) {
     const pagonation = this.getPagonation(paganationQuery);
 
-    const blogsArray = await this.blogsRepo
+    let blogsArray = await this.blogsRepo
       .createQueryBuilder('blogs')
       .select()
       .where('blogs.name ILIKE :nameTerm', {
@@ -61,18 +61,18 @@ export class BlogsRepositoryPg {
       .getMany();
 
     // /////////////// Условие для теста, для сортировки по имени/////////////////
-    // if (pagonation.sotringQuery === "name") {
-    //   blogsArray = blogsArray.sort((a, b) => {
-    //     if (a.name > b.name) {
-    //       return 1
-    //     }
-    //     if (a.name < b.name) {
-    //       return -1;
-    //     }
-    //     return 0;
-    //   })
+    if (pagonation.sotringQuery === "name") {
+      blogsArray = blogsArray.sort((a, b) => {
+        if (a.name > b.name) {
+          return 1
+        }
+        if (a.name < b.name) {
+          return -1;
+        }
+        return 0;
+      })
 
-    // }
+    }
     // ///////////////////////////////////////////////////////////////////////////////
 
     blogsArray.map((b) => {
