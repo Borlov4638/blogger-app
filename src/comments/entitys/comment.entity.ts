@@ -1,4 +1,4 @@
-import { PostEntity } from '../../posts/entitys/post.entity';
+import { PostEntity } from '../../modules/posts/entitys/post.entity';
 import { UsersEntity } from '../../users/entyties/users.entity';
 import {
   Column,

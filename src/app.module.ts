@@ -5,8 +5,8 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { BlogsModule } from './blogs/blogs.module';
-import { PostsModule } from './posts/posts.module';
+import { BlogsModule } from './modules/blogs/blogs.module';
+import { PostsModule } from './modules/posts/posts.module';
 import { CommentsModule } from './comments/comments.module';
 import { UsersModule } from './users/users.module';
 import { Blog, BlogSchema } from './entyties/blogs.schema';
@@ -20,6 +20,7 @@ import { Comment, commentsSchema } from './entyties/comments.schema';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { QuizModule } from './modules/quiz/quis.module';
 
 let imports = [];
 if (process.env.DATABASE === 'mongo') {
@@ -47,6 +48,7 @@ if (process.env.DATABASE === 'mongo') {
       // ssl: true,
       synchronize: false,
       autoLoadEntities: true,
+      logging: true,
     }),
   ];
 }
@@ -59,6 +61,7 @@ if (process.env.DATABASE === 'mongo') {
       secret: 'dhcfgvhbjnkmjbhvgjfgfcjhvkbljnknjbhvghjg',
       global: true,
     }),
+    QuizModule,
     configModule,
     AuthModule,
     BlogsModule,

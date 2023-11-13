@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Request } from 'express';
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreateSessionCommand } from './session-use-cases/create-session';
-import { CryptoService } from '../../crypto/crypto.service';
+import { CryptoService } from '../../modules/crypto/crypto.service';
 import { JwtService } from '@nestjs/jwt';
 import { UsersRepository } from '../../users/users.repository-orm';
 
@@ -24,7 +24,7 @@ interface IUsersAcessToken {
 }
 
 export class LoginUserCommand {
-  constructor(public credentials: ILoginUser, public request: Request) {}
+  constructor(public credentials: ILoginUser, public request: Request) { }
 }
 
 @CommandHandler(LoginUserCommand)
@@ -34,7 +34,7 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
     private jwtService: JwtService,
     private usersRepo: UsersRepository,
     private cryptoService: CryptoService,
-  ) {}
+  ) { }
 
   async execute(command: LoginUserCommand) {
     const user = await this.checkCredentials(command.credentials);

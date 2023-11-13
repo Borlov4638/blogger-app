@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { BearerAccessAuthGuard } from '../auth/guards/auth.bearer.guard';
-import { PostCreateNewCommentDto } from '../posts/dto/post.dto';
+import { PostCreateNewCommentDto } from '../modules/posts/dto/post.dto';
 import { CommentChangeLikeStatusDto } from './dto/comments.dto';
 import { CommandBus } from '@nestjs/cqrs';
 import { GetCommentByIdCommand } from './use-cases/get-comment-by-id';
@@ -22,7 +22,7 @@ import { DeleteCommentByIdCommand } from './use-cases/delete-comment';
 
 @Controller('comments')
 export class CommentsController {
-  constructor(private commandBus: CommandBus) {}
+  constructor(private commandBus: CommandBus) { }
 
   @Get(':id')
   async getCommentById(@Param('id') comentId: string, @Req() request: Request) {

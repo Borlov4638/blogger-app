@@ -1,6 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
-import { CrytoModule } from '../crypto/crypto.module';
+import { CrytoModule } from '../modules/crypto/crypto.module';
 import { UsersModule } from '../users/users.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Session, sessionSchema } from '../entyties/session.schema';

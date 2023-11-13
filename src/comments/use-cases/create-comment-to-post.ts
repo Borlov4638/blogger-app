@@ -2,7 +2,7 @@ import { NotFoundException } from '@nestjs/common';
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { GetPostByIdCommand } from 'src/posts/use-cases/get-post-by-id';
+import { GetPostByIdCommand } from 'src/modules/posts/use-cases/get-post-by-id';
 import { CommentRepository } from '../comments.repository';
 import { CommentRepositoryPg } from '../comments.repository-orm';
 

@@ -5,9 +5,9 @@ import { Request } from 'express';
 import { LikeStatus } from 'src/enums/like-status.enum';
 import { DataSource, Repository } from 'typeorm';
 import { PostEntity } from './entitys/post.entity';
-import { BlogEntity } from 'src/blogs/entitys/blogs.entity';
+import { BlogEntity } from 'src/modules/blogs/entitys/blogs.entity';
 import { CreatePostDto } from './dto/post.dto';
-import { CreatePostByBlogIdDto } from 'src/blogs/dto/blogs.dto';
+import { CreatePostByBlogIdDto } from 'src/modules/blogs/dto/blogs.dto';
 import { PostLikesEntity } from './entitys/post-likes.entity';
 
 interface IPostPaganationQuery {

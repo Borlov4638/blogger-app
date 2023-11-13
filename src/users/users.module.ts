@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { UsersController } from './users.controller';
-import { CrytoModule } from '../crypto/crypto.module';
+import { CrytoModule } from '../modules/crypto/crypto.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, usersSchema } from '../entyties/users.chema';
 import { GetAllUsersUseCase } from './use-cases/get-all-users';

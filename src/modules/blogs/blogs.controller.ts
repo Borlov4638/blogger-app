@@ -22,7 +22,7 @@ import {
   PostPaganationQuery,
   PostUpdateByBlogDto,
 } from '../posts/dto/post.dto';
-import { BasicAuthGuard } from '../auth/guards/auth.basic.guard';
+import { BasicAuthGuard } from '../../auth/guards/auth.basic.guard';
 import { Request } from 'express';
 import { GetAllBlogsCommand } from './use-cases/get-all-blogs-with-pagonation';
 import { CreateBlogCommand } from './use-cases/create-blog';
@@ -32,12 +32,12 @@ import { DeleteBlogByIdCommand } from './use-cases/delete-blog-by-id';
 import { CommandBus } from '@nestjs/cqrs';
 import { GetAllPostsInBlogCommand } from '../posts/use-cases/get-posts-by-blog-id';
 import { CreatePostCommand } from '../posts/use-cases/create-post';
-import { UpdatePostAssignedToBlogCommand } from 'src/posts/use-cases/update-post-by-blog-id';
-import { DeletePostInBlogCommand } from 'src/posts/use-cases/delete-post-by-blog-id';
+import { UpdatePostAssignedToBlogCommand } from 'src/modules/posts/use-cases/update-post-by-blog-id';
+import { DeletePostInBlogCommand } from 'src/modules/posts/use-cases/delete-post-by-blog-id';
 
 @Controller()
 export class BlogsController {
-  constructor(private commandBus: CommandBus) {}
+  constructor(private commandBus: CommandBus) { }
 
   @UseGuards(BasicAuthGuard)
   @Get('sa/blogs')

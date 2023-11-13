@@ -20,9 +20,9 @@ import {
   PostUpdateDto,
   PostsCommentsPaganation,
 } from './dto/post.dto';
-import { BasicAuthGuard } from '../auth/guards/auth.basic.guard';
+import { BasicAuthGuard } from '../../auth/guards/auth.basic.guard';
 import { Request } from 'express';
-import { BearerAccessAuthGuard } from '../auth/guards/auth.bearer.guard';
+import { BearerAccessAuthGuard } from '../../auth/guards/auth.bearer.guard';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreatePostCommand } from './use-cases/create-post';
 import { GetPostByIdCommand } from './use-cases/get-post-by-id';
@@ -35,7 +35,7 @@ import { ChangePostsLikeStatusCommand } from './use-cases/change-post-like-statu
 
 @Controller('posts')
 export class PostController {
-  constructor(private commandBus: CommandBus) {}
+  constructor(private commandBus: CommandBus) { }
 
   @Get()
   async getAllPosts(

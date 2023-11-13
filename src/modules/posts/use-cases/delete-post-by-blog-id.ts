@@ -1,17 +1,17 @@
 import { NotFoundException } from '@nestjs/common';
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { GetBlogByIdCommand } from 'src/blogs/use-cases/get-blog-by-id';
+import { GetBlogByIdCommand } from 'src/modules/blogs/use-cases/get-blog-by-id';
 import { DeletePostByIdCommand } from './delete-post-by-id';
 
 export class DeletePostInBlogCommand {
-  constructor(public blogId, public postId) {}
+  constructor(public blogId, public postId) { }
 }
 
 @CommandHandler(DeletePostInBlogCommand)
 export class DeletePostInBlogsUseCase
   implements ICommandHandler<DeletePostInBlogCommand>
 {
-  constructor(private commandBus: CommandBus) {}
+  constructor(private commandBus: CommandBus) { }
 
   async execute(command: DeletePostInBlogCommand) {
     const blogToFindPosts = await this.commandBus.execute(

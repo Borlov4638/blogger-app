@@ -1,5 +1,5 @@
 import { BlogEntity } from '../../blogs/entitys/blogs.entity';
-import { CommentEntity } from '../../comments/entitys/comment.entity';
+import { CommentEntity } from '../../../comments/entitys/comment.entity';
 import {
   Column,
   CreateDateColumn,

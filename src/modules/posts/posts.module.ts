@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Post, postSchema } from '../entyties/posts.schema';
+import { Post, postSchema } from '../../entyties/posts.schema';
 import { PostController } from './posts.controller';
-import { Blog, BlogSchema } from '../entyties/blogs.schema';
+import { Blog, BlogSchema } from '../../entyties/blogs.schema';
 import { PostRepository } from './posts.repository';
-import { Comment, commentsSchema } from '../entyties/comments.schema';
+import { Comment, commentsSchema } from '../../entyties/comments.schema';
 import { CustomBlogIdValidation } from './dto/post.dto';
 import { CqrsModule } from '@nestjs/cqrs';
 import { CreatePostUseCase } from './use-cases/create-post';
@@ -14,7 +14,7 @@ import { GetAllPostsUseCase } from './use-cases/get-all-posts';
 import { UpdatePostUseCase } from './use-cases/update-post';
 import { DeletePostByIdUseCase } from './use-cases/delete-post-by-id';
 import { PostRepositoryPg } from './posts.repository-orm';
-import { BlogsModule } from 'src/blogs/blogs.module';
+import { BlogsModule } from 'src/modules/blogs/blogs.module';
 import { UpdatePostAssignedToBlogUseCase } from './use-cases/update-post-by-blog-id';
 import { DeletePostInBlogsUseCase } from './use-cases/delete-post-by-blog-id';
 import { ChangePostsLikeStatusUseCase } from './use-cases/change-post-like-status';
@@ -62,4 +62,4 @@ if (process.env.DATABASE === 'mongo') {
   providers: [...providers, CustomBlogIdValidation, ...UseCases],
   exports: [...exporters, ...UseCases],
 })
-export class PostsModule {}
+export class PostsModule { }

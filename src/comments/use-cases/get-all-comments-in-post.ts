@@ -1,8 +1,8 @@
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CommentRepositoryPg } from 'src/comments/comments.repository-orm';
-import { PostsCommentsPaganation } from '../../posts/dto/post.dto';
+import { PostsCommentsPaganation } from '../../modules/posts/dto/post.dto';
 import { Request } from 'express';
-import { GetPostByIdCommand } from 'src/posts/use-cases/get-post-by-id';
+import { GetPostByIdCommand } from 'src/modules/posts/use-cases/get-post-by-id';
 
 export class GetAllPostsCommentsCommand {
   constructor(

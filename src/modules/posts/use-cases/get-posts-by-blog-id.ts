@@ -1,7 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
 import { Request } from 'express';
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { GetBlogByIdCommand } from 'src/blogs/use-cases/get-blog-by-id';
+import { GetBlogByIdCommand } from 'src/modules/blogs/use-cases/get-blog-by-id';
 import { PostRepositoryPg } from '../posts.repository-orm';
 
 export interface IPostPaganationQuery {
@@ -16,7 +16,7 @@ export class GetAllPostsInBlogCommand {
     public postPagonationQuery: IPostPaganationQuery,
     public blogId: string,
     public request: Request,
-  ) {}
+  ) { }
 }
 
 @CommandHandler(GetAllPostsInBlogCommand)
@@ -26,7 +26,7 @@ export class GetAllPostsInBlogUseCase
   constructor(
     private commandBus: CommandBus,
     private readonly postRepo: PostRepositoryPg,
-  ) {}
+  ) { }
 
   async execute(command: GetAllPostsInBlogCommand) {
     const blogToFindPosts = await this.commandBus.execute(

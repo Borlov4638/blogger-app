@@ -1,6 +1,6 @@
 import { UserDocument } from '../entyties/users.chema';
 import { BadRequestException } from '@nestjs/common';
-import { CryptoService } from '../crypto/crypto.service';
+import { CryptoService } from '../modules/crypto/crypto.service';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
@@ -18,7 +18,7 @@ export class UsersRepository {
   constructor(
     @InjectDataSource() private dataSource: DataSource,
     private cryptoService: CryptoService,
-  ) {}
+  ) { }
 
   private usersSortingQuery(sortBy: string): {} {
     switch (sortBy) {
@@ -199,8 +199,7 @@ export class UsersRepository {
   async newConfirmationCode(id: string) {
     const newCode = uuidv4();
     await this.dataSource.query(
-      `UPDATE users SET "confirmationCode" = '${newCode}', "expirationDate" = '${
-        +new Date() + 180000
+      `UPDATE users SET "confirmationCode" = '${newCode}', "expirationDate" = '${+new Date() + 180000
       }' WHERE "id" = '${parseInt(id)}'`,
     );
     return newCode;

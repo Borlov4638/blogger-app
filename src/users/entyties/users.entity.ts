@@ -1,7 +1,7 @@
 import { SessionPg } from '../../auth/enities/session.entity';
 import { CommentEntity } from '../../comments/entitys/comment.entity';
 import { CommentLikesEntity } from '../../comments/entitys/comments-likes.entity';
-import { PostLikesEntity } from '../../posts/entitys/post-likes.entity';
+import { PostLikesEntity } from '../../modules/posts/entitys/post-likes.entity';
 import {
   Column,
   CreateDateColumn,

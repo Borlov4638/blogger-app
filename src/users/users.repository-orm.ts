@@ -1,6 +1,6 @@
 import { UserDocument } from '../entyties/users.chema';
 import { BadRequestException, HttpException, HttpStatus } from '@nestjs/common';
-import { CryptoService } from '../crypto/crypto.service';
+import { CryptoService } from '../modules/crypto/crypto.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';

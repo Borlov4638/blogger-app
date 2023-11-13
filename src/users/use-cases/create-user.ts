@@ -1,5 +1,5 @@
 import { UtilsService } from '../../utils/utils.service';
-import { CryptoService } from '../../crypto/crypto.service';
+import { CryptoService } from '../../modules/crypto/crypto.service';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UsersRepository } from '../users.repository-orm';
 
@@ -10,7 +10,7 @@ interface ICreateUser {
 }
 
 export class CreateUserCommand {
-  constructor(public data: ICreateUser, public isConfirmed: boolean) {}
+  constructor(public data: ICreateUser, public isConfirmed: boolean) { }
 }
 
 @CommandHandler(CreateUserCommand)
@@ -19,7 +19,7 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
     private readonly cryptoService: CryptoService,
     private usersRepository: UsersRepository,
     private utilsService: UtilsService,
-  ) {}
+  ) { }
 
   async execute(command: CreateUserCommand) {
     const hashedPassword = await this.cryptoService.getHash(
