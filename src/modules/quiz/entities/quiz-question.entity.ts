@@ -1,5 +1,4 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { QuizAnswersEntity } from "./quis-answers.entity";
 
 @Entity('quiz-questions')
 export class QuizQuestionEntity {
@@ -13,7 +12,10 @@ export class QuizQuestionEntity {
     createdAt: Date
     @UpdateDateColumn()
     updatedAt: Date
-    @OneToMany(() => QuizAnswersEntity, (qa) => qa.questionId, { onDelete: 'CASCADE' })
-    correctAnswers: QuizAnswersEntity[]
+    @Column({ array: true, type: 'varchar' })
+    correctAnswers: Array<string>
+
+    // @OneToMany(() => QuizAnswersEntity, (qa) => qa.questionId, { onDelete: 'CASCADE' })
+    // correctAnswers: QuizAnswersEntity[]
 }
 

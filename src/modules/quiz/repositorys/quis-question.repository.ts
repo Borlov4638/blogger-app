@@ -1,7 +1,6 @@
 import { DataSource } from "typeorm";
 import { QuizQuestionEntity } from "../entities/quiz-question.entity";
 import { InjectDataSource } from "@nestjs/typeorm";
-import { QuizAnswersEntity } from "../entities/quis-answers.entity";
 import { CreateQuizQuestionDto, QuizPaginationQuery, UpdateQuestionDto } from "../dto/quiz-questions.dto";
 
 export class QuizQuestionsRepository {
@@ -15,21 +14,15 @@ export class QuizQuestionsRepository {
         await queryRunner.connect()
         await queryRunner.startTransaction()
         const quizQuestionRepo = queryRunner.manager.getRepository<QuizQuestionEntity>(QuizQuestionEntity)
-        const quizAnswerRepo = queryRunner.manager.getRepository<QuizAnswersEntity>(QuizAnswersEntity)
 
 
         try {
             const newQuestion = new QuizQuestionEntity()
             newQuestion.body = question.body
-
+            newQuestion.correctAnswers = question.correctAnswers
             await quizQuestionRepo.save(newQuestion)
-
-            const correctAnswers = question.correctAnswers.map(question => quizAnswerRepo.create({ answer: question, question: newQuestion }))
-
-            await quizAnswerRepo.save(correctAnswers)
             await queryRunner.commitTransaction()
-
-            return { ...newQuestion, correctAnswers: question.correctAnswers }
+            return newQuestion
 
         } catch (err) {
             await queryRunner.rollbackTransaction();
@@ -53,15 +46,6 @@ export class QuizQuestionsRepository {
         let questionsQuery = this.dataSource.getRepository(QuizQuestionEntity)
             .createQueryBuilder('q')
             .select('q.*')
-            .addSelect(
-                `COALESCE((SELECT json_agg(row) 
-                FROM (
-                    SELECT quiz_answers.*
-                    FROM quiz_answers
-                    WHERE "questionId" = "q"."id" 
-                ) row
-                ),'[]') as "array"`
-            )
             .where(`q.body LIKE '%${bodySearchTerm}%'`)
             .orderBy(`"${sortBy}"`, sortDirection)
             .offset(itemsToSkip)
@@ -77,10 +61,7 @@ export class QuizQuestionsRepository {
         }
         const questions = await questionsQuery.getRawMany()
 
-        questions.forEach((q) => {
-            q.correctAnswers = q.array.map(ans => ans.answer);
-            delete q.array
-        })
+
         return {
             pagesCount: Math.ceil(totalCount / pageSize),
             page: pageNumber,
