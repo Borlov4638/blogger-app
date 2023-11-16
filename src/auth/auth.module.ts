@@ -35,22 +35,10 @@ const UseCases = [
   GetNewTokenPairUseCase,
 ];
 
-
-let providers = []
-let exporters = []
-let imporst = []
-if (process.env.DATABASE === 'mongo') {
-  providers = [SessionRepository]
-  exporters = [SessionRepository]
-  imporst = [MongooseModule.forFeature([{ name: Session.name, schema: sessionSchema }])]
-} else if (process.env.DATABASE === 'postgres') {
-
-}
-
 @Global()
 @Module({
   controllers: [AuthController],
-  providers: [...UseCases, ...providers],
+  providers: [...UseCases, SessionRepository],
   imports: [
     CrytoModule,
     UsersModule,
@@ -58,9 +46,9 @@ if (process.env.DATABASE === 'mongo') {
       secret: 'dhcfgvhbjnkmjbhvgjfgfcjhvkbljnknjbhvghjg',
       global: true,
     }),
-    ...imporst,
+    MongooseModule.forFeature([{ name: Session.name, schema: sessionSchema }]),
     CqrsModule,
   ],
-  exports: [...exporters],
+  exports: [SessionRepository],
 })
-export class AuthModule { }
+export class AuthModule {}

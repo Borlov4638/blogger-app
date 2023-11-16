@@ -10,15 +10,6 @@ import { CreateUserUseCase } from './use-cases/create-user';
 import { DeleteUserByIdCommand } from './use-cases/delete-user-by-id';
 
 const useCases = [GetAllUsersUseCase, CreateUserUseCase, DeleteUserByIdCommand];
-let imporst = []
-let exporst = []
-if (process.env.DATABASE === 'mongo') {
-  imporst = [MongooseModule.forFeature([{ name: User.name, schema: usersSchema }])]
-  exporst = [UsersRepository]
-} else if (process.env.DATABASE === 'postgres') {
-
-}
-
 
 @Module({
   controllers: [UsersController],
@@ -26,8 +17,8 @@ if (process.env.DATABASE === 'mongo') {
   imports: [
     CrytoModule,
     CqrsModule,
-    ...imporst,
+    MongooseModule.forFeature([{ name: User.name, schema: usersSchema }]),
   ],
-  exports: [...exporst],
+  exports: [UsersRepository],
 })
-export class UsersModule { }
+export class UsersModule {}
