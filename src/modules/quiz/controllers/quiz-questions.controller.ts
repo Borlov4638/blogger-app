@@ -6,6 +6,7 @@ import { BasicAuthGuard } from "src/auth/guards/auth.basic.guard";
 import { GetAllQuestionsCommand } from "../use-cases/get-all-questions-with-pagination.use-case";
 import { DeleteQuestionCommand } from "../use-cases/delete-question.use-case";
 import { UpdateQuestionCommand } from "../use-cases/update-question.use-case";
+import { ChangeQuestionPublishedStatusCommand } from "../use-cases/change-question-published-status.use-case";
 
 @Controller('sa/quiz/questions')
 export class QuizQuestionsController {
@@ -29,6 +30,8 @@ export class QuizQuestionsController {
         return await this.commandBus.execute(new QuizQuestionCreateCommand(data))
     }
 
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @UseGuards(BasicAuthGuard)
     @Put(':id')
     async updateQuestion(@Param('id', new ParseIntPipe()) questionId: number, @Body() data: UpdateQuestionDto) {
         return await this.commandBus.execute(new UpdateQuestionCommand(questionId, data))
@@ -39,6 +42,13 @@ export class QuizQuestionsController {
     @Delete(':id')
     async deleteQuestion(@Param('id', new ParseIntPipe()) questionId: number) {
         return await this.commandBus.execute(new DeleteQuestionCommand(questionId))
+    }
+
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @UseGuards(BasicAuthGuard)
+    @Put('publish/:id')
+    async changePublishedStatus(@Param('id', new ParseIntPipe()) questionId: number) {
+        return this.commandBus.execute(new ChangeQuestionPublishedStatusCommand(questionId))
     }
 
 

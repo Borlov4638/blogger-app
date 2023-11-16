@@ -47,7 +47,6 @@ export class UpdateQuestionDto {
     @IsNotEmpty()
     body: string
     @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => String)
+    @IsString({ each: true })
     correctAnswers: Array<string>
 }

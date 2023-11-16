@@ -1,6 +1,7 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { UpdateQuestionDto } from "../dto/quiz-questions.dto";
 import { QuizQuestionsRepository } from "../repositorys/quis-question.repository";
+import { NotFoundException } from "@nestjs/common";
 
 export class UpdateQuestionCommand {
     constructor(
@@ -16,6 +17,9 @@ export class UpdateQuestionUseCase implements ICommandHandler<UpdateQuestionComm
     ) { }
 
     async execute(command: UpdateQuestionCommand): Promise<any> {
-        await this.questionRepo.updateQuestionById(command.id, command.data)
+        const isUpdated = await this.questionRepo.updateQuestionById(command.id, command.data)
+        if (isUpdated == 0) {
+            throw new NotFoundException()
+        }
     }
 }

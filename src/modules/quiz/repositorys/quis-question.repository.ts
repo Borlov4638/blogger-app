@@ -2,6 +2,7 @@ import { DataSource } from "typeorm";
 import { QuizQuestionEntity } from "../entities/quiz-question.entity";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { CreateQuizQuestionDto, QuizPaginationQuery, UpdateQuestionDto } from "../dto/quiz-questions.dto";
+import { NotFoundException } from "@nestjs/common";
 
 export class QuizQuestionsRepository {
     constructor(
@@ -80,9 +81,37 @@ export class QuizQuestionsRepository {
     }
 
     async updateQuestionById(id: number, data: UpdateQuestionDto) {
-        this.dataSource.getRepository(QuizQuestionEntity)
-            .createQueryBuilder('qq')
-            .update()
-            .execute()
+        try {
+            return await this.dataSource.getRepository(QuizQuestionEntity)
+                .createQueryBuilder('qq')
+                .update(QuizQuestionEntity)
+                .set({ body: data.body, correctAnswers: data.correctAnswers })
+                .where('id = :id', { id })
+                .execute()
+                .then(data => data.affected)
+
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    async changePublishedStatus(id: number) {
+        try {
+            const question = await this.dataSource.getRepository(QuizQuestionEntity).findOneBy({ id })
+
+            return await this.dataSource.getRepository(QuizQuestionEntity)
+                .createQueryBuilder('qq')
+                .update(QuizQuestionEntity)
+                .set({ published: !question.published })
+                .where('id = :id', { id })
+                .execute()
+                .then(query => query.affected)
+
+        } catch (err) {
+            console.error(err)
+            throw new NotFoundException()
+        }
+
+
     }
 }
